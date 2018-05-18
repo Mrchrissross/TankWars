@@ -19,6 +19,6 @@ public class EnemyMuzzleFlash : MonoBehaviour {
         if (muzzleTimer < 0f)                                                           // If the Muzzle timer reaches zero... 
             {
                 gameObject.GetComponent<ParticleSystem>().enableEmission = false;       // the smoke emission will stop
-            }        
+            }
     }
 }

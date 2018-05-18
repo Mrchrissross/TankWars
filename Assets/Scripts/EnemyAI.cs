@@ -63,7 +63,6 @@ public class EnemyAI : MonoBehaviour {
             Player = sResult.transform;                                         // So the Enemy will now seek the player
             StartCoroutine(UpdatePath());
             hasWaypoint = false;
-            return false;
         }
     }
 
@@ -76,7 +75,6 @@ public class EnemyAI : MonoBehaviour {
                 hasWaypoint = true;                                             // ^^
                 StartCoroutine(SearchForWaypoint());                            // ^^
             }
-            return false;                                                       // ^^
         }
 
         seeker.StartPath(transform.position, Player.position, OnPathComplete);  // Start path to the player's position
