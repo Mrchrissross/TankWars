@@ -18,28 +18,20 @@ public class EnemyPathFinding : MonoBehaviour
 
         float dist = Vector3.Distance(player.position, transform.position);     // This is the distance between the enemy and the player
 
-        if (currentWayPoint < this.wayPointList.Length)                         // Check if the enemies waypoint and whereabouts in the list
-        {
-            if (targetWayPoint == null)                                         // If the enemies target waypoint is none existent then the it will go to default currentwaypoint in the waypoint list
-                targetWayPoint = wayPointList[currentWayPoint];
-            Move();                                                             // Use the Move method
-        }
-
-        if (currentWayPoint == 7)                                               // If the current waypoint has gotten to seven, it will then go back to zero
-        {
-            currentWayPoint = 0;
-        }
+        Move();                                                                 // Use the Move method
 
         if (dist <= range)                                                      // If the distance between the player and enemy goes below or equal to the range variable...
         {
-            currentWayPoint = 8;                                                // The current waypoint will be come eight
             playerInRange = true;                                               // The Player in Range bool will become true (EnemyAI script will become active)
             TurnOff();                                                          // This script will turn off
         }
     }
 
     void Move()
-    {        
+    {
+        if (targetWayPoint == null)                                             // If the enemies target waypoint is none existent then the it will go to default currentwaypoint in the waypoint list
+            targetWayPoint = wayPointList[currentWayPoint];
+
         transform.up = Vector3.RotateTowards(transform.up, targetWayPoint.position - transform.position, speed * Time.deltaTime, 0.0f); // Enemy rotation, so that it is looking at its target
 
         transform.position = Vector3.MoveTowards(transform.position, targetWayPoint.position, speed * Time.deltaTime);                  // Enemy movement, so that it moves toward its location
@@ -47,7 +39,14 @@ public class EnemyPathFinding : MonoBehaviour
         if (transform.position == targetWayPoint.position)                                                                              // If the Enemy has reached the target way point and has same position on the x, y, z...
         {
             currentWayPoint++;                                                                                                          // Current way point will go up by one and the enemy will now start moving toward the next way point
-            targetWayPoint = wayPointList[currentWayPoint];                                                                             // Reset the target way point to be that of the current waypoint
+
+            if (currentWayPoint < this.wayPointList.Length)
+                targetWayPoint = wayPointList[currentWayPoint];    
+            else
+            {
+                currentWayPoint = 0;
+                targetWayPoint = wayPointList[currentWayPoint];
+            }
         }
     }
 

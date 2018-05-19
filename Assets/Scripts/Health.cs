@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Health : MonoBehaviour
 {
@@ -66,7 +67,9 @@ public class Health : MonoBehaviour
                 Instantiate(destroyedTank, enemy.position, enemy.rotation);                             // The destroyed tank prefab will instantiate at the enemies position
                 enemyDead = true;                                                                       // The bool enemyDead will become true
                 Instantiate(playerHealth, enemy.position, enemy.rotation);                              // Player health prefab will spawn close to the wreckage
-                GameObject.Find("GameMaster").GetComponent<InfiniteMode>().count += 1f;                 // If in Infinite Mode, the score will go up by one. 
+
+                if (SceneManager.GetActiveScene().name == "Infinite Mode")
+                    GameObject.Find("GameMaster").GetComponent<InfiniteMode>().count += 1f;                 // If in Infinite Mode, the score will go up by one. 
             }
         }
 
