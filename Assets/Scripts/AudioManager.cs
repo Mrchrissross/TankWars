@@ -3,7 +3,6 @@ using UnityEngine;
 [System.Serializable]
 public class Sound
 {
-
     //variables
     public string name;
     public AudioClip clip;
@@ -12,7 +11,7 @@ public class Sound
     [Range(0f, 1f)]
     public float volume = 0.7f;
     [Range(0.5f, 1.5f)]
-    public float pitch = 1f;
+    public float pitch = 1.0f;
     //volume and pitch randomizer
     [Range(0f, 0.5f)]
     public float randomVolume = 0.1f;
@@ -46,18 +45,18 @@ public class Sound
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-//Sound array allows to choose how manyu sounds we want to display.
+    
+    //Sound array allows to choose how many sounds we want to display.
     [SerializeField]
     Sound[] sounds;
-//This is used when changing scenes, if there is already an Audio Manager open. this script will destroy the extra audio manager and only allow one open at a time.
+
+    //This is used when changing scenes, if there is already an Audio Manager open. this script will destroy the extra audio manager and only allow one open at a time.
     void Awake()
     {
         if (instance != null)
         {
             if (instance != this)
-            {
                 Destroy(this.gameObject);
-            }
         }
         else
         {
@@ -65,7 +64,8 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(this);
         }
     }
-//This method is called upon as soon as the game starts and as seen below, it will play Menu-Music.
+    
+    //This method is called upon as soon as the game starts and as seen below, it will play Menu-Music.
     void Start()
     {
         for (int i = 0; i < sounds.Length; i++)
@@ -74,10 +74,9 @@ public class AudioManager : MonoBehaviour
             _go.transform.SetParent(this.transform);
             sounds[i].SetSource(_go.AddComponent<AudioSource>());
         }
-
-        PlaySound("MenuMusic");
     }
-//This method will play the sound whenever it is scripted into one of the other gameobjects. 
+    
+    //This method will play the sound whenever it is scripted into one of the other gameobjects. 
     public void PlaySound(string _name)
     {
         for (int i = 0; i < sounds.Length; i++)

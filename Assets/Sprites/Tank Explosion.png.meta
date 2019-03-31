@@ -1,7 +1,5 @@
 fileFormatVersion: 2
 guid: 32c7b09e017240148857980b5aba4c4e
-timeCreated: 1480274819
-licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: Tank Explosion_0
@@ -19,14 +17,14 @@ TextureImporter:
     21300024: Tank Explosion_12
     21300026: Tank Explosion_13
     21300028: Tank Explosion_14
-    21300030: Tank Explosion_22
-    21300032: Tank Explosion_21
-    21300034: Tank Explosion_15
-    21300036: Tank Explosion_16
-    21300038: Tank Explosion_17
-    21300040: Tank Explosion_18
-    21300042: Tank Explosion_19
-    21300044: Tank Explosion_20
+    21300030: Tank Explosion_15
+    21300032: Tank Explosion_16
+    21300034: Tank Explosion_17
+    21300036: Tank Explosion_18
+    21300038: Tank Explosion_19
+    21300040: Tank Explosion_20
+    21300042: Tank Explosion_21
+    21300044: Tank Explosion_22
     21300046: Tank Explosion_23
     21300048: Tank Explosion_24
     21300050: Tank Explosion_25
@@ -35,14 +33,696 @@ TextureImporter:
     21300056: Tank Explosion_28
     21300058: Tank Explosion_29
     21300060: Tank Explosion_30
-  serializedVersion: 2
+    21300062: Tank Explosion_31
+    21300064: Tank Explosion_32
+    21300066: Tank Explosion_33
+    21300068: Tank Explosion_34
+    21300070: Tank Explosion_35
+    21300072: Tank Explosion_36
+    21300074: Tank Explosion_37
+    21300076: Tank Explosion_38
+    21300078: Tank Explosion_39
+    21300080: Tank Explosion_40
+    21300082: Tank Explosion_41
+    21300084: Tank Explosion_42
+    21300086: Tank Explosion_43
+    21300088: Tank Explosion_44
+    21300090: Tank Explosion_45
+    21300092: Tank Explosion_46
+    21300094: Tank Explosion_47
+    21300096: Tank Explosion_48
+    21300098: Tank Explosion_49
+    21300100: Tank Explosion_50
+    21300102: Tank Explosion_51
+    21300104: Tank Explosion_52
+    21300106: Tank Explosion_53
+    21300108: Tank Explosion_54
+    21300110: Tank Explosion_55
+    21300112: Tank Explosion_56
+    21300114: Tank Explosion_57
+    21300116: Tank Explosion_58
+    21300118: Tank Explosion_59
+    21300120: Tank Explosion_60
+    21300122: Tank Explosion_61
+    21300124: Tank Explosion_62
+    21300126: Tank Explosion_63
+    21300128: Tank Explosion_64
+    21300130: Tank Explosion_65
+    21300132: Tank Explosion_66
+    21300134: Tank Explosion_67
+    21300136: Tank Explosion_68
+    21300138: Tank Explosion_69
+    21300140: Tank Explosion_70
+    21300142: Tank Explosion_71
+    21300144: Tank Explosion_72
+    21300146: Tank Explosion_73
+    21300148: Tank Explosion_74
+    21300150: Tank Explosion_75
+    21300152: Tank Explosion_76
+    21300154: Tank Explosion_77
+    21300156: Tank Explosion_78
+    21300158: Tank Explosion_79
+    21300160: Tank Explosion_80
+    21300162: Tank Explosion_81
+    21300164: Tank Explosion_82
+    21300166: Tank Explosion_83
+    21300168: Tank Explosion_84
+    21300170: Tank Explosion_85
+    21300172: Tank Explosion_86
+    21300174: Tank Explosion_87
+    21300176: Tank Explosion_88
+    21300178: Tank Explosion_89
+    21300180: Tank Explosion_90
+    21300182: Tank Explosion_91
+    21300184: Tank Explosion_92
+    21300186: Tank Explosion_93
+    21300188: Tank Explosion_94
+    21300190: Tank Explosion_95
+    21300192: Tank Explosion_96
+    21300194: Tank Explosion_97
+    21300196: Tank Explosion_98
+    21300198: Tank Explosion_99
+    21300200: Tank Explosion_100
+    21300202: Tank Explosion_101
+    21300204: Tank Explosion_102
+    21300206: Tank Explosion_103
+    21300208: Tank Explosion_104
+    21300210: Tank Explosion_105
+    21300212: Tank Explosion_106
+    21300214: Tank Explosion_107
+    21300216: Tank Explosion_108
+    21300218: Tank Explosion_109
+    21300220: Tank Explosion_110
+    21300222: Tank Explosion_111
+    21300224: Tank Explosion_112
+    21300226: Tank Explosion_113
+    21300228: Tank Explosion_114
+    21300230: Tank Explosion_115
+    21300232: Tank Explosion_116
+    21300234: Tank Explosion_117
+    21300236: Tank Explosion_118
+    21300238: Tank Explosion_119
+    21300240: Tank Explosion_120
+    21300242: Tank Explosion_121
+    21300244: Tank Explosion_122
+    21300246: Tank Explosion_123
+    21300248: Tank Explosion_124
+    21300250: Tank Explosion_125
+    21300252: Tank Explosion_126
+    21300254: Tank Explosion_127
+    21300256: Tank Explosion_128
+    21300258: Tank Explosion_129
+    21300260: Tank Explosion_130
+    21300262: Tank Explosion_131
+    21300264: Tank Explosion_132
+    21300266: Tank Explosion_133
+    21300268: Tank Explosion_134
+    21300270: Tank Explosion_135
+    21300272: Tank Explosion_136
+    21300274: Tank Explosion_137
+    21300276: Tank Explosion_138
+    21300278: Tank Explosion_139
+    21300280: Tank Explosion_140
+    21300282: Tank Explosion_141
+    21300284: Tank Explosion_142
+    21300286: Tank Explosion_143
+    21300288: Tank Explosion_144
+    21300290: Tank Explosion_145
+    21300292: Tank Explosion_146
+    21300294: Tank Explosion_147
+    21300296: Tank Explosion_148
+    21300298: Tank Explosion_149
+    21300300: Tank Explosion_150
+    21300302: Tank Explosion_151
+    21300304: Tank Explosion_152
+    21300306: Tank Explosion_153
+    21300308: Tank Explosion_154
+    21300310: Tank Explosion_155
+    21300312: Tank Explosion_156
+    21300314: Tank Explosion_157
+    21300316: Tank Explosion_158
+    21300318: Tank Explosion_159
+    21300320: Tank Explosion_160
+    21300322: Tank Explosion_161
+    21300324: Tank Explosion_162
+    21300326: Tank Explosion_163
+    21300328: Tank Explosion_164
+    21300330: Tank Explosion_165
+    21300332: Tank Explosion_166
+    21300334: Tank Explosion_167
+    21300336: Tank Explosion_168
+    21300338: Tank Explosion_169
+    21300340: Tank Explosion_170
+    21300342: Tank Explosion_171
+    21300344: Tank Explosion_172
+    21300346: Tank Explosion_173
+    21300348: Tank Explosion_174
+    21300350: Tank Explosion_175
+    21300352: Tank Explosion_176
+    21300354: Tank Explosion_177
+    21300356: Tank Explosion_178
+    21300358: Tank Explosion_179
+    21300360: Tank Explosion_180
+    21300362: Tank Explosion_181
+    21300364: Tank Explosion_182
+    21300366: Tank Explosion_183
+    21300368: Tank Explosion_184
+    21300370: Tank Explosion_185
+    21300372: Tank Explosion_186
+    21300374: Tank Explosion_187
+    21300376: Tank Explosion_188
+    21300378: Tank Explosion_189
+    21300380: Tank Explosion_190
+    21300382: Tank Explosion_191
+    21300384: Tank Explosion_192
+    21300386: Tank Explosion_193
+    21300388: Tank Explosion_194
+    21300390: Tank Explosion_195
+    21300392: Tank Explosion_196
+    21300394: Tank Explosion_197
+    21300396: Tank Explosion_198
+    21300398: Tank Explosion_199
+    21300400: Tank Explosion_200
+    21300402: Tank Explosion_201
+    21300404: Tank Explosion_202
+    21300406: Tank Explosion_203
+    21300408: Tank Explosion_204
+    21300410: Tank Explosion_205
+    21300412: Tank Explosion_206
+    21300414: Tank Explosion_207
+    21300416: Tank Explosion_208
+    21300418: Tank Explosion_209
+    21300420: Tank Explosion_210
+    21300422: Tank Explosion_211
+    21300424: Tank Explosion_212
+    21300426: Tank Explosion_213
+    21300428: Tank Explosion_214
+    21300430: Tank Explosion_215
+    21300432: Tank Explosion_216
+    21300434: Tank Explosion_217
+    21300436: Tank Explosion_218
+    21300438: Tank Explosion_219
+    21300440: Tank Explosion_220
+    21300442: Tank Explosion_221
+    21300444: Tank Explosion_222
+    21300446: Tank Explosion_223
+    21300448: Tank Explosion_224
+    21300450: Tank Explosion_225
+    21300452: Tank Explosion_226
+    21300454: Tank Explosion_227
+    21300456: Tank Explosion_228
+    21300458: Tank Explosion_229
+    21300460: Tank Explosion_230
+    21300462: Tank Explosion_231
+    21300464: Tank Explosion_232
+    21300466: Tank Explosion_233
+    21300468: Tank Explosion_234
+    21300470: Tank Explosion_235
+    21300472: Tank Explosion_236
+    21300474: Tank Explosion_237
+    21300476: Tank Explosion_238
+    21300478: Tank Explosion_239
+    21300480: Tank Explosion_240
+    21300482: Tank Explosion_241
+    21300484: Tank Explosion_242
+    21300486: Tank Explosion_243
+    21300488: Tank Explosion_244
+    21300490: Tank Explosion_245
+    21300492: Tank Explosion_246
+    21300494: Tank Explosion_247
+    21300496: Tank Explosion_248
+    21300498: Tank Explosion_249
+    21300500: Tank Explosion_250
+    21300502: Tank Explosion_251
+    21300504: Tank Explosion_252
+    21300506: Tank Explosion_253
+    21300508: Tank Explosion_254
+    21300510: Tank Explosion_255
+    21300512: Tank Explosion_256
+    21300514: Tank Explosion_257
+    21300516: Tank Explosion_258
+    21300518: Tank Explosion_259
+    21300520: Tank Explosion_260
+    21300522: Tank Explosion_261
+    21300524: Tank Explosion_262
+    21300526: Tank Explosion_263
+    21300528: Tank Explosion_264
+    21300530: Tank Explosion_265
+    21300532: Tank Explosion_266
+    21300534: Tank Explosion_267
+    21300536: Tank Explosion_268
+    21300538: Tank Explosion_269
+    21300540: Tank Explosion_270
+    21300542: Tank Explosion_271
+    21300544: Tank Explosion_272
+    21300546: Tank Explosion_273
+    21300548: Tank Explosion_274
+    21300550: Tank Explosion_275
+    21300552: Tank Explosion_276
+    21300554: Tank Explosion_277
+    21300556: Tank Explosion_278
+    21300558: Tank Explosion_279
+    21300560: Tank Explosion_280
+    21300562: Tank Explosion_281
+    21300564: Tank Explosion_282
+    21300566: Tank Explosion_283
+    21300568: Tank Explosion_284
+    21300570: Tank Explosion_285
+    21300572: Tank Explosion_286
+    21300574: Tank Explosion_287
+    21300576: Tank Explosion_288
+    21300578: Tank Explosion_289
+    21300580: Tank Explosion_290
+    21300582: Tank Explosion_291
+    21300584: Tank Explosion_292
+    21300586: Tank Explosion_293
+    21300588: Tank Explosion_294
+    21300590: Tank Explosion_295
+    21300592: Tank Explosion_296
+    21300594: Tank Explosion_297
+    21300596: Tank Explosion_298
+    21300598: Tank Explosion_299
+    21300600: Tank Explosion_300
+    21300602: Tank Explosion_301
+    21300604: Tank Explosion_302
+    21300606: Tank Explosion_303
+    21300608: Tank Explosion_304
+    21300610: Tank Explosion_305
+    21300612: Tank Explosion_306
+    21300614: Tank Explosion_307
+    21300616: Tank Explosion_308
+    21300618: Tank Explosion_309
+    21300620: Tank Explosion_310
+    21300622: Tank Explosion_311
+    21300624: Tank Explosion_312
+    21300626: Tank Explosion_313
+    21300628: Tank Explosion_314
+    21300630: Tank Explosion_315
+    21300632: Tank Explosion_316
+    21300634: Tank Explosion_317
+    21300636: Tank Explosion_318
+    21300638: Tank Explosion_319
+    21300640: Tank Explosion_320
+    21300642: Tank Explosion_321
+    21300644: Tank Explosion_322
+    21300646: Tank Explosion_323
+    21300648: Tank Explosion_324
+    21300650: Tank Explosion_325
+    21300652: Tank Explosion_326
+    21300654: Tank Explosion_327
+    21300656: Tank Explosion_328
+    21300658: Tank Explosion_329
+    21300660: Tank Explosion_330
+    21300662: Tank Explosion_331
+    21300664: Tank Explosion_332
+    21300666: Tank Explosion_333
+    21300668: Tank Explosion_334
+    21300670: Tank Explosion_335
+    21300672: Tank Explosion_336
+    21300674: Tank Explosion_337
+    21300676: Tank Explosion_338
+    21300678: Tank Explosion_339
+    21300680: Tank Explosion_340
+    21300682: Tank Explosion_341
+    21300684: Tank Explosion_342
+    21300686: Tank Explosion_343
+    21300688: Tank Explosion_344
+    21300690: Tank Explosion_345
+    21300692: Tank Explosion_346
+    21300694: Tank Explosion_347
+    21300696: Tank Explosion_348
+    21300698: Tank Explosion_349
+    21300700: Tank Explosion_350
+    21300702: Tank Explosion_351
+    21300704: Tank Explosion_352
+    21300706: Tank Explosion_353
+    21300708: Tank Explosion_354
+    21300710: Tank Explosion_355
+    21300712: Tank Explosion_356
+    21300714: Tank Explosion_357
+    21300716: Tank Explosion_358
+    21300718: Tank Explosion_359
+    21300720: Tank Explosion_360
+    21300722: Tank Explosion_361
+    21300724: Tank Explosion_362
+    21300726: Tank Explosion_363
+    21300728: Tank Explosion_364
+    21300730: Tank Explosion_365
+    21300732: Tank Explosion_366
+    21300734: Tank Explosion_367
+    21300736: Tank Explosion_368
+    21300738: Tank Explosion_369
+    21300740: Tank Explosion_370
+    21300742: Tank Explosion_371
+    21300744: Tank Explosion_372
+    21300746: Tank Explosion_373
+    21300748: Tank Explosion_374
+    21300750: Tank Explosion_375
+    21300752: Tank Explosion_376
+    21300754: Tank Explosion_377
+    21300756: Tank Explosion_378
+    21300758: Tank Explosion_379
+    21300760: Tank Explosion_380
+    21300762: Tank Explosion_381
+    21300764: Tank Explosion_382
+    21300766: Tank Explosion_383
+    21300768: Tank Explosion_384
+    21300770: Tank Explosion_385
+    21300772: Tank Explosion_386
+    21300774: Tank Explosion_387
+    21300776: Tank Explosion_388
+    21300778: Tank Explosion_389
+    21300780: Tank Explosion_390
+    21300782: Tank Explosion_391
+    21300784: Tank Explosion_392
+    21300786: Tank Explosion_393
+    21300788: Tank Explosion_394
+    21300790: Tank Explosion_395
+    21300792: Tank Explosion_396
+    21300794: Tank Explosion_397
+    21300796: Tank Explosion_398
+    21300798: Tank Explosion_399
+    21300800: Tank Explosion_400
+    21300802: Tank Explosion_401
+    21300804: Tank Explosion_402
+    21300806: Tank Explosion_403
+    21300808: Tank Explosion_404
+    21300810: Tank Explosion_405
+    21300812: Tank Explosion_406
+    21300814: Tank Explosion_407
+    21300816: Tank Explosion_408
+    21300818: Tank Explosion_409
+    21300820: Tank Explosion_410
+    21300822: Tank Explosion_411
+    21300824: Tank Explosion_412
+    21300826: Tank Explosion_413
+    21300828: Tank Explosion_414
+    21300830: Tank Explosion_415
+    21300832: Tank Explosion_416
+    21300834: Tank Explosion_417
+    21300836: Tank Explosion_418
+    21300838: Tank Explosion_419
+    21300840: Tank Explosion_420
+    21300842: Tank Explosion_421
+    21300844: Tank Explosion_422
+    21300846: Tank Explosion_423
+    21300848: Tank Explosion_424
+    21300850: Tank Explosion_425
+    21300852: Tank Explosion_426
+    21300854: Tank Explosion_427
+    21300856: Tank Explosion_428
+    21300858: Tank Explosion_429
+    21300860: Tank Explosion_430
+    21300862: Tank Explosion_431
+    21300864: Tank Explosion_432
+    21300866: Tank Explosion_433
+    21300868: Tank Explosion_434
+    21300870: Tank Explosion_435
+    21300872: Tank Explosion_436
+    21300874: Tank Explosion_437
+    21300876: Tank Explosion_438
+    21300878: Tank Explosion_439
+    21300880: Tank Explosion_440
+    21300882: Tank Explosion_441
+    21300884: Tank Explosion_442
+    21300886: Tank Explosion_443
+    21300888: Tank Explosion_444
+    21300890: Tank Explosion_445
+    21300892: Tank Explosion_446
+    21300894: Tank Explosion_447
+    21300896: Tank Explosion_448
+    21300898: Tank Explosion_449
+    21300900: Tank Explosion_450
+    21300902: Tank Explosion_451
+    21300904: Tank Explosion_452
+    21300906: Tank Explosion_453
+    21300908: Tank Explosion_454
+    21300910: Tank Explosion_455
+    21300912: Tank Explosion_456
+    21300914: Tank Explosion_457
+    21300916: Tank Explosion_458
+    21300918: Tank Explosion_459
+    21300920: Tank Explosion_460
+    21300922: Tank Explosion_461
+    21300924: Tank Explosion_462
+    21300926: Tank Explosion_463
+    21300928: Tank Explosion_464
+    21300930: Tank Explosion_465
+    21300932: Tank Explosion_466
+    21300934: Tank Explosion_467
+    21300936: Tank Explosion_468
+    21300938: Tank Explosion_469
+    21300940: Tank Explosion_470
+    21300942: Tank Explosion_471
+    21300944: Tank Explosion_472
+    21300946: Tank Explosion_473
+    21300948: Tank Explosion_474
+    21300950: Tank Explosion_475
+    21300952: Tank Explosion_476
+    21300954: Tank Explosion_477
+    21300956: Tank Explosion_478
+    21300958: Tank Explosion_479
+    21300960: Tank Explosion_480
+    21300962: Tank Explosion_481
+    21300964: Tank Explosion_482
+    21300966: Tank Explosion_483
+    21300968: Tank Explosion_484
+    21300970: Tank Explosion_485
+    21300972: Tank Explosion_486
+    21300974: Tank Explosion_487
+    21300976: Tank Explosion_488
+    21300978: Tank Explosion_489
+    21300980: Tank Explosion_490
+    21300982: Tank Explosion_491
+    21300984: Tank Explosion_492
+    21300986: Tank Explosion_493
+    21300988: Tank Explosion_494
+    21300990: Tank Explosion_495
+    21300992: Tank Explosion_496
+    21300994: Tank Explosion_497
+    21300996: Tank Explosion_498
+    21300998: Tank Explosion_499
+    21301000: Tank Explosion_500
+    21301002: Tank Explosion_501
+    21301004: Tank Explosion_502
+    21301006: Tank Explosion_503
+    21301008: Tank Explosion_504
+    21301010: Tank Explosion_505
+    21301012: Tank Explosion_506
+    21301014: Tank Explosion_507
+    21301016: Tank Explosion_508
+    21301018: Tank Explosion_509
+    21301020: Tank Explosion_510
+    21301022: Tank Explosion_511
+    21301024: Tank Explosion_512
+    21301026: Tank Explosion_513
+    21301028: Tank Explosion_514
+    21301030: Tank Explosion_515
+    21301032: Tank Explosion_516
+    21301034: Tank Explosion_517
+    21301036: Tank Explosion_518
+    21301038: Tank Explosion_519
+    21301040: Tank Explosion_520
+    21301042: Tank Explosion_521
+    21301044: Tank Explosion_522
+    21301046: Tank Explosion_523
+    21301048: Tank Explosion_524
+    21301050: Tank Explosion_525
+    21301052: Tank Explosion_526
+    21301054: Tank Explosion_527
+    21301056: Tank Explosion_528
+    21301058: Tank Explosion_529
+    21301060: Tank Explosion_530
+    21301062: Tank Explosion_531
+    21301064: Tank Explosion_532
+    21301066: Tank Explosion_533
+    21301068: Tank Explosion_534
+    21301070: Tank Explosion_535
+    21301072: Tank Explosion_536
+    21301074: Tank Explosion_537
+    21301076: Tank Explosion_538
+    21301078: Tank Explosion_539
+    21301080: Tank Explosion_540
+    21301082: Tank Explosion_541
+    21301084: Tank Explosion_542
+    21301086: Tank Explosion_543
+    21301088: Tank Explosion_544
+    21301090: Tank Explosion_545
+    21301092: Tank Explosion_546
+    21301094: Tank Explosion_547
+    21301096: Tank Explosion_548
+    21301098: Tank Explosion_549
+    21301100: Tank Explosion_550
+    21301102: Tank Explosion_551
+    21301104: Tank Explosion_552
+    21301106: Tank Explosion_553
+    21301108: Tank Explosion_554
+    21301110: Tank Explosion_555
+    21301112: Tank Explosion_556
+    21301114: Tank Explosion_557
+    21301116: Tank Explosion_558
+    21301118: Tank Explosion_559
+    21301120: Tank Explosion_560
+    21301122: Tank Explosion_561
+    21301124: Tank Explosion_562
+    21301126: Tank Explosion_563
+    21301128: Tank Explosion_564
+    21301130: Tank Explosion_565
+    21301132: Tank Explosion_566
+    21301134: Tank Explosion_567
+    21301136: Tank Explosion_568
+    21301138: Tank Explosion_569
+    21301140: Tank Explosion_570
+    21301142: Tank Explosion_571
+    21301144: Tank Explosion_572
+    21301146: Tank Explosion_573
+    21301148: Tank Explosion_574
+    21301150: Tank Explosion_575
+    21301152: Tank Explosion_576
+    21301154: Tank Explosion_577
+    21301156: Tank Explosion_578
+    21301158: Tank Explosion_579
+    21301160: Tank Explosion_580
+    21301162: Tank Explosion_581
+    21301164: Tank Explosion_582
+    21301166: Tank Explosion_583
+    21301168: Tank Explosion_584
+    21301170: Tank Explosion_585
+    21301172: Tank Explosion_586
+    21301174: Tank Explosion_587
+    21301176: Tank Explosion_588
+    21301178: Tank Explosion_589
+    21301180: Tank Explosion_590
+    21301182: Tank Explosion_591
+    21301184: Tank Explosion_592
+    21301186: Tank Explosion_593
+    21301188: Tank Explosion_594
+    21301190: Tank Explosion_595
+    21301192: Tank Explosion_596
+    21301194: Tank Explosion_597
+    21301196: Tank Explosion_598
+    21301198: Tank Explosion_599
+    21301200: Tank Explosion_600
+    21301202: Tank Explosion_601
+    21301204: Tank Explosion_602
+    21301206: Tank Explosion_603
+    21301208: Tank Explosion_604
+    21301210: Tank Explosion_605
+    21301212: Tank Explosion_606
+    21301214: Tank Explosion_607
+    21301216: Tank Explosion_608
+    21301218: Tank Explosion_609
+    21301220: Tank Explosion_610
+    21301222: Tank Explosion_611
+    21301224: Tank Explosion_612
+    21301226: Tank Explosion_613
+    21301228: Tank Explosion_614
+    21301230: Tank Explosion_615
+    21301232: Tank Explosion_616
+    21301234: Tank Explosion_617
+    21301236: Tank Explosion_618
+    21301238: Tank Explosion_619
+    21301240: Tank Explosion_620
+    21301242: Tank Explosion_621
+    21301244: Tank Explosion_622
+    21301246: Tank Explosion_623
+    21301248: Tank Explosion_624
+    21301250: Tank Explosion_625
+    21301252: Tank Explosion_626
+    21301254: Tank Explosion_627
+    21301256: Tank Explosion_628
+    21301258: Tank Explosion_629
+    21301260: Tank Explosion_630
+    21301262: Tank Explosion_631
+    21301264: Tank Explosion_632
+    21301266: Tank Explosion_633
+    21301268: Tank Explosion_634
+    21301270: Tank Explosion_635
+    21301272: Tank Explosion_636
+    21301274: Tank Explosion_637
+    21301276: Tank Explosion_638
+    21301278: Tank Explosion_639
+    21301280: Tank Explosion_640
+    21301282: Tank Explosion_641
+    21301284: Tank Explosion_642
+    21301286: Tank Explosion_643
+    21301288: Tank Explosion_644
+    21301290: Tank Explosion_645
+    21301292: Tank Explosion_646
+    21301294: Tank Explosion_647
+    21301296: Tank Explosion_648
+    21301298: Tank Explosion_649
+    21301300: Tank Explosion_650
+    21301302: Tank Explosion_651
+    21301304: Tank Explosion_652
+    21301306: Tank Explosion_653
+    21301308: Tank Explosion_654
+    21301310: Tank Explosion_655
+    21301312: Tank Explosion_656
+    21301314: Tank Explosion_657
+    21301316: Tank Explosion_658
+    21301318: Tank Explosion_659
+    21301320: Tank Explosion_660
+    21301322: Tank Explosion_661
+    21301324: Tank Explosion_662
+    21301326: Tank Explosion_663
+    21301328: Tank Explosion_664
+    21301330: Tank Explosion_665
+    21301332: Tank Explosion_666
+    21301334: Tank Explosion_667
+    21301336: Tank Explosion_668
+    21301338: Tank Explosion_669
+    21301340: Tank Explosion_670
+    21301342: Tank Explosion_671
+    21301344: Tank Explosion_672
+    21301346: Tank Explosion_673
+    21301348: Tank Explosion_674
+    21301350: Tank Explosion_675
+    21301352: Tank Explosion_676
+    21301354: Tank Explosion_677
+    21301356: Tank Explosion_678
+    21301358: Tank Explosion_679
+    21301360: Tank Explosion_680
+    21301362: Tank Explosion_681
+    21301364: Tank Explosion_682
+    21301366: Tank Explosion_683
+    21301368: Tank Explosion_684
+    21301370: Tank Explosion_685
+    21301372: Tank Explosion_686
+    21301374: Tank Explosion_687
+    21301376: Tank Explosion_688
+    21301378: Tank Explosion_689
+    21301380: Tank Explosion_690
+    21301382: Tank Explosion_691
+    21301384: Tank Explosion_692
+    21301386: Tank Explosion_693
+    21301388: Tank Explosion_694
+    21301390: Tank Explosion_695
+    21301392: Tank Explosion_696
+    21301394: Tank Explosion_697
+    21301396: Tank Explosion_698
+    21301398: Tank Explosion_699
+    21301400: Tank Explosion_700
+    21301402: Tank Explosion_701
+    21301404: Tank Explosion_702
+    21301406: Tank Explosion_703
+    21301408: Tank Explosion_704
+    21301410: Tank Explosion_705
+    21301412: Tank Explosion_706
+    21301414: Tank Explosion_707
+    21301416: Tank Explosion_708
+    21301418: Tank Explosion_709
+  externalObjects: {}
+  serializedVersion: 9
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
+    sRGBTexture: 1
     linearTexture: 0
-    correctGamma: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -51,35 +731,76 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
-  generateCubemap: 0
+  generateCubemap: 6
   cubemapConvolution: 0
-  cubemapConvolutionSteps: 7
-  cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
-  textureFormat: -1
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
+    serializedVersion: 2
     filterMode: -1
-    aniso: 16
-    mipBias: -1
-    wrapMode: 1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
-  rGBM: 0
   compressionQuality: 50
-  allowsAlphaSplitting: 0
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
-  buildTargetSettings: []
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 2
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -92,10 +813,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 950fe53a77fa7404ab30c6579f9dacb3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_1
       rect:
@@ -105,10 +833,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 5ad4b17f36c0009459fe1e13484e6054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_2
       rect:
@@ -118,10 +853,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 0baba072bab68f44986f3c95c1042c0d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_3
       rect:
@@ -131,10 +873,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e4e32f3bc13d9a34db9b37498fca906d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_4
       rect:
@@ -144,10 +893,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 739ae1717e7e8c2469f7abff7951e63a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_5
       rect:
@@ -157,10 +913,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 3684c144d1f7f9848bb5e3b8c7aee04b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_6
       rect:
@@ -170,10 +933,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 99a14700f58ab4546a2ef91f9465835e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_7
       rect:
@@ -183,10 +953,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 6c7f54994c9638b438c49ca3264b1b5f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_8
       rect:
@@ -196,10 +973,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 6d233f8bbb9907041bd29de45eb00132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_9
       rect:
@@ -209,10 +993,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: de347c4201d204a4b9cb9dac9efcbfd7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_10
       rect:
@@ -222,10 +1013,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 56096d1dbdca8fb46b887ce34301eda0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_11
       rect:
@@ -235,10 +1033,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: eacb6602c04b1d149a0858395ab0c1ec
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_12
       rect:
@@ -248,10 +1053,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 7c2c92ba754d6e84a945c7a85eefbd15
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_13
       rect:
@@ -261,10 +1073,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: a4f28f4a3e475344b9b95ee5f15ca37b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_14
       rect:
@@ -274,10 +1093,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: dc6f0d30fa0350849b8a8507e76119ee
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_15
       rect:
@@ -287,10 +1113,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 214de45057adba94c95f19bcedd70a1c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_16
       rect:
@@ -300,10 +1133,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 810bd72a8b471d2408e901f0a93a5fcc
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_17
       rect:
@@ -313,10 +1153,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 943aeabe52231f64fbce9cebb15bc953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_18
       rect:
@@ -326,10 +1173,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 608344cc73cbc5a43be4c277a8014e80
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_19
       rect:
@@ -339,10 +1193,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e08d596e7ad007b43a437cfffe3dbccd
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_20
       rect:
@@ -352,10 +1213,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 0cee3e2cb2e287f4ba6afd9c392bc8e9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_21
       rect:
@@ -365,10 +1233,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: f895e17b05bf3994b8d17013f793a344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_22
       rect:
@@ -378,10 +1253,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 4aaa062a306c6754aaaa075d84f3d614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_23
       rect:
@@ -391,10 +1273,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 18c4cf6677e3a8344b045ba6a7edb71d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_24
       rect:
@@ -404,10 +1293,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 79a667b7a5178424f8c615ad01c552f5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_25
       rect:
@@ -417,10 +1313,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e0538163154fceb42b9132557144c9d8
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_26
       rect:
@@ -430,10 +1333,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 5ff182cd2c2e60f4db156899fc1d41a1
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_27
       rect:
@@ -443,10 +1353,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: aef8402f05e324242872aae4b351f6d3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_28
       rect:
@@ -456,10 +1373,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: d1eb0c92218fe8f49b002f9b5340db9e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_29
       rect:
@@ -469,10 +1393,17 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: f5e11f4166f66984092feb7e6784d9a5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Tank Explosion_30
       rect:
@@ -482,12 +1413,28 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 2cdeefac454fa2f48ae684ad4c93a989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 2c453c7b7fb5fa640b3d04445ea2f175
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
   spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

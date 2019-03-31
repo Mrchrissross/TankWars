@@ -1,69 +1,39 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class BulletController : MonoBehaviour
 {
-//Variables. (self-explan)
+    [Tooltip("The bullets explosion when it collides with an object.")]
     public GameObject bulletExplosion;
 
-    public Transform bullet;
+    [Tooltip("How fast the bullet travels.")]
+    public float bulletSpeed = 40f;
 
-    public float bulletSpeed = 20f;
+    [Tooltip("How much damage the bullet does.")]
+    public float bulletDamage = 20f;
 
-    public string shotAudio;
-
+    [Tooltip("How long the bullet lives.")]
     public float bulletLife = 2f;
 
-    private AudioManager audioManager;
-
-//This method will be called upon as soon as the bullet comes into existance and will be destroyed once the bullet's life has expired. Any bullet already in the game will start as any bullet except from its start position.
     void Start()
     {
         Destroy(gameObject, bulletLife);
-
-        audioManager = AudioManager.instance;
-        if (audioManager == null)
-        {
-            Debug.LogError("AudioManager: No AudioManager found in this scene.");
-        }
     }
-//This method allows the bullet to move the way it does, and how fast.
+
     void Update()
     {
         transform.Translate(Vector3.up * bulletSpeed * Time.deltaTime);
     }
-//This method is used to tell the bullet to expire if it ever hits a 2D Collider. If it does, then it will automatically expire and be replaced, instantiate an explosion at itsw position.
+
     void OnTriggerEnter2D(Collider2D other)
     {
+        // Add triggers here.
+
+        // Rock 1 is the objects name.
         if (other.gameObject.CompareTag("Rock 1"))
         {
             Destroy(gameObject);
-            Instantiate(bulletExplosion, bullet.position, transform.rotation = Quaternion.identity);
-            audioManager.PlaySound(shotAudio);
-        }
-        if (other.gameObject.CompareTag("Rock 2"))
-        {
-            Destroy(gameObject);
-            Instantiate(bulletExplosion, bullet.position, transform.rotation = Quaternion.identity);
-            audioManager.PlaySound(shotAudio);
-        }
-        if (other.gameObject.CompareTag("Rock 3"))
-        {
-            Destroy(gameObject);
-            Instantiate(bulletExplosion, bullet.position, transform.rotation = Quaternion.identity);
-            audioManager.PlaySound(shotAudio);
-        }
-        if (other.gameObject.CompareTag("Rock 4"))
-        {
-            Destroy(gameObject);
-            Instantiate(bulletExplosion, bullet.position, transform.rotation = Quaternion.identity);
-            audioManager.PlaySound(shotAudio);
-        }
-        if (other.gameObject.CompareTag("Rock 5"))
-        {
-            Destroy(gameObject);
-            Instantiate(bulletExplosion, bullet.position, transform.rotation = Quaternion.identity);
-            audioManager.PlaySound(shotAudio);
+            Instantiate(bulletExplosion, transform.position, transform.rotation = Quaternion.identity);
+            AudioManager.instance.PlaySound("BulletExplosion");
         }
     }
 }
