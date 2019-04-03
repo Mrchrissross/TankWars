@@ -12,13 +12,6 @@ public class PlayerController : MonoBehaviour
 
         [Header("Cannons")]
             public List<Sprite> Cannons = new List<Sprite>();
-
-        [Header("Bullet")]
-            public BulletController bullet;
-
-        [Header("Player Death")]
-            public GameObject tankExplosion;
-            public GameObject destroyedTank;
     };
 
     public TankAssets assets;
@@ -29,13 +22,14 @@ public class PlayerController : MonoBehaviour
 
     [Header("Health: "), Range(0.0f, 100.0f)]                    
         public float playerHealth = 100f;
-           
-    [Header("Speeds: ")]                    
-        public float Speed = 40f;
+
+    [Header("Speeds: ")]
+        public float forwardSpeed = 40f;
         public float reverseSpeed = 25f;
         public float turnSpeed = 30f;
         public float recoilSpeed = 5f;
         public float reducedMovementSpeed = 13.4f;
+        bool slow;
 
     [Header("Shooting: "), Tooltip("Time between shots in seconds."), Range(0.01f, 2.0f)]
         public float shotTimer = 0.8f;
@@ -96,12 +90,12 @@ public class PlayerController : MonoBehaviour
         rb.velocity = transform.up * Vector2.Dot(rb.velocity, transform.up);    // Give the rigidbody a velocity through the method forward velocity
 
         if (Input.GetButton("Accelerate"))                                      // If the keys set in the input menu "Accelerate" are pressed the player will...
-            rb.AddForce(transform.up * Speed);                                  // Move forward
+            rb.AddForce(transform.up * (slow ? reducedMovementSpeed : forwardSpeed));                                  // Move forward
 
         if (Input.GetButton("Reverse"))                                         // If the keys set in the input menu "Reverse" are pressed the player will...
-            rb.AddForce(transform.up * -reverseSpeed);                          // Move backward
+            rb.AddForce(transform.up * (slow ? reducedMovementSpeed : -reverseSpeed));                          // Move backward
 
-        rb.AddTorque(Input.GetAxis("Left/Right") * -turnSpeed);                // This allows the player to move left or right if the input keys in left and right are pressed
+        rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-turnSpeed / 2) : -turnSpeed));                // This allows the player to move left or right if the input keys in left and right are pressed
     }
 
     void RotateCannon()
@@ -116,14 +110,14 @@ public class PlayerController : MonoBehaviour
 
     void Shoot()
     {
-        shotDecreaseTime = shotDecreaseTime -= Time.deltaTime;                  // This is the timer for when the player can shoot next
+        shotDecreaseTime -= Time.deltaTime;                                     // This is the timer for when the player can shoot next
 
         if (Input.GetMouseButtonDown(0) && shotDecreaseTime < 0f)               // And has clicked the left mouse button down and also has the shot decrease time below zero..
         {
-            BulletController newBullet = Instantiate(assets.bullet, firePoint.position, firePoint.rotation) as BulletController;    // We will instantiate a bullet which is fired at whereever the player is aiming
+            GameObject bullet = AssetManager.instance.SpawnObject("Shoot", firePoint.position, firePoint.rotation);                 // We will instantiate a bullet which is fired at whereever the player is aiming
+            BulletController newBullet = bullet.transform.GetComponent<BulletController>();
             newBullet.bulletSpeed = bulletSpeed;                                                                                    // Gives the bullet a speed at which it will travel at
             newBullet.bulletDamage = bulletDamage;                                                                                  // How much damage the bullet does
-            AudioManager.instance.PlaySound("PlayerShot");                                                                          // Play the shotClip 
             muzzleFlash.Play();                                                                                                     // Play a little smoke effect coming from the firepoint
             Recoil();                                                                                                               // Recoil from the shot
             shotDecreaseTime = shotTimer;                                                                                           // The shot decrease timer will be reset to the amount of the shot timer
@@ -144,9 +138,8 @@ public class PlayerController : MonoBehaviour
         if (playerHealth <= 0f)                                                                                     // If the player has zero life left
         {
             Destroy(gameObject);                                                                                    // Player tank will be destroyed
-            AudioManager.instance.PlaySound("TankExplosion");                                                       // Play the tank explosion sound
-            Instantiate(assets.tankExplosion, transform.position, transform.rotation = Quaternion.identity);        // A tank explosion will be instatiated at the location of the player
-            GameObject destroyedTank = Instantiate(assets.destroyedTank, transform.position, transform.rotation);   // The destroyed tank prefab will instantiate at the players position
+            AssetManager.instance.SpawnObject("TankExplosion", transform.position, transform.rotation);                             // Instantiate a tank explosion
+            GameObject destroyedTank = AssetManager.instance.SpawnObject("DestroyedPlayerTank", transform.position, transform.rotation); // The destroyed tank prefab will instantiate at the players position
             destroyedTank.name = "DeadPlayer";
         }
     }
@@ -155,11 +148,32 @@ public class PlayerController : MonoBehaviour
     {
         // Add triggers here.
 
-        if (other.gameObject.CompareTag("Mine"))
+        switch (other.gameObject.tag)
         {
-            playerHealth = 0.0f;
-            Destroy(other.gameObject);
-            Instantiate(assets.tankExplosion, other.transform.position, other.transform.rotation = Quaternion.identity);
+            case "Mine":
+                {
+                    playerHealth = 0.0f;
+                    AssetManager.instance.SpawnObject("MineExplosion", other.transform.position, other.transform.rotation);
+                    Destroy(other.gameObject);
+                    break;
+                }
+            case "DestroyedTank":
+                {
+                    slow = true;
+                    break;
+                }
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "DestroyedTank":
+                {
+                    slow = false;
+                    break;
+                }
         }
     }
 }

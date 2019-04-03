@@ -77,24 +77,24 @@ public class AudioManager : MonoBehaviour
     }
     
     //This method will play the sound whenever it is scripted into one of the other gameobjects. 
-    public void PlaySound(string _name)
+    public void PlaySound(string name)
     {
         for (int i = 0; i < sounds.Length; i++)
         {
-            if (sounds[i].name == _name)
+            if (sounds[i].name == name)
             {
                 sounds[i].Play();
                 return;
             }
         }
-        Debug.LogWarning("AudioManager: Sound not found in list, " + _name);
+        Debug.LogWarning("AudioManager: Sound not found in list. " + name);
     }
 //This will do the opposite to the PlaySound, and Stop the sound from playing.
-    public void StopSound(string _name)
+    public void StopSound(string name)
     {
         for (int i = 0; i < sounds.Length; i++)
         {
-            if (sounds[i].name == _name)
+            if (sounds[i].name == name)
             {
                 sounds[i].Stop();
                 return;
