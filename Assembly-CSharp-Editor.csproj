@@ -61,7 +61,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Editor\Editor_ChangeModel.cs" />
+    <Compile Include="Assets\Editor\Editor_PlayerController.cs" />
+    <Compile Include="Assets\Editor\VectorLabelsAttributeDrawer.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/Student/Documents/GitHub/TankWars/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

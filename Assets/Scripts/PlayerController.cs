@@ -21,14 +21,12 @@ public class PlayerController : MonoBehaviour
         int tempstyle;
 
     [Header("Health: "), Range(0.0f, 100.0f)]                    
-        public float playerHealth = 100f;
+        public int playerHealth = 100;
 
-    [Header("Speeds: ")]
-        public float forwardSpeed = 40f;
-        public float reverseSpeed = 25f;
-        public float turnSpeed = 30f;
-        public float recoilSpeed = 5f;
-        public float reducedMovementSpeed = 13.4f;
+        [Header("Speeds"), VectorLabels("Foward", "Reverse")]
+        public Vector2 vertical = new Vector2(40f, 25f);
+        [VectorLabels("Turn", "Recoil", "Slow")]
+        public Vector3 extra = new Vector3(30f, 5f, 13.4f);
         bool slow;
 
     [Header("Shooting: "), Tooltip("Time between shots in seconds."), Range(0.01f, 2.0f)]
@@ -37,7 +35,7 @@ public class PlayerController : MonoBehaviour
         [Tooltip("How fast the bullet will travel."), Range(10.0f, 80.0f)]
         public float bulletSpeed = 40.0f;
         [Tooltip("How much damage the bullet does.")]
-        public float bulletDamage = 20.0f;
+        public int bulletDamage = 20;
         [Tooltip("Plays when the tanks shoots.")]
         ParticleSystem muzzleFlash;
 
@@ -90,12 +88,12 @@ public class PlayerController : MonoBehaviour
         rb.velocity = transform.up * Vector2.Dot(rb.velocity, transform.up);    // Give the rigidbody a velocity through the method forward velocity
 
         if (Input.GetButton("Accelerate"))                                      // If the keys set in the input menu "Accelerate" are pressed the player will...
-            rb.AddForce(transform.up * (slow ? reducedMovementSpeed : forwardSpeed));                                  // Move forward
+            rb.AddForce(transform.up * (slow ? extra.z : vertical.x));                                  // Move forward
 
         if (Input.GetButton("Reverse"))                                         // If the keys set in the input menu "Reverse" are pressed the player will...
-            rb.AddForce(transform.up * (slow ? reducedMovementSpeed : -reverseSpeed));                          // Move backward
+            rb.AddForce(transform.up * (slow ? extra.z : -vertical.y));                          // Move backward
 
-        rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-turnSpeed / 2) : -turnSpeed));                // This allows the player to move left or right if the input keys in left and right are pressed
+        rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-extra.x / 2) : -extra.x));                // This allows the player to move left or right if the input keys in left and right are pressed
     }
 
     void RotateCannon()
@@ -127,10 +125,10 @@ public class PlayerController : MonoBehaviour
     void Recoil()
     {
         if((Cannon.localEulerAngles.z > 0.0f && Cannon.localEulerAngles.z < 43.0f) || (Cannon.localEulerAngles.z > 318.0f && Cannon.localEulerAngles.z < 360.0f))
-            rb.AddForce(transform.up * -recoilSpeed, ForceMode2D.Impulse);
+            rb.AddForce(transform.up * -extra.y, ForceMode2D.Impulse);
 
         else if (Cannon.localEulerAngles.z > 150.0f && Cannon.localEulerAngles.z < 210.0f)
-            rb.AddForce(transform.up * recoilSpeed, ForceMode2D.Impulse);
+            rb.AddForce(transform.up * extra.y, ForceMode2D.Impulse);
     }
 
     void CheckHealth()
@@ -152,7 +150,7 @@ public class PlayerController : MonoBehaviour
         {
             case "Mine":
                 {
-                    playerHealth = 0.0f;
+                    playerHealth = 0;
                     AssetManager.instance.SpawnObject("MineExplosion", other.transform.position, other.transform.rotation);
                     Destroy(other.gameObject);
                     break;
