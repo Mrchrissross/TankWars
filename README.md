@@ -16,7 +16,7 @@ It includes the following items:
 
 The package also comes with 3 scripts including a fully functioning player script allowing you to instantly change the colour of the tank. 
 A bullet script and a fully functioning audio manager script. 
-All script have been coded in a way that is easy to understand with room to add your own elements. 
+All scripts have been coded in a way that is easy to understand with room to add your own elements. 
 
 Enjoy!
 
