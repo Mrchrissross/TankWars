@@ -22,6 +22,10 @@ Enjoy!
 
 Images of the project can be found below:
 
-[![Imgur](https://i.imgur.com/1WgD8uA.png)](https://imgur.com/1WgD8uA)
+[![Imgur](https://i.imgur.com/1WgD8uA.png)](https://imgur.com/1WgD8uA.png)
 
 [![Imgur](https://i.imgur.com/Dggvbrl.png)](https://i.imgur.com/Dggvbrl.png)
+
+[![Imgur](https://i.imgur.com/FU8Q26d.png)](https://i.imgur.com/FU8Q26d.png)
+
+[![Imgur](https://i.imgur.com/FaXciGW.png)](https://i.imgur.com/FaXciGW.png)
