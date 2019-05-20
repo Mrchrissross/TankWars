@@ -22,4 +22,4 @@ Enjoy!
 
 Images of the project can be found below:
 
-[![Imgur](https://i.imgur.com/1WgD8uA.png)]
+[![Imgur](https://i.imgur.com/1WgD8uA.png)](https://imgur.com/1WgD8uA)
