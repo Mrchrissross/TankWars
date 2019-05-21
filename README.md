@@ -30,6 +30,6 @@ Images of the project can be found below:
 
 [![Imgur](https://i.imgur.com/FaXciGW.png)](https://i.imgur.com/FaXciGW.png)
 
-Before this asset pack was created, this game was used in my first ever assignment however all the code since then has been revamped and upgraded as my knowledge of programming increased. The game can be seen below or downloaded from the first commit:
+Before this asset pack was created, this game was used in my first ever assignment however all the code since then has been revamped and upgraded as my knowledge of programming increased. The game can be downloaded from the first commit or seen below:
 
 [![TankWars](https://img.youtube.com/vi/A-i3XbMbhq4/0.jpg)](https://youtu.be/A-i3XbMbhq4)
