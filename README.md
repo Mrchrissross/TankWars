@@ -1,6 +1,6 @@
 # TankWars
 
-Tanks Wars is a project created for public use.
+Tanks Wars is a project created for public use, although I would like to be referenced.
 
 This package is perfect for those who want to make a 2D tank game that is either single player or multiplayer. 
 

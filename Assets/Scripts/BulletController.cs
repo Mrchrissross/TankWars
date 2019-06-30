@@ -2,21 +2,14 @@
 
 public class BulletController : MonoBehaviour
 {
-    [Tooltip("How fast the bullet travels.")]
-    public float bulletSpeed = 40f;
-
-    [Tooltip("How much damage the bullet does.")]
+    [HideInInspector, Tooltip("How much damage the bullet does.")]
     public float bulletDamage = 20f;
+    [HideInInspector, Tooltip("How fast the bullet travels.")]
+    public float bulletSpeed = 40f;
 
     void Update()
     {
         transform.Translate(Vector3.up * bulletSpeed * Time.deltaTime);
-    }
-
-    void explode()
-    {
-        Destroy(gameObject);
-        AssetManager.instance.SpawnObject("BulletExplosion", transform.position, transform.rotation);
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -33,11 +26,20 @@ public class BulletController : MonoBehaviour
             case "Mine":
                 {
                     explode();
-                    AssetManager.instance.SpawnObject("MineExplosion", other.transform.position, other.transform.rotation);
+                    AssetManager.Instance.SpawnObject("MineExplosion", other.transform.position, other.transform.rotation);
                     Destroy(other.gameObject);
                     break;
                 }
         }
+    }
+
+    /// <summary>
+    /// Triggers an explosion by destroying the game object and spawning an explosion animation.
+    /// </summary>
+    void explode()
+    {
+        Destroy(gameObject);
+        AssetManager.Instance.SpawnObject("BulletExplosion", transform.position, transform.rotation);
     }
 }
 
