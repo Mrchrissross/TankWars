@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using TankWars.Utility;
 using UnityEditor;
 using UnityEngine;
@@ -22,13 +20,12 @@ namespace TankWars.Editor
 
         private string categoryName;
         private string folderLocation;
+        private string newCategoryName;
+        private string newFolderLocation;
         
-        private bool newSortingLayer;
         private Color guiColorBackup;
         
-        private const string path = "TankWars/Sprites/";
-        private string[] compartmentStyles;
-        private string[] boxStyles;
+        private const string Path = "TankWars/Sprites/";
         private string[] accessoryStyles;
         
         private Texture2D _plusTexture;
@@ -54,7 +51,7 @@ namespace TankWars.Editor
 
         private void InitAccessoryStyle(string folderName, ref string[] styles)
         {
-            var sprites = Resources.LoadAll<Sprite>(path + folderName);
+            var sprites = Resources.LoadAll<Sprite>(Path + folderName);
             styles = new string[sprites.Length];
             for (var i = 0; i < sprites.Length; i++)
                 styles[i] = sprites[i].name;
@@ -62,11 +59,8 @@ namespace TankWars.Editor
         
         public override void OnInspectorGUI()
         {
-            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
+            EditorTools.InitStyles(out _boxStyle);
             
-            InitAccessoryStyle("Compartments", ref compartmentStyles);
-            InitAccessoryStyle("Boxes", ref boxStyles);
-
             DrawSpawnElements();
                 
             Undo.RecordObject(target, "tankBuilder");
@@ -75,7 +69,7 @@ namespace TankWars.Editor
             
             EditorGUIUtility.labelWidth = 150;
             
-            base.OnInspectorGUI();
+            // base.OnInspectorGUI();
         }
 
         private void DrawSpawnElements()
@@ -97,18 +91,6 @@ namespace TankWars.Editor
                 EditorTools.DrawLine(0.5f, 2.5f, 5);
 
                 DrawCategories();
-                
-                // DrawVents();
-                //
-                // EditorTools.DrawLine(0.5f, 2.5f, 5);
-                //
-                // DrawCompartments();
-                //
-                // EditorTools.DrawLine(0.5f, 2.5f, 5);
-                //
-                // DrawBoxes();
-                
-                // DrawCategory();
                 
             }
             EditorGUILayout.EndVertical();
@@ -211,12 +193,6 @@ namespace TankWars.Editor
                     GUILayout.EndVertical(); 
                 }
             }
-
-            GUILayout.Space(15);
-
-            if (EditorTools.Button("Remove Categories", ""))
-                tankBuilder.RemoveAllCategories();
-
         }
 
 
@@ -425,11 +401,7 @@ namespace TankWars.Editor
 
                         EditorGUI.indentLevel--;
 
-
-
                         EditorTools.DrawLine(0.5f, 5f, 5);
-
-
 
                         EditorTools.BeginHorizontalGroup();
                         {
@@ -452,46 +424,42 @@ namespace TankWars.Editor
                             tankBuilder.rightCannonSize, 0.5f, 1.0f, 100.0f);
 
                         EditorGUI.indentLevel--;
+                    }
 
+                    EditorTools.DrawLine(0.5f, 5f, 5);
+                    
+                    EditorTools.Label("Colors:", "Changes the various colors on the tanks cannon.");
+                    {
+                        EditorGUI.indentLevel++;
 
-
-                        EditorTools.DrawLine(0.5f, 5f, 5);
-
-
-
-                        EditorTools.Label("Colors:", "Changes the various colors on the tanks cannon.");
+                        EditorTools.BeginHorizontalGroup();
                         {
-                            EditorGUI.indentLevel++;
+                            EditorTools.Label("Base", "Changes the color of the cannons base.", 100);
 
-                            EditorTools.BeginHorizontalGroup();
-                            {
-                                EditorTools.Label("Base", "Changes the color of the cannons base.", 100);
+                            tankBuilder.cannonBaseColor = EditorGUILayout.ColorField(tankBuilder.cannonBaseColor);
+                            tankBuilder.cannonBaseSidesColor =
+                                EditorGUILayout.ColorField(tankBuilder.cannonBaseSidesColor);
 
-                                tankBuilder.cannonBaseColor = EditorGUILayout.ColorField(tankBuilder.cannonBaseColor);
-                                tankBuilder.cannonBaseSidesColor =
-                                    EditorGUILayout.ColorField(tankBuilder.cannonBaseSidesColor);
-
-                                GUILayout.FlexibleSpace();
-                            }
-                            EditorTools.EndHorizontalGroup(5);
-
-                            if (tankBuilder.cannonType == TankBuilder.CannonType.Single)
-                            {
-                                tankBuilder.cannonColor = EditorTools.ColorField("Cannon",
-                                    "Changes the color of the tanks cannon.", tankBuilder.cannonColor, true, 120);
-                            }
-                            else
-                            {
-                                tankBuilder.leftCannonColor = EditorTools.ColorField("Left Cannon",
-                                    "Changes the color of the tanks left cannon.", tankBuilder.leftCannonColor, true,
-                                    120);
-                                tankBuilder.rightCannonColor = EditorTools.ColorField("Right Cannon",
-                                    "Changes the color of the tanks right cannon.", tankBuilder.rightCannonColor, true,
-                                    120);
-                            }
-
-                            EditorGUI.indentLevel--;
+                            GUILayout.FlexibleSpace();
                         }
+                        EditorTools.EndHorizontalGroup(5);
+
+                        if (tankBuilder.cannonType == TankBuilder.CannonType.Single)
+                        {
+                            tankBuilder.cannonColor = EditorTools.ColorField("Cannon",
+                                "Changes the color of the tanks cannon.", tankBuilder.cannonColor, true, 120);
+                        }
+                        else
+                        {
+                            tankBuilder.leftCannonColor = EditorTools.ColorField("Left Cannon",
+                                "Changes the color of the tanks left cannon.", tankBuilder.leftCannonColor, true,
+                                120);
+                            tankBuilder.rightCannonColor = EditorTools.ColorField("Right Cannon",
+                                "Changes the color of the tanks right cannon.", tankBuilder.rightCannonColor, true,
+                                120);
+                        }
+
+                        EditorGUI.indentLevel--;
                     }
                 }
                 GUILayout.EndVertical();
@@ -499,591 +467,8 @@ namespace TankWars.Editor
             else GUILayout.EndHorizontal();
         }
 
-
-
-        private void DrawVents()
-        {
-            EditorTools.BeginHorizontalGroup();
-
-            if (EditorTools.Foldout("Vents", "Spawn, toggles, or destroys the vents that are present on the tank.",
-                ref tankBuilder.expandVents))
-            {
-                GUILayout.Space(-100);
-
-                // if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new vent.", 20f))
-                //     tankBuilder.SpawnAccessory("Vents");
-
-                EditorTools.EndHorizontalGroup();
-
-                EditorTools.DrawLine(0.5f, 2.5f, 5);
-
-                if (tankBuilder.hull == null) return;
-
-
-
-
-
-                GUILayout.BeginVertical("box");
-                {
-                    var index = 0;
-                    foreach (var vent in tankBuilder.vents)
-                    {
-                        if (index > 0) EditorTools.DrawLine(0.5f, 5f, 5);
-
-                        GUILayout.BeginHorizontal();
-
-                        if (EditorTools.Foldout(vent.ventName, "", ref vent.expand))
-                        {
-                            GUILayout.Space(-100);
-
-                            if (EditorTools.TexturedButton(_editTexture, "Rename this object?", 20f))
-                                vent.editName = !vent.editName;
-
-                            if (EditorTools.TexturedButton(_plusTexture, "Create a copy of this object?", 20f))
-                            {
-                                tankBuilder.CopyVent(vent);
-                                break;
-                            }
-
-                            if (EditorTools.TexturedButton(_minusTexture, "Remove this object?", 20f))
-                            {
-                                if (vent.vent != null) DestroyImmediate(vent.vent.gameObject);
-                                tankBuilder.vents.RemoveAt(index);
-                                break;
-                            }
-
-                            GUILayout.EndHorizontal();
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
-                            
-                            
-                            
-                            GUI.backgroundColor = Color.black;
-                            GUILayout.BeginVertical("box");
-                            GUI.backgroundColor = guiColorBackup;
-                            
-                            if (vent.editName)
-                            {
-                                GUILayout.BeginHorizontal();
-                                GUI.backgroundColor = Color.grey;
-                                vent.ventName = EditorGUILayout.TextField(new GUIContent("Name", "Automatically renames the game object."), vent.ventName);
-                                GUI.backgroundColor = guiColorBackup;
-                                if (EditorTools.Button("Done", "Finish renaming the box.")) vent.editName = false;
-                                GUILayout.EndHorizontal();
-                                
-                                EditorTools.DrawLine(0.5f, 2.5f, 5);
-                            }
-
-
-                            if (vent.vent == null)
-                            {
-                                vent.vent = (Transform) EditorGUILayout.ObjectField(new GUIContent("Missing Transform:",
-                                        vent.ventName + "'s transform was not found, please reassign it or delete this item."),
-                                    vent.vent, typeof(Transform), true);
-                                
-                                GUILayout.EndVertical();
-
-                                continue;
-                            }
-
-                            if (vent.ventSprite == null) vent.ventSprite = vent.vent.GetComponent<SpriteRenderer>();
-
-                            if (EditorTools.Button("Toggle", "Toggles the current vent."))
-                                Selection.activeGameObject = vent.vent.gameObject;
-
-
-
-
-
-
-
-                            GUILayout.Space(5);
-
-
-
-                            vent.currentTab = GUILayout.Toolbar(vent.currentTab,
-                                new string[] {"Position", "Rotation", "Size"});
-
-                            switch (vent.currentTab)
-                            {
-                                case 0:
-                                {
-                                    EditorTools.Label("Position:", "Changes the position of the vent.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var position = vent.ventPosition;
-                                    position.x = EditorTools.Slider("X", "Changes the vents position along the x axis.",
-                                        position.x, -10, 10, 100);
-                                    position.y = EditorTools.Slider("Y", "Changes the vents position along the y axis.",
-                                        position.y, -13, 11.4f, 100);
-                                    vent.ventPosition = position;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-                                case 1:
-                                {
-                                    EditorTools.Label("Rotation:", "Changes the rotation of the vent.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    vent.ventRotation = EditorTools.Slider("Y",
-                                        "Changes the vents rotation along the y axis.",
-                                        vent.ventRotation, -180.0f, 180.0f, 100);
-
-                                    EditorGUI.indentLevel--;
-
-                                    break;
-                                }
-                                case 2:
-                                {
-                                    EditorTools.Label("Local Scale:", "Changes the scale of the vent.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var scale = vent.ventScale;
-                                    scale.x = EditorTools.Slider("X", "Changes the vents position along the x axis.",
-                                        scale.x, 0.0f, 2.0f, 100);
-                                    scale.y = EditorTools.Slider("Y", "Changes the vents position along the y axis.",
-                                        scale.y, 0.0f, 2.0f, 100);
-                                    vent.ventScale = scale;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-
-                                default:
-                                    break;
-                            }
-
-                            EditorTools.DrawLine(0.5f, 5f, 5);
-
-                            vent.currentParent = EditorGUILayout.Popup(new GUIContent("Parent",
-                                    "The current parent of the vent.\n\n" +
-                                    "eg. if parent to the cannon, this vent will rotate with it."), vent.currentParent,
-                                new string[] {"Hull", "Cannon"});
-                            GUILayout.Space(2.5f);
-
-                            vent.ventColor = EditorTools.ColorField("Color",
-                                "Changes the color of the vent.", vent.ventColor, true, 100);
-
-                            vent.sortingOrder = EditorTools.IntField("Sorting Order",
-                                "Where this accessory standing within the chosen sorting layer.",
-                                vent.sortingOrder, 100);
-
-                            GUILayout.EndVertical();
-                        }
-                        else GUILayout.EndHorizontal();
-
-                        index++;
-                    }
-                }
-                GUILayout.EndVertical();
-            }
-            else EditorTools.EndHorizontalGroup();
-        }
         
         
-        
-        private void DrawCompartments()
-        {
-            EditorTools.BeginHorizontalGroup();
-
-            if (EditorTools.Foldout("Compartments", "Spawn, toggles, or destroys the compartments that are present on the tank.",
-                ref tankBuilder.expandCompartments))
-            {
-                GUILayout.Space(-100);
-
-                // if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new compartment.", 20f))
-                //     tankBuilder.SpawnAccessory("Compartments");
-
-                EditorTools.EndHorizontalGroup();
-
-                EditorTools.DrawLine(0.5f, 2.5f, 5);
-
-                if (tankBuilder.hull == null) return;
-
-
-
-
-
-                GUILayout.BeginVertical("box");
-                {
-                    var index = 0;
-                    foreach (var compartment in tankBuilder.compartments)
-                    {
-                        if (index > 0) EditorTools.DrawLine(0.5f, 5f, 5);
-
-                        GUILayout.BeginHorizontal();
-
-                        if (EditorTools.Foldout(compartment.compartmentName, "", ref compartment.expand))
-                        {
-                            GUILayout.Space(-100);
-
-                            if (EditorTools.TexturedButton(_editTexture, "Rename the compartment?", 20f))
-                                compartment.editName = !compartment.editName;
-
-                            if (EditorTools.TexturedButton(_plusTexture, "Create a copy of this compartment?", 20f))
-                            {
-                                tankBuilder.CopyCompartment(compartment);
-                                break;
-                            }
-
-                            if (EditorTools.TexturedButton(_minusTexture, "Remove this compartment?", 20f))
-                            {
-                                if (compartment.compartment != null) DestroyImmediate(compartment.compartment.gameObject);
-                                tankBuilder.compartments.RemoveAt(index);
-                                break;
-                            }
-
-                            GUILayout.EndHorizontal();
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
-                            
-                            
-                            
-                            GUI.backgroundColor = Color.black;
-                            GUILayout.BeginVertical("box");
-                            GUI.backgroundColor = guiColorBackup;
-                            
-                            if (compartment.editName)
-                            {
-                                GUILayout.BeginHorizontal();
-                                GUI.backgroundColor = Color.grey;
-                                compartment.compartmentName = EditorGUILayout.TextField(new GUIContent("Name", 
-                                    "Automatically renames the game object."), compartment.compartmentName);
-                                GUI.backgroundColor = guiColorBackup;
-                                if (EditorTools.Button("Done", "Finish renaming the box.")) compartment.editName = false;
-                                GUILayout.EndHorizontal();
-                                
-                                EditorTools.DrawLine(0.5f, 2.5f, 5);
-                            }
-
-                            
-                            
-                            if (compartment.compartment == null)
-                            {
-                                compartment.compartment = (Transform) EditorGUILayout.ObjectField(new GUIContent(
-                                        "Missing Transform:", compartment.compartmentName +
-                                        "'s transform was not found, please reassign it or delete this item."),
-                                    compartment.compartment, typeof(Transform), true);
-                                
-                                GUILayout.EndVertical();
-
-                                continue;
-                            }
-
-                            if (compartment.compartmentSprite == null) compartment.compartmentSprite = compartment.compartment.GetComponent<SpriteRenderer>();
-
-                            if (EditorTools.Button("Toggle", "Toggles the current compartment."))
-                                Selection.activeGameObject = compartment.compartment.gameObject;
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
-
-                            
-
-                            EditorGUIUtility.labelWidth = 100;
-                            compartment.compartmentStyle = EditorGUILayout.Popup(new GUIContent("Style",
-                                "Changes the style of the compartment."), compartment.compartmentStyle, compartmentStyles);
-                            
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 5);
-
-                            
-
-                            compartment.currentTab = GUILayout.Toolbar(compartment.currentTab,
-                                new string[] {"Position", "Rotation", "Size"});
-
-                            switch (compartment.currentTab)
-                            {
-                                case 0:
-                                {
-                                    EditorTools.Label("Position:", "Changes the position of the compartment.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var position = compartment.compartmentPosition;
-                                    position.x = EditorTools.Slider("X", "Changes the compartments position along the x axis.",
-                                        position.x, -10, 10, 100);
-                                    position.y = EditorTools.Slider("Y", "Changes the compartments position along the y axis.",
-                                        position.y, -13, 11.4f, 100);
-                                    compartment.compartmentPosition = position;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-                                case 1:
-                                {
-                                    EditorTools.Label("Rotation:", "Changes the rotation of the compartment.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    compartment.compartmentRotation = EditorTools.Slider("Y",
-                                        "Changes the compartments rotation along the y axis.",
-                                        compartment.compartmentRotation, -180.0f, 180.0f, 100);
-
-                                    EditorGUI.indentLevel--;
-
-                                    break;
-                                }
-                                case 2:
-                                {
-                                    EditorTools.Label("Local Scale:", "Changes the scale of the compartment.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var scale = compartment.compartmentScale;
-                                    scale.x = EditorTools.Slider("X", "Changes the compartments position along the x axis.",
-                                        scale.x, -2.0f, 2.0f, 100);
-                                    scale.y = EditorTools.Slider("Y", "Changes the compartments position along the y axis.",
-                                        scale.y, -2.0f, 2.0f, 100);
-                                    compartment.compartmentScale = scale;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-
-                                default:
-                                    break;
-                            }
-
-                            EditorTools.DrawLine(0.5f, 5f, 5);
-
-                            compartment.currentParent = EditorGUILayout.Popup(new GUIContent("Parent",
-                                    "The current parent of the compartment.\n\n" +
-                                    "eg. if parent to the cannon, this compartment will rotate with it."), compartment.currentParent,
-                                new string[] {"Hull", "Cannon"});
-                            
-                            GUILayout.Space(2.5f);
-                            
-                            compartment.compartmentColor = EditorTools.ColorField("Color",
-                                "Changes the color of the compartment.", compartment.compartmentColor, true, 100);
-
-                            compartment.sortingOrder = EditorTools.IntField("Sorting Order",
-                                "Where this accessory standing within the chosen sorting layer.",
-                                compartment.sortingOrder, 100);
-
-                            GUILayout.EndVertical();
-                        }
-                        else GUILayout.EndHorizontal();
-
-                        index++;
-                    }
-                }
-                GUILayout.EndVertical();
-            }
-            else EditorTools.EndHorizontalGroup();
-        }
-        
-        
-        
-        private void DrawBoxes()
-        {
-            EditorTools.BeginHorizontalGroup();
-
-            if (EditorTools.Foldout("Boxes", "Spawn, toggles, or destroys the boxes that are present on the tank.",
-                ref tankBuilder.expandBoxes))
-            {
-                GUILayout.Space(-100);
-
-                // if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new box.", 20f))
-                //     tankBuilder.SpawnAccessory("Boxes");
-
-                EditorTools.EndHorizontalGroup();
-
-                EditorTools.DrawLine(0.5f, 2.5f, 5);
-
-                if (tankBuilder.hull == null) return;
-
-
-
-
-
-                GUILayout.BeginVertical("box");
-                {
-                    var index = 0;
-                    foreach (var box in tankBuilder.boxes)
-                    {
-                        if (index > 0) EditorTools.DrawLine(0.5f, 5f, 5);
-
-                        GUILayout.BeginHorizontal();
-
-                        if (EditorTools.Foldout(box.boxName, "", ref box.expand))
-                        {
-                            GUILayout.Space(-100);
-
-                            if (EditorTools.TexturedButton(_editTexture, "Rename object?", 20f))
-                                box.editName = !box.editName;
-
-                            if (EditorTools.TexturedButton(_plusTexture, "Create a copy of this object?.", 20f))
-                            {
-                                tankBuilder.CopyBox(box);
-                                break;
-                            }
-
-                            if (EditorTools.TexturedButton(_minusTexture, "Remove this object?", 20f))
-                            {
-                                if (box.box != null) DestroyImmediate(box.box.gameObject);
-                                tankBuilder.boxes.RemoveAt(index);
-                                break;
-                            }
-
-                            GUILayout.EndHorizontal();
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
-                            
-                            
-                            
-                            GUI.backgroundColor = Color.black;
-                            GUILayout.BeginVertical("box");
-                            GUI.backgroundColor = guiColorBackup;
-                            
-                            if (box.editName)
-                            {
-                                GUILayout.BeginHorizontal();
-                                GUI.backgroundColor = Color.grey;
-                                box.boxName = EditorGUILayout.TextField(new GUIContent("Name", "Automatically renames the game object."), box.boxName);
-                                GUI.backgroundColor = guiColorBackup;
-                                if (EditorTools.Button("Done", "Finish renaming the box.")) box.editName = false;
-                                GUILayout.EndHorizontal();
-                                
-                                EditorTools.DrawLine(0.5f, 2.5f, 5);
-                            }
-
-
-                            if (box.box == null)
-                            {
-                                box.box = (Transform) EditorGUILayout.ObjectField(new GUIContent("Missing Transform:",
-                                        box.boxName + "'s transform was not found, please reassign it or delete this item."),
-                                    box.box, typeof(Transform), true);
-                                
-                                GUILayout.EndVertical();
-
-                                continue;
-                            }
-
-                            if (box.boxSprite == null) box.boxSprite = box.box.GetComponent<SpriteRenderer>();
-
-                            if (EditorTools.Button("Toggle", "Toggles the current box."))
-                                Selection.activeGameObject = box.box.gameObject;
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
-
-
-                            
-                            EditorGUIUtility.labelWidth = 100;
-                            box.boxStyle = EditorGUILayout.Popup(new GUIContent("Style",
-                                "Changes the style of the box."), box.boxStyle, boxStyles);
-
-                            
-                            
-                            EditorTools.DrawLine(0.5f, 2.5f, 5);
-
-                            
-
-                            box.currentTab = GUILayout.Toolbar(box.currentTab,
-                                new string[] {"Position", "Rotation", "Size"});
-
-                            switch (box.currentTab)
-                            {
-                                case 0:
-                                {
-                                    EditorTools.Label("Position:", "Changes the position of the box.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var position = box.boxPosition;
-                                    position.x = EditorTools.Slider("X", "Changes the boxes position along the x axis.",
-                                        position.x, -10, 10, 100);
-                                    position.y = EditorTools.Slider("Y", "Changes the boxes position along the y axis.",
-                                        position.y, -13, 11.4f, 100);
-                                    box.boxPosition = position;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-                                case 1:
-                                {
-                                    EditorTools.Label("Rotation:", "Changes the rotation of the box.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    box.boxRotation = EditorTools.Slider("Y",
-                                        "Changes the boxes rotation along the y axis.",
-                                        box.boxRotation, -180.0f, 180.0f, 100);
-
-                                    EditorGUI.indentLevel--;
-
-                                    break;
-                                }
-                                case 2:
-                                {
-                                    EditorTools.Label("Local Scale:", "Changes the scale of the box.", 100);
-
-                                    EditorGUI.indentLevel++;
-
-                                    var scale = box.boxScale;
-                                    scale.x = EditorTools.Slider("X", "Changes the boxes position along the x axis.",
-                                        scale.x, -2.0f, 2.0f, 100);
-                                    scale.y = EditorTools.Slider("Y", "Changes the boxes position along the y axis.",
-                                        scale.y, -2.0f, 2.0f, 100);
-                                    box.boxScale = scale;
-
-                                    EditorGUI.indentLevel--;
-                                    break;
-                                }
-
-                                default:
-                                    break;
-                            }
-
-                            EditorTools.DrawLine(0.5f, 5f, 5);
-
-                            box.currentParent = EditorGUILayout.Popup(new GUIContent("Parent",
-                                    "The current parent of the box.\n\n" +
-                                    "eg. if parent to the cannon, this box will rotate with it."), box.currentParent,
-                                new string[] {"Hull", "Cannon"});
-                            
-                            GUILayout.Space(2.5f);
-                            
-                            box.boxColor = EditorTools.ColorField("Color",
-                                "Changes the color of the box.", box.boxColor, true, 100);
-
-                            box.sortingOrder = EditorTools.IntField("Sorting Order",
-                                "Where this accessory standing within the chosen sorting layer.",
-                                box.sortingOrder, 100);
-                            
-                            GUILayout.EndVertical();
-
-                        }
-                        else GUILayout.EndHorizontal();
-
-                        index++;
-                    }
-                }
-                GUILayout.EndVertical();
-            }
-            else EditorTools.EndHorizontalGroup();
-        }
-
-
-
-
-
-
-
         private void DrawCategories()
         {
             var index = 0;
@@ -1099,7 +484,17 @@ namespace TankWars.Editor
                 {
                     GUILayout.Space(-100);
 
-                    if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new box.", 20f))
+                    if (!category.editCategory)
+                    {
+                        if (EditorTools.TexturedButton(_editTexture, "Edit Category?", 20f))
+                        {
+                            category.editCategory = true;
+                            newCategoryName = category.categoryName;
+                            newFolderLocation = category.categoryFolder;   
+                        }
+                    }
+
+                    if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new accessory.", 20f))
                         tankBuilder.SpawnAccessory(index, category.categoryName, category.categoryFolder);
 
                     if (EditorTools.TexturedButton(_minusTexture, "Removes this category.", 20f))
@@ -1111,6 +506,69 @@ namespace TankWars.Editor
                     EditorTools.EndHorizontalGroup();
 
                     EditorTools.DrawLine(0.5f, 2.5f, 5);
+                    
+                    if (category.editCategory)
+                    {
+                        GUI.backgroundColor = Color.grey;
+                        GUILayout.BeginVertical("box");
+                        {
+                            EditorTools.Label("Edit Category:", "", 100);
+
+                            EditorGUIUtility.labelWidth = 100;
+                            newCategoryName = EditorGUILayout.TextField(new GUIContent("Name:", 
+                            "Name of the category."), newCategoryName);
+                            
+                            newFolderLocation = EditorGUILayout.TextField(new GUIContent("Folder Location:", 
+                            "Location of the folder in resources."), newFolderLocation);
+                        
+                            GUILayout.Space(5);
+                        
+                            GUILayout.BeginHorizontal();
+                            {
+                                if (EditorTools.Button("Apply", "Applies the changes."))
+                                {
+                                    foreach (var accessory in category.accessories)
+                                        accessory.parentName = newCategoryName;
+                                    
+                                    var transform = tankBuilder.transform;
+                                        
+                                    for (var i = 0; i < 2; i++)
+                                    {
+                                        var parent = transform.Find(i == 0 ? "Hull" : "Cannon");
+                                        if (parent == null) continue;
+                        
+                                        var categoryTransform = parent.Find(category.categoryName);
+                                        if(categoryTransform == null) continue;
+                                            
+                                        categoryTransform.name = newCategoryName;
+                                    }
+                                    
+                                    category.categoryName = newCategoryName;
+                                    category.categoryFolder = newFolderLocation;
+                                    
+                                    category.editCategory = false;
+                                    newCategoryName = "";
+                                    newFolderLocation = "";
+                                    GUI.FocusControl(null);
+                                    
+                                    // Debug.Log("Tank Builder: New category name and folder has been applied.");
+                                }
+
+                                if (EditorTools.Button("Back", "Goes back to main."))
+                                {
+                                    category.editCategory = false;
+                                    newCategoryName = "";
+                                    newFolderLocation = "";
+                                    GUI.FocusControl(null);
+                                }
+                            }
+                            GUILayout.EndHorizontal();
+                    
+                        }
+                        GUILayout.EndVertical(); 
+                        
+                        EditorTools.DrawLine(0.5f, 2.5f, 5);
+                    }
 
                     if (tankBuilder.hull == null) return;
                     
@@ -1120,15 +578,20 @@ namespace TankWars.Editor
                 }
                 else GUILayout.EndHorizontal();
 
-                EditorTools.DrawLine(0.5f, 2.5f, 5);
+                if(index != tankBuilder.categories.Count - 1) EditorTools.DrawLine(0.5f, 2.5f, 5);
+                else GUILayout.Space(2.5f);
                 
                 category.expandCategory = expandCategory;
                 index++;
             }            
         }
         
+        
+        
         private void DrawAccessories(int index, ref List<TankBuilder.Accessory> accessories)
         {
+            if (accessories.Count == 0) return;
+            
             GUILayout.BeginVertical("box");
             {
                 var i = 0;
@@ -1142,8 +605,14 @@ namespace TankWars.Editor
                     {
                         GUILayout.Space(-100);
 
-                        if (EditorTools.TexturedButton(_editTexture, "Rename object?", 20f))
-                            accessory.editName = !accessory.editName;
+                        if (!accessory.editName)
+                        {
+                            if (EditorTools.TexturedButton(_editTexture, "Rename object?", 20f))
+                            {
+                                accessory.editName = true;
+                                accessory.newName = accessory.Name;
+                            }
+                        }
 
                         if (EditorTools.TexturedButton(_plusTexture, "Create a copy of this object?.", 20f))
                         {
@@ -1172,15 +641,30 @@ namespace TankWars.Editor
                         
                         if (accessory.editName)
                         {
-                            GUILayout.BeginHorizontal();
                             GUI.backgroundColor = Color.grey;
+                            
                             EditorGUIUtility.labelWidth = 50;
-                            accessory.Name = EditorGUILayout.TextField(new GUIContent("Name", "Automatically renames the game object."), accessory.Name);
+                            accessory.newName = EditorGUILayout.TextField(new GUIContent("Name", 
+                                "Automatically renames the game object."), accessory.newName);
+                            
                             GUI.backgroundColor = guiColorBackup;
-                            if (EditorTools.Button("Done", "Finish renaming the accessory."))
+                                
+                            GUILayout.BeginHorizontal();
                             {
-                                accessory.editName = false;
-                                GUI.FocusControl(null);
+                                if (EditorTools.Button("Apply", "Finish renaming the accessory."))
+                                {
+                                    accessory.Name = accessory.newName;
+                                    accessory.editName = false;
+                                    GUI.FocusControl(null);
+                                    
+                                    // Debug.Log("Tank Builder: New accessory name has been applied.");
+                                }
+                                
+                                if (EditorTools.Button("Back", "Goes back to main."))
+                                {
+                                    accessory.editName = false;
+                                    GUI.FocusControl(null);
+                                }
                             }
                             GUILayout.EndHorizontal();
                             
@@ -1236,9 +720,9 @@ namespace TankWars.Editor
 
                                 var position = accessory.Position;
                                 position.x = EditorTools.Slider("X", "Changes the accessories position along the x axis.",
-                                    position.x, -10, 10, 100);
+                                    position.x, -10.0f, 10.0f, 100);
                                 position.y = EditorTools.Slider("Y", "Changes the accessories position along the y axis.",
-                                    position.y, -13, 11.4f, 100);
+                                    position.y, -13, 13.0f, 100);
                                 accessory.Position = position;
 
                                 EditorGUI.indentLevel--;

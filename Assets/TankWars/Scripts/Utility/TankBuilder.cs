@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace TankWars.Utility
@@ -13,749 +11,14 @@ namespace TankWars.Utility
     public class TankBuilder : MonoBehaviour
     {
         #region Classes
-
-        [Serializable]
-        public class Vent
-        {
-            #region Fields
-
-            public Transform vent;
-            public SpriteRenderer ventSprite;
-            
-            // Unity Editor Fields
-            public int currentTab = 0;
-            public bool expand;
-            public bool editName;
-
-            #endregion
-
-            
-            
-            #region Properties
-
-            public int currentParent
-            {
-                get => _currentParent;
-                set
-                {
-                    if (_currentParent == value) return;
-                    _currentParent = value;
-                    
-                    if (vent.parent.name == (currentParent == 0 ? "Cannon" : "Hull")) return;
-
-                    var grParent = vent.parent.parent.parent.Find(currentParent == 0 ? "Hull" : "Cannon");
-                    var parent = grParent.Find("Vents");
-                
-                    if (parent == null)
-                    {
-                        parent = new GameObject().transform;
-                        parent.name = "Vents";
-                        parent.parent = grParent;
-                        parent.localPosition = Vector3.zero;
-                        parent.localRotation = Quaternion.identity;
-                    }
-                
-                    vent.parent = grParent.Find("Vents");
-                }
-            }
-            [SerializeField] private int _currentParent = 0;
-            
-            public string ventName
-            {
-                get => _ventName;
-                set
-                {
-                    if (value == _ventName) return;
-
-                    _ventName = value;
-                    vent.name = _ventName;
-                }
-            }
-            [SerializeField] private string _ventName = "Vent";
-            
-            public Vector2 ventPosition
-            {
-                get => _ventPosition;
-                set
-                {
-                    if (value == _ventPosition) return;
-                    
-                    _ventPosition.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    _ventPosition.y = Mathf.Clamp(value.y, -13.0f, 11.4f);
-                    vent.localPosition = _ventPosition;
-                }
-            }
-            [SerializeField] private Vector2 _ventPosition = Vector2.zero;
-            
-            public float ventRotation
-            {
-                get => _ventRotation;
-                set
-                {
-                    if (value == _ventRotation) return;
-                    
-                    _ventRotation = Mathf.Clamp(value, -180.0f, 180.0f);
-                    vent.localEulerAngles = vent.localEulerAngles.WithZ(_ventRotation);
-                }
-            }
-            [SerializeField] private float _ventRotation = 0;
-            
-            public Vector2 ventScale
-            {
-                get => _ventScale;
-                set
-                {
-                    if (value == _ventScale) return;
-                    
-                    _ventScale.x = Mathf.Clamp(value.x, 0.0f, 2.0f);
-                    _ventScale.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
-                    vent.localScale = _ventScale;
-                }
-            }
-            [SerializeField] private Vector2 _ventScale = Vector2.one;
-            
-            public Color ventColor
-            {
-                get => _ventColor;
-                set
-                {
-                    if (value == _ventColor) return;
-
-                    _ventColor = value;
-                    ventSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _ventColor = Color.white;
-
-            public int sortingOrder
-            {
-                get => _sortingOrder;
-                set
-                {
-                    if (value == _sortingOrder) return;
-
-                    _sortingOrder = value;
-                    ventSprite.sortingOrder = _sortingOrder;
-                }
-            }
-            [SerializeField] private int _sortingOrder = 0;
-
-            #endregion
-
-            
-            
-            #region Functions
-
-            public Vent(Transform parent, int sortingLayerID)
-            {
-                // Vent
-                vent = new GameObject().transform;
-                vent.name = ventName;
-                vent.parent = parent;
-                vent.localPosition = Vector3.zero;
-                vent.localRotation = Quaternion.identity;
-
-                ventSprite = vent.gameObject.AddComponent<SpriteRenderer>();
-                ventSprite.sprite = Resources.Load<Sprite>(path + "Vent");
-                ventSprite.sortingLayerID = sortingLayerID;            
-                ventSprite.sortingOrder = sortingOrder;
-                ventSprite.color = ventColor;
-            }
-            
-            public Vent(Vent copy)
-            {
-                // Vent
-                vent = new GameObject().transform;
-                ventName = copy.ventName + " copy";
-                vent.parent = copy.vent.parent;
-                currentParent = copy.currentParent;
-                ventPosition = copy.vent.localPosition;
-                ventRotation = copy.ventRotation;
-                ventScale = copy.ventScale;
-
-                // Copy the sprite renderer.
-                var copySprite = copy.ventSprite;
-                ventSprite = vent.gameObject.AddComponent<SpriteRenderer>();
-                ventSprite.sprite = copySprite.sprite;
-                ventSprite.sortingLayerID = copySprite.sortingLayerID;            
-                sortingOrder = copySprite.sortingOrder;
-                ventColor = copySprite.color;
-            }
-            
-            #endregion
-
-        }
         
-        
-        [Serializable]
-        public class Compartment
-        {
-            #region Fields
-
-            public Transform compartment;
-            public SpriteRenderer compartmentSprite;
-            
-            // Unity Editor Fields
-            public int currentTab = 0;
-            public bool expand;
-            public bool editName;
-
-            #endregion
-
-            
-            
-            #region Properties
-
-            public int compartmentStyle
-            {
-                get => _compartmentStyle;
-                set
-                {
-                    if (_compartmentStyle == value) return;
-                    _compartmentStyle = value;
-                    
-                    compartmentSprite.sprite = Resources.LoadAll<Sprite>(path + "Compartments")[_compartmentStyle];
-                }
-            }
-            [SerializeField] private int _compartmentStyle = 0;
-            
-            public int currentParent
-            {
-                get => _currentParent;
-                set
-                {
-                    if (_currentParent == value) return;
-                    _currentParent = value;
-                    
-                    if (compartment.parent.name == (currentParent == 0 ? "Cannon" : "Hull")) return;
-
-                    var grParent = compartment.parent.parent.parent.Find(currentParent == 0 ? "Hull" : "Cannon");
-                    var parent = grParent.Find("Compartments");
-                
-                    if (parent == null)
-                    {
-                        parent = new GameObject().transform;
-                        parent.name = "Compartments";
-                        parent.parent = grParent;
-                        parent.localPosition = Vector3.zero;
-                        parent.localRotation = Quaternion.identity;
-                    }
-                
-                    compartment.parent = grParent.Find("Compartments");
-                }
-            }
-            [SerializeField] private int _currentParent = 0;
-            
-            public string compartmentName
-            {
-                get => _compartmentName;
-                set
-                {
-                    if (value == _compartmentName) return;
-
-                    _compartmentName = value;
-                    compartment.name = _compartmentName;
-                }
-            }
-            [SerializeField] private string _compartmentName = "Compartment";
-            
-            public Vector2 compartmentPosition
-            {
-                get => _compartmentPosition;
-                set
-                {
-                    if (value == _compartmentPosition) return;
-                    
-                    _compartmentPosition.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    _compartmentPosition.y = Mathf.Clamp(value.y, -13.0f, 11.4f);
-                    compartment.localPosition = _compartmentPosition;
-                }
-            }
-            [SerializeField] private Vector2 _compartmentPosition = Vector2.zero;
-            
-            public float compartmentRotation
-            {
-                get => _compartmentRotation;
-                set
-                {
-                    if (value == _compartmentRotation) return;
-                    
-                    _compartmentRotation = Mathf.Clamp(value, -180.0f, 180.0f);
-                    compartment.localEulerAngles = compartment.localEulerAngles.WithZ(_compartmentRotation);
-                }
-            }
-            [SerializeField] private float _compartmentRotation = 0;
-            
-            public Vector2 compartmentScale
-            {
-                get => _compartmentScale;
-                set
-                {
-                    if (value == _compartmentScale) return;
-                    
-                    _compartmentScale.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
-                    _compartmentScale.y = Mathf.Clamp(value.y, -2.0f, 2.0f);
-                    compartment.localScale = _compartmentScale;
-                }
-            }
-            [SerializeField] private Vector2 _compartmentScale = Vector2.one;
-            
-            public Color compartmentColor
-            {
-                get => _compartmentColor;
-                set
-                {
-                    if (value == _compartmentColor) return;
-
-                    _compartmentColor = value;
-                    compartmentSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _compartmentColor = Color.white;
-
-            public int sortingOrder
-            {
-                get => _sortingOrder;
-                set
-                {
-                    if (value == _sortingOrder) return;
-
-                    _sortingOrder = value;
-                    compartmentSprite.sortingOrder = _sortingOrder;
-                }
-            }
-            [SerializeField] private int _sortingOrder = 0;
-
-            #endregion
-
-            
-            
-            #region Functions
-
-            public Compartment(Transform parent, int sortingLayerID)
-            {
-                // compartment
-                compartment = new GameObject().transform;
-                compartment.name = compartmentName;
-                compartment.parent = parent;
-                compartment.localPosition = Vector3.zero;
-                compartment.localRotation = Quaternion.identity;
-
-                compartmentSprite = compartment.gameObject.AddComponent<SpriteRenderer>();
-                compartmentSprite.sprite = Resources.LoadAll<Sprite>(path + "Compartments")[0];
-                compartmentSprite.sortingLayerID = sortingLayerID;            
-                compartmentSprite.sortingOrder = sortingOrder;
-                compartmentSprite.color = compartmentColor;
-            }
-            
-            public Compartment(Compartment copy)
-            {
-                // compartment
-                compartment = new GameObject().transform;
-                compartmentName = copy.compartmentName + " copy";
-                compartment.parent = copy.compartment.parent;
-                currentParent = copy.currentParent;
-                compartmentPosition = copy.compartment.localPosition;
-                compartmentRotation = copy.compartmentRotation;
-                compartmentScale = copy.compartmentScale;
-
-                // Copy the sprite renderer.
-                var copySprite = copy.compartmentSprite;
-                compartmentSprite = compartment.gameObject.AddComponent<SpriteRenderer>();
-                compartmentSprite.sprite = copySprite.sprite;
-                compartmentSprite.sortingLayerID = copySprite.sortingLayerID;            
-                sortingOrder = copySprite.sortingOrder;
-                compartmentColor = copySprite.color;
-                
-                compartmentStyle = copy.compartmentStyle;
-            }
-            
-            #endregion
-
-        }
-
-        
-        
-        [Serializable]
-        public class Box
-        {
-            #region Fields
-
-            public Transform box;
-            public SpriteRenderer boxSprite;
-            
-            // Unity Editor Fields
-            public int currentTab = 0;
-            public bool expand;
-            public bool editName;
-
-            #endregion
-
-            
-            
-            #region Properties
-
-            public int boxStyle
-            {
-                get => _boxStyle;
-                set
-                {
-                    if (_boxStyle == value) return;
-                    _boxStyle = value;
-                    
-                    boxSprite.sprite = Resources.LoadAll<Sprite>(path + "Boxes")[_boxStyle];
-                }
-            }
-            [SerializeField] private int _boxStyle = 0;
-            
-            public int currentParent
-            {
-                get => _currentParent;
-                set
-                {
-                    if (_currentParent == value) return;
-                    _currentParent = value;
-                    
-                    if (box.parent.name == (currentParent == 0 ? "Cannon" : "Hull")) return;
-
-                    var grParent = box.parent.parent.parent.Find(currentParent == 0 ? "Hull" : "Cannon");
-                    var parent = grParent.Find("Boxes");
-                
-                    if (parent == null)
-                    {
-                        parent = new GameObject().transform;
-                        parent.name = "Boxes";
-                        parent.parent = grParent;
-                        parent.localPosition = Vector3.zero;
-                        parent.localRotation = Quaternion.identity;
-                    }
-                
-                    box.parent = grParent.Find("Boxes");
-                }
-            }
-            [SerializeField] private int _currentParent = 0;
-            
-            public string boxName
-            {
-                get => _boxName;
-                set
-                {
-                    if (value == _boxName) return;
-
-                    _boxName = value;
-                    box.name = _boxName;
-                }
-            }
-            [SerializeField] private string _boxName = "Box";
-            
-            public Vector2 boxPosition
-            {
-                get => _boxPosition;
-                set
-                {
-                    if (value == _boxPosition) return;
-                    
-                    _boxPosition.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    _boxPosition.y = Mathf.Clamp(value.y, -13.0f, 11.4f);
-                    box.localPosition = _boxPosition;
-                }
-            }
-            [SerializeField] private Vector2 _boxPosition = Vector2.zero;
-            
-            public float boxRotation
-            {
-                get => _boxRotation;
-                set
-                {
-                    if (value == _boxRotation) return;
-                    
-                    _boxRotation = Mathf.Clamp(value, -180.0f, 180.0f);
-                    box.localEulerAngles = box.localEulerAngles.WithZ(_boxRotation);
-                }
-            }
-            [SerializeField] private float _boxRotation = 0;
-            
-            public Vector2 boxScale
-            {
-                get => _boxScale;
-                set
-                {
-                    if (value == _boxScale) return;
-                    
-                    _boxScale.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
-                    _boxScale.y = Mathf.Clamp(value.y, -2.0f, 2.0f);
-                    box.localScale = _boxScale;
-                }
-            }
-            [SerializeField] private Vector2 _boxScale = Vector2.one;
-            
-            public Color boxColor
-            {
-                get => _boxColor;
-                set
-                {
-                    if (value == _boxColor) return;
-
-                    _boxColor = value;
-                    boxSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _boxColor = Color.white;
-
-            public int sortingOrder
-            {
-                get => _sortingOrder;
-                set
-                {
-                    if (value == _sortingOrder) return;
-
-                    _sortingOrder = value;
-                    boxSprite.sortingOrder = _sortingOrder;
-                }
-            }
-            [SerializeField] private int _sortingOrder = 0;
-
-            #endregion
-
-            
-            
-            #region Functions
-
-            public Box(Transform parent, int sortingLayerID)
-            {
-                // box
-                box = new GameObject().transform;
-                box.name = boxName;
-                box.parent = parent;
-                box.localPosition = Vector3.zero;
-                box.localRotation = Quaternion.identity;
-
-                boxSprite = box.gameObject.AddComponent<SpriteRenderer>();
-                boxSprite.sprite = Resources.LoadAll<Sprite>(path + "Boxes")[0];
-                boxSprite.sortingLayerID = sortingLayerID;            
-                boxSprite.sortingOrder = sortingOrder;
-                boxSprite.color = boxColor;
-            }
-            
-            public Box(Box copy)
-            {
-                // box
-                box = new GameObject().transform;
-                boxName = copy.boxName + " copy";
-                box.parent = copy.box.parent;
-                currentParent = copy.currentParent;
-                boxPosition = copy.box.localPosition;
-                boxRotation = copy.boxRotation;
-                boxScale = copy.boxScale;
-
-                // Copy the sprite renderer.
-                var copySprite = copy.boxSprite;
-                boxSprite = box.gameObject.AddComponent<SpriteRenderer>();
-                boxSprite.sprite = copySprite.sprite;
-                boxSprite.sortingLayerID = copySprite.sortingLayerID;            
-                sortingOrder = copySprite.sortingOrder;
-                boxColor = copySprite.color;
-                
-                boxStyle = copy.boxStyle;
-            }
-            
-            #endregion
-
-        }
-        
-        [Serializable]
-        public class Extra
-        {
-            #region Fields
-
-            public Transform extra;
-            public SpriteRenderer extraSprite;
-            
-            // Unity Editor Fields
-            public int currentTab = 0;
-            public bool expand;
-            public bool editName;
-
-            #endregion
-
-            
-            
-            #region Properties
-
-            public int extraStyle
-            {
-                get => _extraStyle;
-                set
-                {
-                    if (_extraStyle == value) return;
-                    _extraStyle = value;
-                    
-                    extraSprite.sprite = Resources.LoadAll<Sprite>(path + "Extras")[_extraStyle];
-                }
-            }
-            [SerializeField] private int _extraStyle = 0;
-            
-            public int currentParent
-            {
-                get => _currentParent;
-                set
-                {
-                    if (_currentParent == value) return;
-                    _currentParent = value;
-                    
-                    if (extra.parent.name == (currentParent == 0 ? "Cannon" : "Hull")) return;
-
-                    var grParent = extra.parent.parent.parent.Find(currentParent == 0 ? "Hull" : "Cannon");
-                    var parent = grParent.Find("Extras");
-                
-                    if (parent == null)
-                    {
-                        parent = new GameObject().transform;
-                        parent.name = "Extras";
-                        parent.parent = grParent;
-                        parent.localPosition = Vector3.zero;
-                        parent.localRotation = Quaternion.identity;
-                    }
-                
-                    extra.parent = grParent.Find("Extras");
-                }
-            }
-            [SerializeField] private int _currentParent = 0;
-            
-            public string extraName
-            {
-                get => _extraName;
-                set
-                {
-                    if (value == _extraName) return;
-
-                    _extraName = value;
-                    extra.name = _extraName;
-                }
-            }
-            [SerializeField] private string _extraName = "Box";
-            
-            public Vector2 extraPosition
-            {
-                get => _extraPosition;
-                set
-                {
-                    if (value == _extraPosition) return;
-                    
-                    _extraPosition.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    _extraPosition.y = Mathf.Clamp(value.y, -13.0f, 11.4f);
-                    extra.localPosition = _extraPosition;
-                }
-            }
-            [SerializeField] private Vector2 _extraPosition = Vector2.zero;
-            
-            public float extraRotation
-            {
-                get => _extraRotation;
-                set
-                {
-                    if (value == _extraRotation) return;
-                    
-                    _extraRotation = Mathf.Clamp(value, -180.0f, 180.0f);
-                    extra.localEulerAngles = extra.localEulerAngles.WithZ(_extraRotation);
-                }
-            }
-            [SerializeField] private float _extraRotation = 0;
-            
-            public Vector2 extraScale
-            {
-                get => _extraScale;
-                set
-                {
-                    if (value == _extraScale) return;
-                    
-                    _extraScale.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
-                    _extraScale.y = Mathf.Clamp(value.y, -2.0f, 2.0f);
-                    extra.localScale = _extraScale;
-                }
-            }
-            [SerializeField] private Vector2 _extraScale = Vector2.one;
-            
-            public Color extraColor
-            {
-                get => _extraColor;
-                set
-                {
-                    if (value == _extraColor) return;
-
-                    _extraColor = value;
-                    extraSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _extraColor = Color.white;
-
-            public int sortingOrder
-            {
-                get => _sortingOrder;
-                set
-                {
-                    if (value == _sortingOrder) return;
-
-                    _sortingOrder = value;
-                    extraSprite.sortingOrder = _sortingOrder;
-                }
-            }
-            [SerializeField] private int _sortingOrder = 0;
-
-            #endregion
-
-            
-            
-            #region Functions
-
-            public Extra(Transform parent, int sortingLayerID)
-            {
-                // extra
-                extra = new GameObject().transform;
-                extra.name = extraName;
-                extra.parent = parent;
-                extra.localPosition = Vector3.zero;
-                extra.localRotation = Quaternion.identity;
-
-                extraSprite = extra.gameObject.AddComponent<SpriteRenderer>();
-                extraSprite.sprite = Resources.LoadAll<Sprite>(path + "Extras")[0];
-                extraSprite.sortingLayerID = sortingLayerID;            
-                extraSprite.sortingOrder = sortingOrder;
-                extraSprite.color = extraColor;
-            }
-            
-            public Extra(Extra copy)
-            {
-                // extra
-                extra = new GameObject().transform;
-                extraName = copy.extraName + " copy";
-                extra.parent = copy.extra.parent;
-                currentParent = copy.currentParent;
-                extraPosition = copy.extra.localPosition;
-                extraRotation = copy.extraRotation;
-                extraScale = copy.extraScale;
-
-                // Copy the sprite renderer.
-                var copySprite = copy.extraSprite;
-                extraSprite = extra.gameObject.AddComponent<SpriteRenderer>();
-                extraSprite.sprite = copySprite.sprite;
-                extraSprite.sortingLayerID = copySprite.sortingLayerID;            
-                sortingOrder = copySprite.sortingOrder;
-                extraColor = copySprite.color;
-                
-                extraStyle = copy.extraStyle;
-            }
-            
-            #endregion
-
-        }
-
         [Serializable]
         public class Category
         {
             public string categoryName;
             public string categoryFolder;
             public bool expandCategory;
+            public bool editCategory;
             public List<Accessory> accessories;
         }
         
@@ -764,6 +27,7 @@ namespace TankWars.Utility
         {
             #region Fields
 
+            public string newName;
             public string projectFolder;
             public string parentName;
             
@@ -789,7 +53,7 @@ namespace TankWars.Utility
                     if (style == value) return;
                     style = value;
                     
-                    accessorySprite.sprite = Resources.LoadAll<Sprite>(path + projectFolder)[style];
+                    accessorySprite.sprite = Resources.LoadAll<Sprite>(Path + projectFolder)[style];
                 }
             }
             [SerializeField] private int style = 0;
@@ -842,7 +106,7 @@ namespace TankWars.Utility
                     if (value == position) return;
                     
                     position.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    position.y = Mathf.Clamp(value.y, -13.0f, 11.4f);
+                    position.y = Mathf.Clamp(value.y, -13.0f, 13.0f);
                     transform.localPosition = position;
                 }
             }
@@ -929,7 +193,7 @@ namespace TankWars.Utility
 
                 // Sprite
                 accessorySprite = transform.gameObject.AddComponent<SpriteRenderer>();
-                accessorySprite.sprite = Resources.LoadAll<Sprite>(path + projectFolder)[0];
+                accessorySprite.sprite = Resources.LoadAll<Sprite>(Path + projectFolder)[0];
                 accessorySprite.sortingLayerID = sortingLayerID;            
                 accessorySprite.sortingOrder = SortingOrder;
                 accessorySprite.color = Color;
@@ -1235,27 +499,23 @@ namespace TankWars.Utility
         
         #region Fields
 
-        /// <summary>
-        /// The sorting layer ID, used to assign the tank parts to a sorting layer.
-        /// </summary>
-
-        public bool expandHull;
-        public bool expandCannon;
-        public bool expandVents;
-        public bool expandCompartments;
-        public bool expandBoxes;
-        public bool expandExtras;
-
+        // Constant variable leading to the tank sprites.
+        private const string Path = "TankWars/Sprites/";
+        
+        // Current tab that the cannon is current on. eg. position, size.        
         public int cannonCurrentTab = 0;
         
+        // The sorting layer ID, used to assign the tank parts to a sorting layer.
         [HideInInspector] public int sortingLayerID = 0;
-        private const string path = "TankWars/Sprites/";
         
+        // Hull data.
         public Transform hull;
         public SpriteRenderer hullSprite;
         public SpriteRenderer hullAdditionalColorSprite;
         public SpriteRenderer hullShadowsSprite;
+        public bool expandHull;
         
+        // Cannon data.
         public Transform cannonRotor;
         public Transform cannonBase;
         public List<Transform> cannonHolder = new List<Transform>();
@@ -1263,12 +523,9 @@ namespace TankWars.Utility
         public SpriteRenderer cannonBaseSprite;
         public SpriteRenderer cannonBaseSidesSprite;
         public List<SpriteRenderer> cannonSprite = new List<SpriteRenderer>();
+        public bool expandCannon;
         
-        public List<Vent> vents = new List<Vent>();
-        public List<Compartment> compartments = new List<Compartment>();
-        public List<Box> boxes = new List<Box>();
-        public List<Extra> extras = new List<Extra>();
-
+        // Categories data.
         public List<Category> categories = new List<Category>();
         
         #endregion
@@ -1276,20 +533,11 @@ namespace TankWars.Utility
         
 
         #region Functions
-
-        public void SpawnTank()
-        {
-            SpawnHull();
-            SpawnCannon();
-        }
         
-        public void RemoveAllCategories()
-        {
-            print(categories.Count);
-
-            foreach (var category in categories) category.accessories.Clear();
-            categories.Clear();
-        }
+        /// <summary>
+        /// Use with caution: Remove absolutely everything from the tank
+        /// and deletes is all.
+        /// </summary>
         
         public void EraseAll()
         {
@@ -1299,8 +547,15 @@ namespace TankWars.Utility
             categories.Clear();
         }
 
+        /// <summary>
+        /// Spawns the tanks hull.
+        /// </summary>
+        
         public void SpawnHull()
         {
+            
+            // Create the tanks hull
+            // (the game object that holds all elements attached to the hull).
             var hullParent = transform.Find("Hull");
             if (hullParent == null)
             {
@@ -1309,59 +564,75 @@ namespace TankWars.Utility
                 hullParent.parent = transform;
             }
             
+            // Reset the hulls position to zero.
             hullParent.localPosition = Vector3.zero;
             hullParent.localRotation = Quaternion.identity;
             
-            // Hull
+            
+            
+            // Destroy the original hull.
+            if(hull != null) DestroyImmediate(hull.gameObject);
+            
+            // Create a new hull for the tank as a
+            // child of the parent hull (holds all hull elements).
             hull = new GameObject().transform;
             hull.name = "Hull";
             hull.parent = hullParent;
             hull.localPosition = Vector3.zero;
             hull.localRotation = Quaternion.identity;
 
+            // Add a sprite renderer to the hull game object and set it layer.
             hullSprite = hull.gameObject.AddComponent<SpriteRenderer>();
-            hullSprite.sprite = Resources.Load<Sprite>(path + "Hull/Hull");
+            hullSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Hull");
             hullSprite.sortingLayerID = sortingLayerID;
             hullSprite.color = hullColor;
             
             
             
-            // Additional Coloring
+            // Add a additional coloring object as a child of the (child) hull.
             var hullAdditionalColoring = new GameObject().transform;
             hullAdditionalColoring.name = "Additional Color";
             hullAdditionalColoring.parent = hull;
             hullAdditionalColoring.localPosition = Vector3.zero;
             hullAdditionalColoring.localRotation = Quaternion.identity;
             
+            // Again, add a sprite renderer to this object, set its layer/sorting order and the color.
             hullAdditionalColorSprite = hullAdditionalColoring.gameObject.AddComponent<SpriteRenderer>();
-            hullAdditionalColorSprite.sprite = Resources.Load<Sprite>(path + "Hull/Additional Color");
+            hullAdditionalColorSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Additional Color");
             hullAdditionalColorSprite.sortingLayerID = sortingLayerID;
             hullAdditionalColorSprite.sortingOrder = 1;
             hullAdditionalColorSprite.color = hullAdditionalColor;
             
             
             
-            // Shadows Coloring
+            // Add shadows to the tank, following the above process.
             var hullShadows = new GameObject().transform;
             hullShadows.name = "Shadows";
             hullShadows.parent = hull;
             hullShadows.localPosition = Vector3.zero;
             hullShadows.localRotation = Quaternion.identity;
-            
+         
+            // Add the shadow sprite renderer.
             hullShadowsSprite = hullShadows.gameObject.AddComponent<SpriteRenderer>();
-            hullShadowsSprite.sprite = Resources.Load<Sprite>(path + "Hull/Shadows");
+            hullShadowsSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Shadows");
             hullShadowsSprite.sortingLayerID = sortingLayerID;
             hullShadowsSprite.sortingOrder = 1;
             hullShadowsSprite.color = hullShadowsColor;
         }
         
+        /// <summary>
+        /// Spawns the tanks cannon.
+        /// </summary>
+        
         public void SpawnCannon()
         {
+            // Clear all cannon data.
             cannonHolder.Clear();
             cannon.Clear();
             cannonSprite.Clear();
 
-            // Create the cannon rotor.
+            // Create the cannon rotor
+            // (the game object that holds all elements attached to the cannon).
             if (cannonRotor == null)
             {
                 cannonRotor = new GameObject().transform;
@@ -1373,36 +644,45 @@ namespace TankWars.Utility
             } 
             
             
-            // Base.            
+            
+            // Destroy the original base.
+            if(cannonBase != null) DestroyImmediate(cannonBase.gameObject);
+            
+            // Create a new base for the cannon as a
+            // child of the rotor.
             cannonBase = new GameObject().transform;
             cannonBase.name = "Base";
             cannonBase.parent = cannonRotor;
             cannonBase.localPosition = Vector3.zero;
             cannonBase.localRotation = Quaternion.identity;
 
+            // Add a sprite renderer to the base.
             cannonBaseSprite = cannonBase.gameObject.AddComponent<SpriteRenderer>();
-            cannonBaseSprite.sprite = Resources.Load<Sprite>(path + "Cannon/Base");
+            cannonBaseSprite.sprite = Resources.Load<Sprite>(Path + "Cannon/Base");
             cannonBaseSprite.sortingLayerID = sortingLayerID;
             cannonBaseSprite.sortingOrder = 11;
             cannonBaseSprite.color = cannonBaseColor;
             
             
             
-            // Base Sides Coloring.
+            // Create a child object of the base which acts as the
+            // coloring to the bases sides.
             var baseSides = new GameObject().transform;
             baseSides.name = "BaseSides";
             baseSides.parent = cannonBase;
             baseSides.localPosition = Vector3.zero;
             baseSides.localRotation = Quaternion.identity;
             
+            // Again add a sprite to this object.
             cannonBaseSidesSprite = baseSides.gameObject.AddComponent<SpriteRenderer>();
-            cannonBaseSidesSprite.sprite = Resources.Load<Sprite>(path + "Cannon/BaseSides");
+            cannonBaseSidesSprite.sprite = Resources.Load<Sprite>(Path + "Cannon/BaseSides");
             cannonBaseSidesSprite.sortingLayerID = sortingLayerID;
             cannonBaseSidesSprite.sortingOrder = 10;
             cannonBaseSidesSprite.color = cannonBaseSidesColor;
             
             
 
+            // Depending on whether the tank is a single or double draw however many cannons.
             var single = cannonType == CannonType.Single;
 
             for (var i = 0; i < 2; i++)
@@ -1426,11 +706,12 @@ namespace TankWars.Utility
                 cannonHolder[i].localPosition = new Vector3(0, 4.2f, 0);
                 
                 cannonSprite.Add(cannon[i].gameObject.AddComponent<SpriteRenderer>());
-                cannonSprite[i].sprite = Resources.Load<Sprite>(path + "Cannon/Cannon");
+                cannonSprite[i].sprite = Resources.Load<Sprite>(Path + "Cannon/Cannon");
                 cannonSprite[i].sortingLayerID = sortingLayerID;
                 cannonSprite[i].sortingOrder = 12;
             }
 
+            // Reposition and scale the cannons.
             if (single)
             {
                 cannonHolder[0].localPosition = cannonHolder[0].localPosition.WithX(singleCannonPosition);
@@ -1449,9 +730,6 @@ namespace TankWars.Utility
             }
         }
 
-        
-        
-        
         /// <summary>
         /// Creates a new category.
         /// </summary>
@@ -1474,27 +752,26 @@ namespace TankWars.Utility
                 accessories = new List<Accessory>(),
                 categoryFolder = folderLocation,
                 categoryName = nameOfCategory,
-                expandCategory = false
+                expandCategory = false,
+                editCategory = false
             };
             categories.Add(category);
 
             for (var i = 0; i < 2; i++)
             {
-                var parentHull = transform.Find(i == 0 ? "Hull" : "Cannon");
-                if (parentHull == null) return;
+                var grandParent = transform.Find(i == 0 ? "Hull" : "Cannon");
+                if (grandParent == null) continue;
                 
-                var parent = parentHull.Find(nameOfCategory);
+                var parent = grandParent.Find(nameOfCategory);
 
                 if (parent != null) continue;
                 
                 parent = new GameObject().transform;
                 parent.name = nameOfCategory;
-                parent.parent = parentHull;
+                parent.parent = grandParent;
                 parent.localPosition = Vector3.zero;
                 parent.localRotation = Quaternion.identity;
             }
-            
-            print(categories.Count);
         }
 
         /// <summary>
@@ -1549,13 +826,6 @@ namespace TankWars.Utility
         
         public void CopyAccessory(int categoryIndex, Accessory accessory) => 
             categories[categoryIndex].accessories.Add(new Accessory(accessory));
-        
-        
-        
-        public void CopyVent(Vent vent) => vents.Add(new Vent(vent));
-        public void CopyCompartment(Compartment compartment) => compartments.Add(new Compartment(compartment));
-        public void CopyBox(Box box) => boxes.Add(new Box(box));
-        public void CopyBox(Extra extra) => extras.Add(new Extra(extra));
         
         #endregion
         

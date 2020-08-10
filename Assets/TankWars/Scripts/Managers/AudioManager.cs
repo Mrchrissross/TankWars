@@ -93,9 +93,11 @@ namespace TankWars.Managers
 
         #region Fields
 
-        // Storage of sounds.
+        // Storage of sounds, also disable warning saying it is unused.
+        #pragma warning disable 0649
         [SerializeField] private Sound[] sounds;
-
+        #pragma warning restore 0649
+        
         #endregion
 
         

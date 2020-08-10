@@ -33,8 +33,11 @@ namespace TankWars.Managers
     {
         #region Fields
 
-        // Asset array allows to choose how many assets we want to display.
+        // Asset array allows to choose how many assets we want to display,
+        // also disable warning saying it is unused.
+        #pragma warning disable 0649
         [SerializeField] private Asset[] assets;
+        #pragma warning restore 0649
         
         #endregion
 
