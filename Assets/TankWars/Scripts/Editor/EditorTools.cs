@@ -46,13 +46,13 @@ namespace TankWars.Editor
             EditorGUILayout.LabelField(new GUIContent(label, tooltip), style ?? EditorStyles.label, GUILayout.Width(width));
             Space(space);
         }
-        
-        public static void BeginHorizontalGroup(params GUILayoutOption[] options)
+
+        private static void BeginHorizontalGroup(params GUILayoutOption[] options)
         {
             EditorGUILayout.BeginHorizontal(options);
         }
-        
-        public static void EndHorizontalGroup(float space = 0)
+
+        private static void EndHorizontalGroup(float space = 0)
         {
             EditorGUILayout.EndHorizontal();
             Space(space);
@@ -90,14 +90,15 @@ namespace TankWars.Editor
         /// <returns>Returns true when the button is pressed.</returns>
         public static bool DrawDocumentationIcon(Texture2D texture, float size, string tooltip, float space = -20)
         {
-            BeginHorizontalGroup();
+            GUILayout. BeginHorizontal();
+            
             GUILayout.FlexibleSpace();
             
             var pressed = GUILayout.Button(new GUIContent(texture, tooltip), GUIStyle.none, GUILayout.Width(size),
                 GUILayout.Height(size));
             
-            EndHorizontalGroup();
-
+            GUILayout.EndHorizontal();
+                    
             Space(space);
 
             return pressed;
@@ -235,18 +236,11 @@ namespace TankWars.Editor
         /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
         /// <param name="value">The float within the script.</param>
         /// <param name="labelWidth">Width of the displayed Label.</param>
-        /// <param name="barWidth">Width of the input bar.</param>
         /// <param name="space">Amount of space after the element. </param>
-        public static string StringField(string label, string tooltip, string value, float labelWidth = 50, float barWidth = 250f, float space = 0)
+        public static string StringField(string label, string tooltip, string value, float labelWidth = 50, float space = 0)
         {
             EditorGUIUtility.labelWidth = labelWidth;
-            
-            var style = new GUIStyle(new GUIStyle(GUI.skin.box));
-            var width = (Screen.width - (Screen.width / 2.0f)) - barWidth;
-            var rect = GUILayoutUtility.GetRect(width + labelWidth, 17.5f, style);
-            var fieldRect = new Rect(rect.x + 4, rect.y - 1.5f, rect.width, rect.height);
-            
-            value = EditorGUI.TextField(fieldRect, new GUIContent(label, tooltip), value);
+            value = EditorGUILayout.TextField(new GUIContent(label, tooltip), value);
             
             Space(space);
 
@@ -378,8 +372,8 @@ namespace TankWars.Editor
 
                 if (drawToggle)
                 {
-                    GUILayout.FlexibleSpace();
                     value = GUILayout.Toggle(value, "");            
+                    GUILayout.Space(-5);
                 }
             }
             EditorGUILayout.EndHorizontal();

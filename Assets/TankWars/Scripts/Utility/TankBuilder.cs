@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TankWars.Controllers;
 using UnityEngine;
 
 namespace TankWars.Utility
@@ -523,6 +524,7 @@ namespace TankWars.Utility
         public SpriteRenderer cannonBaseSprite;
         public SpriteRenderer cannonBaseSidesSprite;
         public List<SpriteRenderer> cannonSprite = new List<SpriteRenderer>();
+        public List<Transform> cannonFirePoint = new List<Transform>();
         public bool expandCannon;
         
         // Categories data.
@@ -630,6 +632,7 @@ namespace TankWars.Utility
             cannonHolder.Clear();
             cannon.Clear();
             cannonSprite.Clear();
+            cannonFirePoint.Clear();
 
             // Create the cannon rotor
             // (the game object that holds all elements attached to the cannon).
@@ -693,14 +696,14 @@ namespace TankWars.Utility
                 cannonHolder.Add(new GameObject().transform);
                 cannonHolder[i].name = single ? "Cannon" : i == 0 ? "Left Cannon" : "Right Cannon";
                 cannonHolder[i].parent = cannonBase;
-                cannonHolder[i].localPosition = new Vector3(0, 0, 0);
+                cannonHolder[i].localPosition = Vector3.zero;
                 cannonHolder[i].localRotation = Quaternion.identity;
                 
                 // Create the cannon and parent it to the holder.
                 cannon.Add(new GameObject().transform);
                 cannon[i].name = "CannonSprite";
                 cannon[i].parent = cannonHolder[i];
-                cannon[i].localPosition = new Vector3(0, 8.195f, 0);
+                cannon[i].localPosition = Vector3.zero.WithY(8.195f);
                 cannon[i].localRotation = Quaternion.identity;
                 
                 cannonHolder[i].localPosition = new Vector3(0, 4.2f, 0);
@@ -709,6 +712,12 @@ namespace TankWars.Utility
                 cannonSprite[i].sprite = Resources.Load<Sprite>(Path + "Cannon/Cannon");
                 cannonSprite[i].sortingLayerID = sortingLayerID;
                 cannonSprite[i].sortingOrder = 12;
+                
+                cannonFirePoint.Add(new GameObject().transform);
+                cannonFirePoint[i].name = "FirePoint";
+                cannonFirePoint[i].parent = cannonHolder[i];
+                cannonFirePoint[i].localPosition = Vector3.zero.WithY(8.195f * 2.0f);
+                cannonFirePoint[i].localRotation = Quaternion.identity;
             }
 
             // Reposition and scale the cannons.
@@ -826,6 +835,24 @@ namespace TankWars.Utility
         
         public void CopyAccessory(int categoryIndex, Accessory accessory) => 
             categories[categoryIndex].accessories.Add(new Accessory(accessory));
+
+        /// <summary>
+        /// Adds all movement components to the tanks game object.
+        /// </summary>
+        
+        public void AddMovementSystem()
+        {
+            if (hull == null || cannonRotor == null) return;
+
+            var movementController = GetComponent<MovementController>();
+            if(movementController != null) DestroyImmediate(movementController);
+
+            movementController = gameObject.AddComponent<MovementController>();
+            movementController.cannonRotor = cannonRotor;
+
+            foreach (var firePoint in cannonFirePoint)
+                movementController.firePoints.Add(firePoint);
+        }
         
         #endregion
         

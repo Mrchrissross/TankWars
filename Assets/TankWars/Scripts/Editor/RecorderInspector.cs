@@ -30,31 +30,35 @@ namespace TankWars.Editor
                 GUILayout.Space(2.5f);
                 
                 if (Application.isPlaying)
-                {
-                    EditorTools.BeginHorizontalGroup();
-                    GUILayout.FlexibleSpace();
-
-                    var recorderLabel = "Recording";
+                { 
                     var showIndex = false;
-                    
-                    if (recorder.isRewinding) recorderLabel = "<b>Rewinding</b>";
-                    else if (recorder.isFastForwarding) recorderLabel = "<b>Fast Forwarding</b>";
-                    else if (recorder.isPaused) recorderLabel = "<b>Paused</b>";
+                    GUILayout.BeginHorizontal();
+                    {
+                        GUILayout.FlexibleSpace();
 
-                    if (recorderLabel != "Recording") showIndex = true;
-                    
-                    EditorTools.Label(recorderLabel, "", 
-                        120, 0, new GUIStyle(GUI.skin.label)
-                        {
-                            alignment = TextAnchor.MiddleCenter,
-                            richText = true
-                        });
+                        var recorderLabel = "Recording";
+                        
+                        if (recorder.isRewinding) recorderLabel = "<b>Rewinding</b>";
+                        else if (recorder.isFastForwarding) recorderLabel = "<b>Fast Forwarding</b>";
+                        else if (recorder.isPaused) recorderLabel = "<b>Paused</b>";
 
-                    if(showIndex)
-                        EditorTools.ReadOnlyValue("Frame", "", recorder.index,"0", 60);
+                        if (recorderLabel != "Recording") showIndex = true;
+                        
+                        EditorTools.Label(recorderLabel, "", 
+                            120, 0, new GUIStyle(GUI.skin.label)
+                            {
+                                alignment = TextAnchor.MiddleCenter,
+                                richText = true
+                            });
+
+                        if(showIndex)
+                            EditorTools.ReadOnlyValue("Frame", "", recorder.index,"0", 60);
+                        
+                        GUILayout.FlexibleSpace();
+                    }
+                    GUILayout.EndHorizontal();
                     
-                    GUILayout.FlexibleSpace();
-                    EditorTools.EndHorizontalGroup(4);
+                    GUILayout.Space(4);
 
                     if (showIndex)
                     {
@@ -74,13 +78,15 @@ namespace TankWars.Editor
                 EditorTools.DrawLine(0.5f, 5, 2.5f);
                 
                 EditorTools.Label("Keys: ", "");                
-                EditorTools.BeginHorizontalGroup();
+                GUILayout.BeginHorizontal();
                 {
                     recorder.pause = EditorTools.KeyCodeDropdown("Pause", "The keyboard key to pause the recorder.", recorder.pause, 125);
                 }
-                EditorTools.EndHorizontalGroup(5);
+                GUILayout.EndHorizontal();
+                    
+                GUILayout.Space(5);
                 
-                EditorTools.BeginHorizontalGroup();
+                GUILayout.BeginHorizontal();
                 {
                     recorder.rewind = EditorTools.KeyCodeDropdown("Rewind",
                         "The keyboard key to rewind.", recorder.rewind, 55);
@@ -88,7 +94,9 @@ namespace TankWars.Editor
                     recorder.fastForward = EditorTools.KeyCodeDropdown("Fast Forward",
                         "The keyboard key to fast forward.", recorder.fastForward, 85);
                 }
-                EditorTools.EndHorizontalGroup(5);
+                GUILayout.EndHorizontal();
+                    
+                GUILayout.Space(5);
             }
             EditorGUILayout.EndVertical();
             

@@ -12,8 +12,29 @@ namespace TankWars.Controllers
     public class BulletController : MonoBehaviour
     {
         
-        #region Properties & Fields
+        /// <summary>
+        ///  The type of bullet that the tank will fire.
+        /// </summary>
+        
+        public enum BulletType
+        {
+            Bullet,
+            Shell,
+            Missile
+        }
+        
+        #region Properties
 
+        /// <summary>
+        /// The storage of components for easy access.
+        /// </summary>
+            
+        [Header("Cached Components")]
+
+        #region Cached Components
+            
+        private Rigidbody2D _rigidbody2D;
+        
         /// <summary>
         /// Cached 'Rigidbody' component.
         /// </summary>
@@ -29,8 +50,21 @@ namespace TankWars.Controllers
                 return _rigidbody2D;
             }
         }
-        private Rigidbody2D _rigidbody2D;
+            
+        #endregion
 
+
+        
+        /// <summary>
+        /// Contains all the bullets information.
+        /// </summary>
+            
+        [Header("Bullet Information")]
+        
+        #region Bullet Information
+
+        private float _bulletDamage = 20.0f;
+        
         /// <summary>
         /// How much damage the bullet does.
         /// </summary>
@@ -40,7 +74,6 @@ namespace TankWars.Controllers
             get => _bulletDamage;
             set => _bulletDamage = Mathf.Max(0.0f, value);
         }
-        [Tooltip("How much damage the bullet does.")] private float _bulletDamage = 20.0f;
         
         /// <summary>
         /// How fast the bullet travels.
@@ -49,12 +82,24 @@ namespace TankWars.Controllers
         public float BulletSpeed
         {
             get => _bulletSpeed;
-            set => _bulletSpeed = Mathf.Clamp(value, 20.0f, 100.0f);
+            set => _bulletSpeed = Mathf.Max(20.0f, value);
         }
-        [Tooltip("How fast the bullet travels.")] private float _bulletSpeed = 40f;
+        private float _bulletSpeed = 40.0f;
         
-        [Tooltip("Layers that the bullet can collide with.")] public LayerMask collisionLayer;
+        #endregion
         
+        #endregion
+
+        
+        
+        #region Fields
+
+        // The type of bullet fired.
+        public BulletType type;
+        
+        // Layers that the bullet can collide with.
+        public LayerMask collisionLayer;
+
         #endregion
         
         
