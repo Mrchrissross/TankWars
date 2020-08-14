@@ -509,6 +509,10 @@ namespace TankWars.Utility
         // The sorting layer ID, used to assign the tank parts to a sorting layer.
         [HideInInspector] public int sortingLayerID = 0;
         
+        // Storage of built controllers.
+        public TankController tankController;
+        public CameraController cameraController;
+        
         // Hull data.
         public Transform hull;
         public SpriteRenderer hullSprite;
@@ -588,6 +592,15 @@ namespace TankWars.Utility
             hullSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Hull");
             hullSprite.sortingLayerID = sortingLayerID;
             hullSprite.color = hullColor;
+            
+            // Get or create a collider and assign a material that has absolutely no
+            // friction (this will all be accomplished through script).
+            var cCollider = hull.gameObject.AddComponent<PolygonCollider2D>();
+            cCollider.sharedMaterial = new PhysicsMaterial2D("Frictionless")
+            {
+                friction = 0.0f,
+                bounciness = 0.0f,
+            };
             
             
             
@@ -712,6 +725,16 @@ namespace TankWars.Utility
                 cannonSprite[i].sprite = Resources.Load<Sprite>(Path + "Cannon/Cannon");
                 cannonSprite[i].sortingLayerID = sortingLayerID;
                 cannonSprite[i].sortingOrder = 12;
+                
+                // Get or create a collider and assign a material that has absolutely no
+                // friction (this will all be accomplished through script).
+                var cCollider = cannon[i].gameObject.AddComponent<PolygonCollider2D>();
+                cCollider.sharedMaterial = new PhysicsMaterial2D("Frictionless")
+                {
+                    friction = 0.0f,
+                    bounciness = 0.0f,
+                };
+                
                 
                 cannonFirePoint.Add(new GameObject().transform);
                 cannonFirePoint[i].name = "FirePoint";
@@ -843,15 +866,59 @@ namespace TankWars.Utility
         public void AddMovementSystem()
         {
             if (hull == null || cannonRotor == null) return;
+            
+            tankController = GetComponent<TankController>();
+            if(tankController != null) DestroyImmediate(tankController);
 
-            var movementController = GetComponent<MovementController>();
-            if(movementController != null) DestroyImmediate(movementController);
-
-            movementController = gameObject.AddComponent<MovementController>();
-            movementController.cannonRotor = cannonRotor;
+            tankController = gameObject.AddComponent<TankController>();
+            tankController.hull = hull;
+            tankController.cannonRotor = cannonRotor;
 
             foreach (var firePoint in cannonFirePoint)
-                movementController.firePoints.Add(firePoint);
+                tankController.firePoints.Add(firePoint);
+            
+            // Rigidbody initialisation.
+            var rb = GetComponent<Rigidbody2D>();
+            if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
+            
+            rb.gravityScale = 0;
+            rb.isKinematic = false;
+
+            // Reassign the cameras tank controller.
+            if (cameraController != null) cameraController.tankController = tankController;
+            
+            print("Tank Builder: Movement system added.");
+        }
+        
+        /// <summary>
+        /// Adds all camera system to the hierarchy.
+        /// </summary>
+        
+        public void AddCameraSystem()
+        {
+            var ccGameObject = new GameObject();
+            var ccTransform = ccGameObject.transform;
+            ccTransform.name = "Camera";
+            
+            cameraController = ccGameObject.AddComponent<CameraController>();
+            cameraController.tankController = tankController;
+            cameraController.ResetTarget();
+            cameraController.Reset();
+            
+            var cameraGameObject = new GameObject();
+            var cameraTransform = cameraGameObject.transform;
+            cameraTransform.name = "Main Camera";
+            cameraTransform.parent = ccTransform;
+            cameraTransform.localPosition = Vector3.zero.WithZ(-5);
+            cameraTransform.localRotation = Quaternion.identity;
+
+            var cam = cameraGameObject.AddComponent<Camera>();
+            cam.orthographic = true;
+            cam.orthographicSize = cameraController.CameraDistance;
+		        
+            cameraGameObject.AddComponent<AudioListener>();
+            
+            if(cameraController.CameraTransform != null) print("Tank Builder: Camera system added.");
         }
         
         #endregion

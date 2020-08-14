@@ -13,7 +13,7 @@ namespace TankWars.Editor
     
     public static class EditorTools
     {
-        public static void Header(string label, float space = 5, GUIStyle style = null)
+        public static void Header(string label, string tooltip = "", float space = 5, GUIStyle style = null)
         {
             if (style == null)
             {
@@ -25,7 +25,7 @@ namespace TankWars.Editor
                 };
             }
             
-            EditorGUILayout.LabelField(label, style);
+            EditorGUILayout.LabelField(new GUIContent(label, tooltip), style);
             DrawLine();
             Space(space);
         }
@@ -256,19 +256,13 @@ namespace TankWars.Editor
         /// <param name="labelWidth">Width of the displayed Label.</param>
         /// <param name="barWidth">Width of the object area.</param>
         /// <param name="space">Amount of space after the element. </param>
-        public static Transform TransformField(string label, string tooltip, Transform value, float labelWidth = 50, float barWidth = 250f, float space = 0)
+        public static Transform TransformField(string label, string tooltip, Transform value, float labelWidth = 50, float space = 0)
         {
             EditorGUIUtility.labelWidth = labelWidth;
+            value = (Transform) EditorGUILayout.ObjectField(new GUIContent(label, tooltip), value, 
+                typeof(Transform), true);
             
-            var style = new GUIStyle(new GUIStyle(GUI.skin.box));
-            var width = Screen.width - Screen.width / 2.0f - barWidth;
-            var rect = GUILayoutUtility.GetRect(width, 17.5f, style);
-            var fieldRect = new Rect(rect.x + 4, rect.y - 1.5f, rect.width, rect.height);
-            
-            value = (Transform) EditorGUI.ObjectField(fieldRect, 
-                new GUIContent(label, tooltip), value, typeof(Transform), true);
-            
-            Space(space);
+            if(space > 0) Space(space);
 
             return value;
         }

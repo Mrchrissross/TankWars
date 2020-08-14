@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace TankWars.Editor
 {
-    [CustomEditor(typeof(MovementController))]
-    public class MovementControllerInspector : UnityEditor.Editor
+    [CustomEditor(typeof(TankController))]
+    public class TankControllerInspector : UnityEditor.Editor
     {
         
         private const float BoxMinWidth = 300f;
@@ -22,7 +22,7 @@ namespace TankWars.Editor
         private Texture2D _minusTexture;
         private Texture2D _editTexture;
         
-        private MovementController MovementController => target as MovementController;
+        private TankController TankController => target as TankController;
         
         private void OnEnable()
         {
@@ -43,6 +43,7 @@ namespace TankWars.Editor
             EditorGUI.BeginChangeCheck();
             Undo.RecordObject(target, "MovementController");
             
+            
             DrawSections();
 
             if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(target);
@@ -59,6 +60,7 @@ namespace TankWars.Editor
             DrawSpeedSettings();
             DrawAccelerationSettings();
             DrawMaxSettings();
+            DrawFrictionSettings();
         }
 
         private void DrawInputSettings()
@@ -78,23 +80,23 @@ namespace TankWars.Editor
                             "Inverts the input on select axis.", 95);
                         
                         EditorTools.Toggle("Horizontal", "",
-                            ref MovementController.keyboardInvertHorizontal, 75);
+                            ref TankController.keyboardInvertHorizontal, 75);
                         
                         EditorTools.Toggle("Vertical", "",
-                            ref MovementController.keyboardInvertVertical, 60);
+                            ref TankController.keyboardInvertVertical, 60);
                         GUILayout.Space(-10);
                     }
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2.5f);
                     
                     
-                    MovementController.keyboardHorizontalInput = EditorTools.StringField("Horizontal",
+                    TankController.keyboardHorizontalInput = EditorTools.StringField("Horizontal",
                         "This is the horizontal mouse input found in the input manager.",
-                        MovementController.keyboardHorizontalInput, 100);
+                        TankController.keyboardHorizontalInput, 100);
 
-                    MovementController.keyboardVerticalInput = EditorTools.StringField("Vertical",
+                    TankController.keyboardVerticalInput = EditorTools.StringField("Vertical",
                         "This is the vertical mouse input found in the input manager.",
-                        MovementController.keyboardVerticalInput, 100);
+                        TankController.keyboardVerticalInput, 100);
                 }
                 GUILayout.EndVertical();
 
@@ -111,29 +113,29 @@ namespace TankWars.Editor
                             "Inverts the input on select axis.", 95);
 
                         EditorTools.Toggle("Horizontal", "",
-                            ref MovementController.joystickInvertHorizontal, 75);
+                            ref TankController.joystickInvertHorizontal, 75);
 
                         EditorTools.Toggle("Vertical", "",
-                            ref MovementController.joystickInvertVertical, 60);
+                            ref TankController.joystickInvertVertical, 60);
                         GUILayout.Space(-10);
                     }
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2.5f);
 
 
-                    MovementController.joystickHorizontalInput = EditorTools.StringField("Horizontal",
+                    TankController.joystickHorizontalInput = EditorTools.StringField("Horizontal",
                         "This is the horizontal joystick input found in the input manager.",
-                        MovementController.joystickHorizontalInput, 100);
+                        TankController.joystickHorizontalInput, 100);
 
-                    MovementController.joystickVerticalInput = EditorTools.StringField("Vertical",
+                    TankController.joystickVerticalInput = EditorTools.StringField("Vertical",
                         "This is the vertical joystick input found in the input manager.",
-                        MovementController.joystickVerticalInput, 100);
+                        TankController.joystickVerticalInput, 100);
                     
                     EditorGUILayout.Space(7.5f);
 
-                    MovementController.deadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold", 
+                    TankController.deadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold", 
                         "This is the dead zone threshold of the joystick, if the joystick input is below this " +
-                        "threshold, no input is applied.", MovementController.deadZoneThreshold, 0.05f, 0.5f, 150);
+                        "threshold, no input is applied.", TankController.deadZoneThreshold, 0.05f, 0.5f, 150);
                     
                 }
                 GUILayout.EndVertical();
@@ -145,25 +147,25 @@ namespace TankWars.Editor
                     
                 GUILayout.BeginVertical("box");
                 {
-                    MovementController.accelerateInput = EditorTools.StringField("Accelerate",
+                    TankController.accelerateInput = EditorTools.StringField("Accelerate",
                         "Used to make the tank accelerate faster.",
-                        MovementController.accelerateInput, 100);
+                        TankController.accelerateInput, 100);
 
-                    if (MovementController.firePoints.Count > 1)
+                    if (TankController.firePoints.Count > 1)
                     {
-                        MovementController.leftCannonFire = EditorTools.StringField("Left Cannon",
+                        TankController.leftCannonFire = EditorTools.StringField("Left Cannon",
                             "Button used to fire the left cannon.",
-                            MovementController.leftCannonFire, 100);
+                            TankController.leftCannonFire, 100);
                         
-                        MovementController.rightCannonFire = EditorTools.StringField("Right Cannon",
+                        TankController.rightCannonFire = EditorTools.StringField("Right Cannon",
                             "Button used to fire the right cannon.",
-                            MovementController.rightCannonFire, 100);
+                            TankController.rightCannonFire, 100);
                     }
                     else
                     {
-                        MovementController.mainCannonFire = EditorTools.StringField("Main Cannon",
+                        TankController.mainCannonFire = EditorTools.StringField("Main Cannon",
                             "Button used to fire the main cannon.",
-                            MovementController.mainCannonFire, 100);
+                            TankController.mainCannonFire, 100);
                     }
                 }
                 GUILayout.EndVertical();
@@ -187,7 +189,7 @@ namespace TankWars.Editor
                     GUILayout.FlexibleSpace();
                     
                     EditorTools.ReadOnlyValue("Current Speed", "Current movement speed of the character (in m/s).", 
-                        MovementController.Speed, default, 100, 22.5f);
+                        TankController.Speed, "0", 100, 30);
                     
                     GUILayout.FlexibleSpace();
                 }
@@ -197,17 +199,17 @@ namespace TankWars.Editor
                 
                 GUILayout.BeginVertical("box");
                 {
-                    MovementController.ForwardSpeed = EditorTools.FloatField("Forward", 
-                        "Speed when moving forward.", MovementController.ForwardSpeed, 100);
+                    TankController.ForwardSpeed = EditorTools.FloatField("Forward", 
+                        "Speed when moving forward.", TankController.ForwardSpeed, 100);
                     
-                    MovementController.BackwardSpeed = EditorTools.FloatField("Backward", 
-                        "Speed when moving backward.", MovementController.BackwardSpeed, 100);
+                    TankController.BackwardSpeed = EditorTools.FloatField("Backward", 
+                        "Speed when moving backward.", TankController.BackwardSpeed, 100);
                     
-                    MovementController.TurnSpeed = EditorTools.FloatField("Turn", 
-                        "Speed at which the tank turns.", MovementController.TurnSpeed, 100);
+                    TankController.TurnSpeed = EditorTools.FloatField("Turn", 
+                        "Speed at which the tank turns.", TankController.TurnSpeed, 100);
                     
-                    MovementController.SpeedMultiplier = EditorTools.FloatField("Sprint Multiplier", 
-                        "Speed multiplier while sprinting.", MovementController.SpeedMultiplier, 100);
+                    TankController.SpeedMultiplier = EditorTools.FloatField("Sprint Multiplier", 
+                        "Speed multiplier while sprinting.", TankController.SpeedMultiplier, 100);
                 }
                 GUILayout.EndVertical();
             }
@@ -224,17 +226,17 @@ namespace TankWars.Editor
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                var acceleration = MovementController.Acceleration;
-                MovementController.Acceleration = EditorTools.Slider("Acceleration",
+                var acceleration = TankController.Acceleration;
+                acceleration = EditorTools.Slider("Acceleration",
                     "The rate at which the character accelerates in a given direction.",
                     acceleration, 0.5f, 150.0f, width);
-                MovementController.Acceleration = acceleration;
+                TankController.Acceleration = acceleration;
                 
-                var deceleration = MovementController.Deceleration;
+                var deceleration = TankController.Deceleration;
                 deceleration = EditorTools.Slider("Deceleration",
                     "The rate at which the character decelerates and comes to a halt.",
                     deceleration, 0.5f, 150.0f, width);
-                MovementController.Deceleration = deceleration;
+                TankController.Deceleration = deceleration;
             }
             EditorGUILayout.EndVertical();
             
@@ -248,24 +250,24 @@ namespace TankWars.Editor
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
                 if (EditorTools.Foldout("Limit Speed", "Enabling this will limit the characters maximum velocity including " +
-                                            "those that are from external sources.", ref MovementController.limitMaximumSpeed, true, true))
+                                            "those that are from external sources.", ref TankController.limitMaximumSpeed, true, true))
                 {
                     GUILayout.BeginVertical("box");
                     {
-                        MovementController.MaxHorizontalSpeed = EditorTools.FloatField("Horizontal",
+                        TankController.MaxHorizontalSpeed = EditorTools.FloatField("Horizontal",
                         "The maximum speed at which the character can move along the X and Z axis.\n\n" +
                         "This includes all external physics that may be at work (eg. sliding, being pushed, etc).",
-                        MovementController.MaxHorizontalSpeed, 100);
+                        TankController.MaxHorizontalSpeed, 100);
             
-                        MovementController.MaxUpwardSpeed = EditorTools.FloatField("Upward",
+                        TankController.MaxUpwardSpeed = EditorTools.FloatField("Upward",
                             "The maximum speed at which the character will go upward.\n\n" +
                             "This includes all external physics that may be at work (eg. elevator, etc).",
-                            MovementController.MaxUpwardSpeed, 100);
+                            TankController.MaxUpwardSpeed, 100);
         
-                        MovementController.MaxDownwardSpeed = EditorTools.FloatField("Downward",
+                        TankController.MaxDownwardSpeed = EditorTools.FloatField("Downward",
                             "The maximum speed at which the character will go downward.\n\n" +
                             "This includes all external physics that may be at work (eg. falling, etc).",
-                            MovementController.MaxDownwardSpeed, 100);
+                            TankController.MaxDownwardSpeed, 100);
                     }
                     GUILayout.EndVertical();
                 }
@@ -274,5 +276,30 @@ namespace TankWars.Editor
             
             EditorGUILayout.Space(5);
         }
+        
+        private void DrawFrictionSettings()
+        {
+            EditorTools.Header("Friction", "This is how much grip the tank has to its surface.");
+
+            const float width = 100.0f;
+            
+            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
+            {
+                var friction = TankController.Friction;
+                
+                friction.x = EditorTools.Slider("Turning", "This affects how quickly the tank can turn. " +
+                "The higher the friction, the quicker the turn.", friction.x, 0, 10, width);
+                friction.y = EditorTools.Slider("Braking", "This affects how the tank comes to a halt. " +
+                "The more friction the character has, the quicker it will stop moving.", friction.y, 0, 10, width);
+                
+                TankController.Friction = friction;
+                
+                EditorGUILayout.Space(1f);
+            }
+            EditorGUILayout.EndVertical();
+            
+            EditorGUILayout.Space(5);
+        }
+        
     }
 }

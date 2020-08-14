@@ -11,7 +11,8 @@ namespace TankWars.Controllers
     /// Controls the movement, style and shooting of the player tank.
     /// </summary>
     
-    public class MovementController : MonoBehaviour
+    [RequireComponent(typeof(Rigidbody2D))]
+    public class TankController : MonoBehaviour
     {
 
         #region Classes
@@ -135,7 +136,6 @@ namespace TankWars.Controllers
             #region Speed Settings
             // The movement settings control all aspects relating to the speed of the tank.
 
-            [SerializeField] private float forwardSpeed = 8.0f;
         
             /// <summary>
             /// Speed when moving forward.
@@ -146,6 +146,7 @@ namespace TankWars.Controllers
                 get => forwardSpeed;
                 set => forwardSpeed = Mathf.Max(0.0f, value);
             }
+            [SerializeField] private float forwardSpeed = 10.0f;
             
             /// <summary>
             /// Speed when moving backwards.
@@ -167,7 +168,7 @@ namespace TankWars.Controllers
                 get => turnSpeed;
                 set => turnSpeed = Mathf.Max(0.0f, value);
             }
-            [SerializeField] private float turnSpeed = 6.0f;
+            [SerializeField] private float turnSpeed = 5.0f;
 
             /// <summary>
             /// Speed multiplier while sprinting.
@@ -195,11 +196,23 @@ namespace TankWars.Controllers
             /// </summary>
             
             // ReSharper disable once InconsistentNaming
-            public Vector3 velocity
+            public Vector2 velocity
             {
                 get => rigidbody.velocity;
                 set => rigidbody.velocity = value;
             }
+
+            public float currentRotation
+            {
+                get => _currentRotation;
+                set
+                {
+                    _currentRotation = value;
+                    rigidbody.MoveRotation(_currentRotation);
+                }
+            }
+            private float _currentRotation = 0;
+
             
             /// <summary>
             /// This is the current move direction magnitude. Used ensure the speed matches that of a joystick. 
@@ -267,7 +280,7 @@ namespace TankWars.Controllers
                 get => deceleration;
                 set => deceleration = Mathf.Max(0.0f, value);
             }
-            [SerializeField] public float deceleration = 20.0f;
+            [SerializeField] public float deceleration = 10.0f;
             
             #endregion
             
@@ -312,6 +325,28 @@ namespace TankWars.Controllers
                 set => maxDownwardSpeed = Mathf.Max(0.0f, value);
             }
             [SerializeField] private float maxDownwardSpeed = 100.0f;
+
+            #endregion
+            
+            
+            
+            
+            #region Friction Settings
+        
+            /// <summary>
+            /// This is how much grip the character has while grounded.
+            /// </summary>
+            
+            public Vector2 Friction
+            {
+                get => friction;
+                set
+                {
+                    friction.x = Mathf.Max(0.0f, value.x);
+                    friction.y = Mathf.Max(0.0f, value.y);
+                }
+            }
+            [SerializeField] private Vector2 friction = new Vector2(10, 2.0f);
 
             #endregion
             
@@ -369,13 +404,12 @@ namespace TankWars.Controllers
         // Pauses all tank components.
         public bool pause;
         
-        
         // The characters cached layer to use when ignore raycasts is applied.
         private int _cachedLayer;
-
         // Stored ignore raycast layer.
         private int _ignoreLayer;
 
+        public Transform hull;
         public Transform cannonRotor;
         public List<Transform> firePoints = new List<Transform>();
         public List<Weapon> weapons = new List<Weapon>();
@@ -398,8 +432,17 @@ namespace TankWars.Controllers
         {
             if (pause || HaltMovement) return;
             
+            // Acquire Inputs.
             MovementDirection = new Vector2(GetHorizontalInput(),GetVerticalInput());
             _accelerate = Input.GetButton(accelerateInput);
+            
+            // Apply constraints to the acquired input.
+            var x = Mathf.Abs(MovementDirection.x);
+            var y = Mathf.Abs(MovementDirection.y);
+            
+            if (x > y) MovementDirection = MovementDirection.WithY(0);
+            else if (y > x) MovementDirection = MovementDirection.WithX(0);
+            else if (x > 0.69f && y > 0.69f) MovementDirection = MovementDirection.WithY(0) * 1.4285f;  
         }
         
         /// <summary>
@@ -447,12 +490,176 @@ namespace TankWars.Controllers
             // Else, return the joystick input.
             return joystickInvertVertical ? -vertical : vertical;
         }
+        
+        /// <summary>
+        /// Perform character movement.
+        /// </summary>
 
-
-        private void Update()
+        private void ProcessInput()
         {
-            HandleInput();
+            // Performs character movement.
+            UpdateVelocity();
+            
+            // Jump logic
+            // PerformJumpLogic();
         }
+
+
+
+        #region Movement Logic
+
+        /// <summary>
+        /// Generates a velocity by multiplying the movement direction with the input speed.
+        /// </summary>
+        
+        private Vector2 InputToVelocity(out float targetSpeed)
+        {
+            // Acquire the length of the movement direction.
+            CurrentSpeed = MovementDirection == Vector2.zero ? 0.0f : MovementDirection.magnitude;
+            
+            // Default the target speed to zero.
+            targetSpeed = 0;
+            
+            // If moving along the x-axis, default to turn speed.
+            if(Mathf.Abs(MovementDirection.x) > 0) targetSpeed = turnSpeed * CurrentSpeed;
+            
+            // Multiply a speed multiplier when accelerating (only applicable while moving forward or backward).
+            if (_accelerate) CurrentSpeed *= speedMultiplier;
+            
+            // If moving backwards, set the target speed to backward.
+            if (MovementDirection.y < 0.0f) targetSpeed = backwardSpeed * CurrentSpeed;
+
+            // The forward speed should be the quickest so it overwrites the target speed last.
+            else if (MovementDirection.y > 0.0f) targetSpeed = forwardSpeed * CurrentSpeed;
+            
+            // If necessary, override the target speed.
+            OverrideInput(ref targetSpeed);
+            
+            // Update the speed displayed in the inspector.
+            Speed = targetSpeed;
+            
+            // Multiply the direction with speed to acquire the new velocity.
+            var velocity = MovementDirection * targetSpeed;
+            
+            // Transform the newly acquired local velocity's direction from local to world.
+            velocity = transform.TransformDirection(velocity);
+            
+            // Remove the y axis from the equation as this will be controlled by gravity or through jumping.
+            return velocity;
+        }
+
+        /// <summary>
+        /// Overrides the users input, to produce a new speed.
+        /// </summary>
+        /// <param name="targetSpeed">The current users input speed.</param>
+        
+        private void OverrideInput(ref float targetSpeed)
+        {
+            if (targetSpeed.IsZero()) return;
+
+            // Override speed.
+        }
+        
+        
+        
+        /// <summary>
+        /// Updates the characters velocity by applying movement, gravity, and limits.
+        /// </summary>
+
+        private void UpdateVelocity()
+        {
+            var currentVelocity = velocity;
+            var deltaTime = Time.deltaTime;
+
+            // Calculate the target velocity.
+            var targetVelocity = InputToVelocity(out var targetSpeed);
+            
+            // Apply movement to the tank.
+            ApplyMovement(ref currentVelocity, targetVelocity, targetSpeed, deltaTime);
+            
+            // Apply limits to the velocity.
+            LimitVelocity(ref currentVelocity);
+            
+            // Finally, apply the new velocity to the rigidbody. 
+            if(!currentVelocity.IsNaN()) velocity = currentVelocity;
+        }
+
+        /// <summary>
+        /// Perform an accelerated friction based movement.
+        /// </summary>
+        /// <param name="currentVelocity">The current velocity of the character.</param>
+        /// <param name="targetVelocity">The target velocity of the character.</param>
+        /// <param name="targetSpeed">This is the speed to aim for.</param>
+        /// <param name="deltaTime">The completion time in seconds since the last frame.</param>
+
+        private void ApplyMovement(ref Vector2 currentVelocity, Vector2 targetVelocity, float targetSpeed, float deltaTime)
+        {
+            // Apply torque to the tanks rigidbody for rotation.        
+            var torque = -MovementDirection.x * Mathf.Clamp01(1f - Friction.x * deltaTime);
+            currentRotation += torque * targetSpeed;
+            
+            // if turning, remove all extra velocity.
+            if(Mathf.Abs(MovementDirection.x) > 0) targetVelocity = Vector2.zero; 
+            
+            // If in the previous fixed frame the character was grounded, assign the whole velocity.
+            var newVelocity = currentVelocity;
+            var targetDirection = targetVelocity / targetSpeed;
+            
+            // Calculate the appropriate acceleration and combine the direction.
+            var targetAcceleration = targetDirection * (Acceleration * deltaTime);
+            
+            // Character is decelerating.
+            if (targetAcceleration.IsZero() || newVelocity.IsExceeding(targetSpeed))
+            {
+                // Find appropriate friction and apply braking friction clamped between zero and one.
+                newVelocity *= Mathf.Clamp01(1f - Friction.y * deltaTime);
+
+                // Retrieve the appropriate deceleration value and apply it.
+                newVelocity = Vector3.MoveTowards(newVelocity, targetVelocity, Deceleration * deltaTime);
+            }
+            
+            // Character is accelerating.
+            else
+            {
+                // Find appropriate friction and apply it.
+                newVelocity -= (newVelocity - targetDirection * newVelocity.magnitude) * Mathf.Min(Friction.x * deltaTime, 1.0f);
+
+                // Apply acceleration while also clamping its length to the target speed.
+                newVelocity = Vector3.ClampMagnitude(newVelocity + targetAcceleration, targetSpeed);
+            }
+            
+            // Update the reference to the character's velocity.
+            currentVelocity += newVelocity - currentVelocity;
+        }
+        
+        /// <summary>
+        /// Applies limits the horizontal and vertical velocity of the tank to ensure it does not propel
+        /// too fast in one direction.
+        /// </summary>
+
+        private void LimitVelocity(ref Vector2 currentVelocity)
+        {
+            // If not limiting speed, return.
+            if (!limitMaximumSpeed) return;
+            
+            // Split the velocity between horizontal and vertical.
+            var horizontalVelocity = currentVelocity.x; 
+            var verticalVelocity = currentVelocity.y;
+
+            // Apply left and right limits.
+            if (horizontalVelocity > MaxHorizontalSpeed) 
+                currentVelocity += Vector2.zero.WithX(MaxHorizontalSpeed - horizontalVelocity);
+            else if (horizontalVelocity < -MaxHorizontalSpeed)
+                currentVelocity += Vector2.zero.WithX(-MaxHorizontalSpeed - horizontalVelocity);
+            
+            // Apply upward and downward limits.
+            if (verticalVelocity > MaxUpwardSpeed) 
+                currentVelocity += Vector2.zero.WithY(MaxUpwardSpeed - verticalVelocity);
+            else if (verticalVelocity < -MaxDownwardSpeed)
+                currentVelocity += Vector2.zero.WithY(-MaxDownwardSpeed - verticalVelocity);
+        }
+
+        #endregion
 
         // /// <summary>
         // /// Ensures the main camera stays on top of the player tank.
@@ -535,6 +742,14 @@ namespace TankWars.Controllers
         //     rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-extra.x / 2) : -extra.x));                
         // }
 
+        public void CheckDependancies()
+        {
+            if (hull != null && cannonRotor != null) return;
+            
+            Debug.LogError("Tank Controller: Please build a tank using the Tank Builder component on an empty game object.");
+            DestroyImmediate(this);
+        }
+
         #endregion
 
         
@@ -543,6 +758,19 @@ namespace TankWars.Controllers
         
         #region MonoBehaviour
 
+        private void Update()
+        {
+            // Handles the user input
+            HandleInput();
+        }
+        
+        private void FixedUpdate()
+        {
+            // Processes the users input by moving the character
+            ProcessInput();
+        }
+        
+        
         // private void Update()
         // {
         //     UpdateCamera();

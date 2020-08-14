@@ -150,8 +150,6 @@ namespace TankWars.Editor
                 }
                 
                 GUI.backgroundColor = _guiColorBackup;
-                
-                GUILayout.Space(5);
             }
 
             if (!_eraseAll)
@@ -200,15 +198,26 @@ namespace TankWars.Editor
                     
                     GUILayout.EndVertical(); 
                 }
-                
-                GUILayout.Space(5);
             }
-
+            
             if (_eraseAll || _addCategory) return;
             
-            if (EditorTools.Button("Add Movement System", "Adds and sets up all the necessary " +
-                                                          "components for the tank to move."))
-                tankBuilder.AddMovementSystem();
+            EditorTools.DrawLine(0.5f, 5, 5);
+
+            if (tankBuilder.hull != null && tankBuilder.cannonRotor != null)
+            {
+                if (EditorTools.Button("Add Movement System", "Adds and sets up all the necessary " +
+                                                              "components for the tank to move."))
+                    tankBuilder.AddMovementSystem();
+            }
+
+            if (tankBuilder.tankController == null) return;
+            
+            GUILayout.Space(1.5f);
+                
+            if (EditorTools.Button("Add Camera System", "Adds and sets up all the necessary " +
+                                                        "components for the camera."))
+                tankBuilder.AddCameraSystem();
         }
 
 

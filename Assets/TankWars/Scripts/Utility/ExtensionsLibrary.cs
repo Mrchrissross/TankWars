@@ -17,6 +17,12 @@ namespace TankWars.Utility
         /// Checks whether vector is near to zero within a tolerance.
         /// </summary>
 
+        public static bool IsZero(this Vector2 vector) => vector.sqrMagnitude < 9.99999943962493E-11;
+        
+        /// <summary>
+        /// Checks whether vector is near to zero within a tolerance.
+        /// </summary>
+
         public static bool IsZero(this Vector3 vector) => vector.sqrMagnitude < 9.99999943962493E-11;
         
         /// <summary>
@@ -131,11 +137,33 @@ namespace TankWars.Utility
         /// Checks whether vector is exceeding the magnitude within a small error tolerance.
         /// </summary>
 
-        public static bool IsExceeding(this Vector3 vector3, float magnitude)
+        public static bool IsExceeding(this Vector2 vector, float magnitude)
         {
             const float errorTolerance = 1.01f;
-            return vector3.sqrMagnitude > (magnitude * magnitude) * errorTolerance;
+            return vector.sqrMagnitude > (magnitude * magnitude) * errorTolerance;
         }
+        
+        /// <summary>
+        /// Checks whether vector is exceeding the magnitude within a small error tolerance.
+        /// </summary>
+
+        public static bool IsExceeding(this Vector3 vector, float magnitude)
+        {
+            const float errorTolerance = 1.01f;
+            return vector.sqrMagnitude > (magnitude * magnitude) * errorTolerance;
+        }
+
+        /// <summary>
+        /// Checks if any of the elements within the vector return as NaN (not a number).
+        /// </summary>
+        
+        public static bool IsNaN(this Vector2 vector) => float.IsNaN(vector.x) || float.IsNaN(vector.y);
+        
+        /// <summary>
+        /// Checks if any of the elements within the vector return as NaN (not a number).
+        /// </summary>
+        
+        public static bool IsNaN(this Vector3 vector) => float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
 
         /// <summary>
         /// Returns a copy of the given vector squared.
@@ -279,7 +307,7 @@ namespace TankWars.Utility
         {
             if (component != null) return;
                 
-            Debug.LogError("Movement Controller: A " + typeName +
+            Debug.LogError("Infomation: A " + typeName +
                            " has not been attached to the \""
                            + name + "\" game object. Please ensure one is added.");
             Quit();
