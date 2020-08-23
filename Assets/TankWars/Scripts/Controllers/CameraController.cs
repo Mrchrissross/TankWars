@@ -181,18 +181,24 @@ namespace TankWars.Controllers
 
 		#region Fields
 
+		#region Unity Inspector
+
+		[HideInInspector] public bool[] hideSection = new bool[2];
+
+		#endregion
+		
+		
+		
+		#region Input
+
 		// Mouse axes (names that are within the input manager).
 		public string joystickHorizontalInput = "Right Joystick Horizontal";
 		public string joystickVerticalInput = "Right Joystick Vertical";
-	    
-		[Space]
-        
+
 		// Inverts the input on select axis.
 		public bool joystickInvertHorizontal;
 		public bool joystickInvertVertical;
 
-		[Space]
-        
 		// This is the dead zone threshold of the joystick, if the joystick input is below this threshold,
 		// no input is applied.
 		public float deadZoneThreshold = 0.2f;
@@ -202,6 +208,10 @@ namespace TankWars.Controllers
 		public string farLookInput = "Far Look";
 		public float farLookSpeed = 10.0f;
 		public float farLookDistance = 15.0f;
+		
+		#endregion
+
+		
 		
 		// The tanks transform, used to reset the camera to look at tank.
 		public TankController tankController;
@@ -233,6 +243,9 @@ namespace TankWars.Controllers
 		// This is the current position of the camera.
 		private Vector2 _currentPosition;
 		
+		// The previous mouse position.
+		private Vector2 _mousePosition;
+		
 		#endregion
 
 		
@@ -248,20 +261,55 @@ namespace TankWars.Controllers
 			if(tankController != null && (tankController.pause || tankController.HaltMovement)) return;
 			
 			// Acquire the far look input.
-			if(Input.GetButtonDown(farLookInput)) farLook = true;
-			if(Input.GetButtonUp(farLookInput)) farLook = false;
-            
+			if (Input.GetButtonDown(farLookInput))
+			{
+				// Get the mouse input for later use.
+				_mousePosition = Input.mousePosition;
+				
+				// Enable far look.
+				farLook = true;
+			}
+			
+			// On far look disable,
+			if (Input.GetButtonUp(farLookInput))
+			{
+				// Reset the look offset.
+				FarLookOffset = Vector2.zero;
+				
+				// Disable far look.
+				farLook = false;
+			}
+
+			// If far look is not enabled, we don't need to go any further.
+			if (!farLook) return;
+			
 			// Acquire mouse or joystick input for use of far look.
 			var lookOffset = GetFarLookInput() * farLookDistance;
 			FarLookOffset = Vector2.Lerp(FarLookOffset, lookOffset, Time.deltaTime * farLookSpeed);
 		}
 
+		/// <summary>
+		/// Gets the far look input.
+		/// </summary>
+		
 		private Vector2 GetFarLookInput()
 		{
-			// Default to mouse position.
-			var mousePosition = Input.mousePosition;
-			mousePosition = (Camera.ScreenToWorldPoint(mousePosition) - Target.position).normalized;
-			
+			// Check for any mouse input through using the earlier input.
+			var mousePosition = Input.mousePosition.xy() - _mousePosition;
+
+			// If no input has been found, the joystick will be used instead.
+			var useMouse = mousePosition != Vector2.zero;
+
+			// Else, find the world point, direction and normalize it so it is between 1 & 0.
+			if(useMouse)
+			{
+				mousePosition = 
+					(Camera.ScreenToWorldPoint(
+						(_mousePosition + mousePosition)).xy() - Target.position.xy()).normalized;
+
+				return mousePosition;
+			}
+
 			// Acquire joystick horizontal input.
 			var horizontal = Input.GetAxisRaw(joystickHorizontalInput);
 			var vertical = Input.GetAxisRaw(joystickVerticalInput);
@@ -274,10 +322,8 @@ namespace TankWars.Controllers
 			horizontal = joystickInvertHorizontal ? -horizontal : horizontal;
 			vertical = joystickInvertVertical ? -vertical : vertical;
 			
-			// Get final joystick position.
-			var joystickPosition = new Vector2(horizontal, vertical);
-			
-			return mousePosition.sqrMagnitude > joystickPosition.sqrMagnitude ? mousePosition.xy() : joystickPosition;
+			// Return the final joystick position.
+			return new Vector2(horizontal, vertical);
 		}
 		
 		/// <summary>

@@ -9,18 +9,17 @@ namespace TankWars.Controllers
     /// Performs bullet movement, collision detection and damage.
     /// </summary>
     
-    public class BulletController : MonoBehaviour
+    public class AmmoController : MonoBehaviour
     {
         
         /// <summary>
         ///  The type of bullet that the tank will fire.
         /// </summary>
         
-        public enum BulletType
+        public enum AmmoType
         {
-            Bullet,
-            Shell,
-            Missile
+            Forward,
+            Guided
         }
         
         #region Properties
@@ -55,36 +54,31 @@ namespace TankWars.Controllers
 
 
         
-        /// <summary>
-        /// Contains all the bullets information.
-        /// </summary>
             
-        [Header("Bullet Information")]
-        
         #region Bullet Information
-
-        private float _bulletDamage = 20.0f;
+        // Contains all the bullets information.
         
         /// <summary>
         /// How much damage the bullet does.
         /// </summary>
         
-        public float BulletDamage
+        public float Damage
         {
-            get => _bulletDamage;
-            set => _bulletDamage = Mathf.Max(0.0f, value);
+            get => _damage;
+            set => _damage = Mathf.Max(0.0f, value);
         }
+        private float _damage = 20.0f;
         
         /// <summary>
         /// How fast the bullet travels.
         /// </summary>
         
-        public float BulletSpeed
+        public float Speed
         {
-            get => _bulletSpeed;
-            set => _bulletSpeed = Mathf.Max(20.0f, value);
+            get => _speed;
+            set => _speed = Mathf.Max(20.0f, value);
         }
-        private float _bulletSpeed = 40.0f;
+        private float _speed = 40.0f;
         
         #endregion
         
@@ -94,11 +88,21 @@ namespace TankWars.Controllers
         
         #region Fields
 
-        // The type of bullet fired.
-        public BulletType type;
+        #region Bullet Information
         
-        // Layers that the bullet can collide with.
+        // The type of ammo fired.
+        public AmmoType ammoType;
+        
+        // (Ensure below matches the settings found in the Audio Manager)
+        public string explosionSound;        // Sound effect when the ammo explodes.
+
+        // (Ensure below matches the settings found in the Asset Manager)
+        public string explosion;             // The particle system to play when the ammo explodes.
+        
+        // Layers that the ammo can collide with.
         public LayerMask collisionLayer;
+        
+        #endregion
 
         #endregion
         
@@ -106,9 +110,23 @@ namespace TankWars.Controllers
         
         #region Functions
 
+        /// <summary>
+        /// Copies an existing weapon.
+        /// </summary>
+
+        public void InitialiseAmmo(Weapon copy)
+        {
+            ammoType = copy.AmmoType;
+            Speed = copy.Speed;
+            Damage = copy.Damage;
+            explosionSound = copy.ExplosionSound;
+            explosion = copy.Explosion;
+            collisionLayer = copy.CollisionLayer;
+        }
+
         private void Move()
         {
-            Vector2 velocity = transform.up * (BulletSpeed * Time.fixedDeltaTime);
+            Vector2 velocity = transform.up * (Speed * Time.fixedDeltaTime);
             rigidbody2D.MovePosition(rigidbody2D.position + velocity);
         } 
 
@@ -126,7 +144,8 @@ namespace TankWars.Controllers
             {
                 case "Mine":
                 {
-                    AssetManager.Instance.SpawnObject("MineExplosion", impactTarget.position, impactTarget.rotation);
+                    AssetManager.Instance.SpawnObject("Mine Explosion", impactTarget.position, impactTarget.rotation);
+                    AudioManager.Instance.PlaySound(explosionSound);
                     Destroy(impactTarget.gameObject);
                     break;
                 }
@@ -139,7 +158,8 @@ namespace TankWars.Controllers
         private void Explode()
         {
             Destroy(gameObject);
-            AssetManager.Instance.SpawnObject("BulletExplosion", transform.position, transform.rotation, true);
+            AssetManager.Instance.SpawnObject(explosion, transform.position, transform.rotation);
+            AudioManager.Instance.PlaySound(explosionSound);
         }
         
         #endregion
@@ -156,8 +176,8 @@ namespace TankWars.Controllers
 
         private void OnValidate()
         {
-            BulletDamage = _bulletDamage;
-            BulletSpeed = _bulletSpeed;
+            Damage = _damage;
+            Speed = _speed;
         }
 
         #endregion

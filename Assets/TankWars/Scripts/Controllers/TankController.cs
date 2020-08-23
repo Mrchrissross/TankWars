@@ -1,9 +1,11 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using TankWars.Managers;
 using TankWars.Utility;
+using Debug = UnityEngine.Debug;
 
 namespace TankWars.Controllers
 {
@@ -14,109 +16,17 @@ namespace TankWars.Controllers
     [RequireComponent(typeof(Rigidbody2D))]
     public class TankController : MonoBehaviour
     {
-
-        #region Classes
-
-        [Serializable]
-        public class Weapon
-        {
-            
-            #region Fields
-
-            // The name of the weapon.
-            public string name;
-
-            // The type of bullet fired.
-            public BulletController.BulletType type;
-            
-            // Plays when the tanks shoots.
-            public ParticleSystem muzzleFlash;
-
-            #endregion
-            
-            
-            #region Properties
-
-            /// <summary>
-            /// Time between shots fired in seconds.
-            /// </summary>
-                
-            public Vector2 shotTimer
-            {
-                get => _shotTimer;
-                set
-                {
-                    _shotTimer.x = Mathf.Max(0.0f, value.x);
-                    _shotTimer.y = Mathf.Max(-0.001f, value.y);
-                }
-            }
-            [SerializeField] private Vector2 _shotTimer = new Vector2(0.8f, 0.0f);
-            
-            /// <summary>
-            /// How fast the bullet travels.
-            /// </summary>
-                
-            public float bulletSpeed
-            {
-                get => _bulletSpeed;
-                set => _bulletSpeed = Mathf.Max(20.0f, value);
-            }
-            [SerializeField] private float _bulletSpeed = 40.0f;
-            
-            /// <summary>
-            /// How much damage the bullet does.
-            /// </summary>
-                
-            public float bulletDamage
-            {
-                get => _bulletDamage;
-                set => _bulletDamage = Mathf.Max(0.0f, value);
-            }
-            [SerializeField] private float _bulletDamage = 20.0f;
-            
-            #endregion
-
-
-            #region Functions
-
-            public Weapon()
-            {
-                name = "New Weapon";
-                type = BulletController.BulletType.Shell;
-            }
-            
-            public Weapon(Weapon copy)
-            {
-                name = copy.name + " copy";
-                type = copy.type;
-                muzzleFlash = copy.muzzleFlash;
-                shotTimer = copy.shotTimer;
-                bulletSpeed = copy.bulletSpeed;
-                bulletDamage = copy.bulletDamage;
-            }
-
-            #endregion
-            
-        }
-        
-        #endregion
-        
-        
-        
-        
         
         #region Properties
 
-            #region Cached Components
+            #region Cached Data
             // The storage of components for easy access.
-            
-            private Rigidbody2D _rigidbody;
             
             /// <summary>
             /// Cached 'Rigidbody' component.
             /// </summary>
 
-            private new Rigidbody2D rigidbody
+            private Rigidbody2D Rigidbody
             {
                 get
                 {
@@ -127,7 +37,30 @@ namespace TankWars.Controllers
                     return _rigidbody;
                 }
             }
+            private Rigidbody2D _rigidbody;
             
+            /// <summary>
+            /// Cached Cannon Transform.
+            /// </summary>
+
+            public Transform CannonRotor
+            {
+                get
+                {
+                    if (cannonRotor) return cannonRotor;
+
+                    cannonRotor = transform.Find("Cannon");
+                    
+                    if (!cannonRotor) 
+                        Debug.LogError("Tank Controller: No child named \"Cannon\" has been " +
+                                                      "found among the first tier children of \"Player Tank\".");
+
+                    return cannonRotor;
+                }
+                set => cannonRotor = value;
+            }
+            [SerializeField] private Transform cannonRotor;
+
             #endregion
         
             
@@ -198,8 +131,8 @@ namespace TankWars.Controllers
             // ReSharper disable once InconsistentNaming
             public Vector2 velocity
             {
-                get => rigidbody.velocity;
-                set => rigidbody.velocity = value;
+                get => Rigidbody.velocity;
+                set => Rigidbody.velocity = value;
             }
 
             public float currentRotation
@@ -208,7 +141,7 @@ namespace TankWars.Controllers
                 set
                 {
                     _currentRotation = value;
-                    rigidbody.MoveRotation(_currentRotation);
+                    Rigidbody.MoveRotation(_currentRotation);
                 }
             }
             private float _currentRotation = 0;
@@ -259,8 +192,6 @@ namespace TankWars.Controllers
             #region Acceleration Settings
             // The acceleration settings control how quickly the character accelerates or decelerates.
             
-            [SerializeField] public float acceleration = 50.0f;
-            
             /// <summary>
             /// The rate at which the tank accelerates.
             /// </summary>
@@ -270,6 +201,7 @@ namespace TankWars.Controllers
                 get => acceleration;
                 set => acceleration = Mathf.Max(0.0f, value);
             }
+            [SerializeField] public float acceleration = 50.0f;
 
             /// <summary>
             /// The rate at which the tank decelerates and comes to a halt.
@@ -346,7 +278,48 @@ namespace TankWars.Controllers
                     friction.y = Mathf.Max(0.0f, value.y);
                 }
             }
-            [SerializeField] private Vector2 friction = new Vector2(10, 2.0f);
+            [SerializeField] private Vector2 friction = new Vector2(10.0f, 2.0f);
+
+            #endregion
+
+
+
+            #region Rotor
+
+            /// <summary>
+            /// Method of rotating the rotor.
+            /// </summary>
+            
+            public enum RotorRotationMethod
+            {
+                None,
+                RotateTowards,
+                Lerp,
+                Slerp,
+                SmoothDamp
+            }
+            
+            /// <summary>
+            /// Speed when moving sideways.
+            /// </summary>
+            
+            public float RotorSpeed
+            {
+                get => rotorSpeed;
+                set => rotorSpeed = Mathf.Max(0.0f, value);
+            }
+            [SerializeField] private float rotorSpeed = 5.0f;
+            
+            /// <summary>
+            /// Speed when moving sideways.
+            /// </summary>
+            
+            public float RotorSmoothSpeed
+            {
+                get => rotorSmoothSpeed;
+                set => rotorSmoothSpeed = Mathf.Max(0.0f, value);
+            }
+            [SerializeField] private float rotorSmoothSpeed = 0.2f;
 
             #endregion
             
@@ -355,10 +328,18 @@ namespace TankWars.Controllers
         
         
         
-        
         #region Fields
 
-        #region Input settings
+        #region Unity Inspector
+
+        [HideInInspector] public bool[] hideSection = new bool[6];
+
+        #endregion
+        
+        
+        
+        
+        #region Input Settings
 
         // Keyboard Input (names that are within the input manager).
         public string keyboardHorizontalInput = "Horizontal";
@@ -369,60 +350,64 @@ namespace TankWars.Controllers
         public bool keyboardInvertVertical;
 
         // Joystick Input (names that are within the input manager).
-        public string joystickHorizontalInput = "Joystick Horizontal";
-        public string joystickVerticalInput = "Joystick Vertical";
+        public string leftJoystickHorizontalInput = "Left Joystick Horizontal";
+        public string leftJoystickVerticalInput = "Left Joystick Vertical";
 	    
         // Inverts the input on select axis.
-        public bool joystickInvertHorizontal;
-        public bool joystickInvertVertical;
+        public bool leftJoystickInvertHorizontal;
+        public bool leftJoystickInvertVertical;
+        
+        // Mouse axes (names that are within the input manager).
+        public string rightJoystickHorizontalInput = "Right Joystick Horizontal";
+        public string rightJoystickVerticalInput = "Right Joystick Vertical";
+	    
+        // Inverts the input on select axis.
+        public bool rightJoystickInvertHorizontal;
+        public bool rightJoystickInvertVertical;
 
         // Button to apply the speed multiplier.
         private bool _accelerate;
         public string accelerateInput = "Accelerate";
         
-        // Button to shoot from the main (middle) cannon.
-        private bool _mainShoot;
-        public string mainCannonFire = "Main Shoot";
         
-        // Button to shoot from the left cannon.
-        private bool _leftShoot;
-        public string leftCannonFire = "Left Shoot";
-        
-        // Button to shoot from the left cannon.
-        private bool _rightShoot;
-        public string rightCannonFire = "Right Shoot";
 
-        #endregion
+        private Vector2 _previousMouseInput;
+        private Vector2 _previousJoystickInput;
         
+        #endregion
+
+        
+        
+        // Pauses all tank components.
+        public bool pause;
+        
+        // Rotor rotation type
+        public RotorRotationMethod rotorRotationMethod = RotorRotationMethod.SmoothDamp;
+        
+        // Camera
+        public new Camera camera;
         
         // This is the dead zone threshold of the joystick, if the joystick input is below this threshold, no input is applied.
-        public float deadZoneThreshold = 0.2f;
+        public float leftDeadZoneThreshold = 0.2f;
+        public float rightDeadZoneThreshold = 0.2f;
         
         // The movement settings control all aspects relating to the speed of the character.
         public bool limitMaximumSpeed = true;
 
-        // Pauses all tank components.
-        public bool pause;
-        
-        // The characters cached layer to use when ignore raycasts is applied.
-        private int _cachedLayer;
-        // Stored ignore raycast layer.
-        private int _ignoreLayer;
+        // Cannons desired angle.
+        public float cannonAngle;
 
-        public Transform hull;
-        public Transform cannonRotor;
-        public List<Transform> firePoints = new List<Transform>();
-        public List<Weapon> weapons = new List<Weapon>();
-
-        // [Header("Health: "), Range(0.0f, 100.0f)] public int playerHealth = 100;
+        // Cannons current rotation velocity when using the smooth damp rotation method.
+        public Quaternion cannonVelocity = Quaternion.identity;
         
         #endregion
 
         
         
-        
 
         #region Functions
+
+        #region Input
 
         /// <summary>
         /// Handles user input.
@@ -435,6 +420,7 @@ namespace TankWars.Controllers
             // Acquire Inputs.
             MovementDirection = new Vector2(GetHorizontalInput(),GetVerticalInput());
             _accelerate = Input.GetButton(accelerateInput);
+            cannonAngle = GetCannonInput();
             
             // Apply constraints to the acquired input.
             var x = Mathf.Abs(MovementDirection.x);
@@ -442,11 +428,11 @@ namespace TankWars.Controllers
             
             if (x > y) MovementDirection = MovementDirection.WithY(0);
             else if (y > x) MovementDirection = MovementDirection.WithX(0);
-            else if (x > 0.69f && y > 0.69f) MovementDirection = MovementDirection.WithY(0) * 1.4285f;  
+            else if (x > 0.69f && y > 0.69f) MovementDirection = MovementDirection.WithY(0) * 1.4285f;
         }
         
         /// <summary>
-        /// Handles the users horizontal input.
+        /// Handles the users horizontal movement input.
         /// </summary>
 		
         private float GetHorizontalInput()
@@ -459,17 +445,17 @@ namespace TankWars.Controllers
                 return keyboardInvertHorizontal ? -horizontal : horizontal;
 	        
             // Acquire joystick horizontal input.
-            horizontal = Input.GetAxisRaw(joystickHorizontalInput);
+            horizontal = Input.GetAxisRaw(leftJoystickHorizontalInput);
             
             // If not moving the joystick or the joystick is extremely lightly pushed return zero.
-            if (Mathf.Abs(horizontal) < deadZoneThreshold) return 0;
+            if (Mathf.Abs(horizontal) < leftDeadZoneThreshold) return 0;
             
             // Else, return the joystick input.
-            return joystickInvertHorizontal ? -horizontal : horizontal;
+            return leftJoystickInvertHorizontal ? -horizontal : horizontal;
         }
 
         /// <summary>
-        /// Handles the users vertical input.
+        /// Handles the users vertical movement input.
         /// </summary>
 		
         private float GetVerticalInput()
@@ -482,31 +468,33 @@ namespace TankWars.Controllers
                 return keyboardInvertVertical ? -vertical : vertical;
 	        
             // Acquire joystick vertical input.
-            vertical = Input.GetAxisRaw(joystickVerticalInput);
+            vertical = Input.GetAxisRaw(leftJoystickVerticalInput);
 
             // If not moving the joystick or the joystick is extremely lightly pushed return zero.
-            if (Mathf.Abs(vertical) < deadZoneThreshold) return 0;
+            if (Mathf.Abs(vertical) < leftDeadZoneThreshold) return 0;
             
             // Else, return the joystick input.
-            return joystickInvertVertical ? -vertical : vertical;
+            return leftJoystickInvertVertical ? -vertical : vertical;
         }
         
         /// <summary>
-        /// Perform character movement.
+        /// Updates the tank based on user input.
         /// </summary>
 
         private void ProcessInput()
         {
-            // Performs character movement.
+            // Update the hulls velocity.
             UpdateVelocity();
             
-            // Jump logic
-            // PerformJumpLogic();
+            // Update the tanks cannon.
+            UpdateCannon();
         }
 
+        #endregion
 
+        
 
-        #region Movement Logic
+        #region Hull Movement
 
         /// <summary>
         /// Generates a velocity by multiplying the movement direction with the input speed.
@@ -539,13 +527,13 @@ namespace TankWars.Controllers
             Speed = targetSpeed;
             
             // Multiply the direction with speed to acquire the new velocity.
-            var velocity = MovementDirection * targetSpeed;
+            var newVelocity = MovementDirection * targetSpeed;
             
             // Transform the newly acquired local velocity's direction from local to world.
-            velocity = transform.TransformDirection(velocity);
+            newVelocity = transform.TransformDirection(newVelocity);
             
             // Remove the y axis from the equation as this will be controlled by gravity or through jumping.
-            return velocity;
+            return newVelocity;
         }
 
         /// <summary>
@@ -622,8 +610,8 @@ namespace TankWars.Controllers
             else
             {
                 // Find appropriate friction and apply it.
-                newVelocity -= (newVelocity - targetDirection * newVelocity.magnitude) * Mathf.Min(Friction.x * deltaTime, 1.0f);
-
+                newVelocity -= (newVelocity - targetDirection * newVelocity.magnitude) * (Friction.x  * deltaTime);
+                
                 // Apply acceleration while also clamping its length to the target speed.
                 newVelocity = Vector3.ClampMagnitude(newVelocity + targetAcceleration, targetSpeed);
             }
@@ -661,6 +649,110 @@ namespace TankWars.Controllers
 
         #endregion
 
+
+
+        #region Rotor Movement
+
+        /// <summary>
+        /// Handles the users cannon input.
+        /// </summary>
+        
+        private float GetCannonInput()
+        {
+            // Check for any mouse input.
+            var mouseInput = Input.mousePosition.xy();
+            
+            // Compare the newly acquired mouse input with the one collected on the previous frame.
+            var useMouse = mouseInput != _previousMouseInput;
+            
+            // If new input has been found, translate it and return.
+            if(useMouse)
+            {
+                _previousMouseInput = mouseInput;
+                _previousJoystickInput = mouseInput;
+                
+                var screenPos = camera.WorldToScreenPoint(CannonRotor.position);                              
+                var offset = mouseInput - screenPos.xy();
+            
+                return Mathf.Atan2(offset.x, offset.y) * Mathf.Rad2Deg;     
+            }
+            
+            // Acquire joystick horizontal input.
+            var horizontal = Input.GetAxisRaw(rightJoystickHorizontalInput);
+            var vertical = Input.GetAxisRaw(rightJoystickVerticalInput);
+            
+            // Invert the input if desired.
+            horizontal = leftJoystickInvertHorizontal ? -horizontal : horizontal;
+            vertical = leftJoystickInvertVertical ? -vertical : vertical;
+			      
+            // Place the input into a new vector. 
+            var joystickInput = new Vector2(horizontal, vertical);
+
+            var newInput = Mathf.Abs(horizontal) > 0.2f || Mathf.Abs(vertical) > 0.2f;
+            
+            var useJoystick = newInput && joystickInput != _previousJoystickInput;
+
+            if (!useJoystick)
+            {
+                if (_previousJoystickInput != _previousMouseInput) return Mathf.Atan2(_previousJoystickInput.x, _previousJoystickInput.y) * Mathf.Rad2Deg;
+                
+                var screenPos = camera.WorldToScreenPoint(CannonRotor.position);                              
+                var offset = _previousJoystickInput - screenPos.xy();
+            
+                return Mathf.Atan2(offset.x, offset.y) * Mathf.Rad2Deg;
+            }
+            
+            _previousJoystickInput = joystickInput;
+                
+            return Mathf.Atan2(horizontal, vertical) * Mathf.Rad2Deg;
+        }
+        
+        /// <summary>
+        /// Rotates the tanks cannon toward the direction of the mouse or joystick.
+        /// </summary>
+        
+        private void UpdateCannon()
+        {
+            var newRotation = Quaternion.AngleAxis(cannonAngle, Vector3.back);
+            
+            switch(rotorRotationMethod)
+            {
+                case RotorRotationMethod.None:
+                {
+                    CannonRotor.rotation = newRotation;
+                    break;
+                }
+                case RotorRotationMethod.RotateTowards:
+                {
+                    var smoothTime = (RotorSpeed * 100) * Time.deltaTime;
+                    CannonRotor.rotation = Quaternion.RotateTowards(CannonRotor.rotation, newRotation, smoothTime);
+                    break;
+                }
+                case RotorRotationMethod.Lerp:
+                {
+                    var smoothTime = RotorSpeed * Time.deltaTime;
+                    CannonRotor.rotation = Quaternion.Lerp(CannonRotor.rotation, newRotation, smoothTime);
+                    break;
+                }
+                case RotorRotationMethod.Slerp:
+                {
+                    var smoothTime = RotorSpeed * Time.deltaTime;
+                    CannonRotor.rotation = Quaternion.Slerp(CannonRotor.rotation, newRotation, smoothTime);
+                    break;
+                }
+                case RotorRotationMethod.SmoothDamp:
+                {
+                    CannonRotor.rotation = ExtensionsLibrary.SmoothDamp(CannonRotor.rotation, newRotation,
+                        ref cannonVelocity, rotorSmoothSpeed);
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        #endregion
+        
         // /// <summary>
         // /// Ensures the main camera stays on top of the player tank.
         // /// </summary>
@@ -742,17 +834,8 @@ namespace TankWars.Controllers
         //     rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-extra.x / 2) : -extra.x));                
         // }
 
-        public void CheckDependancies()
-        {
-            if (hull != null && cannonRotor != null) return;
-            
-            Debug.LogError("Tank Controller: Please build a tank using the Tank Builder component on an empty game object.");
-            DestroyImmediate(this);
-        }
-
         #endregion
 
-        
         
         
         
@@ -816,5 +899,6 @@ namespace TankWars.Controllers
         // }
 
         #endregion
+        
     }
 }

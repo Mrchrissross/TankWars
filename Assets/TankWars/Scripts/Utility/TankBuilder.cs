@@ -239,6 +239,7 @@ namespace TankWars.Utility
         
         
         
+        
         #region Properties
 
         public enum CannonType
@@ -256,6 +257,13 @@ namespace TankWars.Utility
                 
                 _cannonType = value;
                 SpawnCannon();
+
+                if (weaponController == null) return;
+                
+                weaponController.firePoints.Clear();
+                
+                foreach (var firePoint in cannonFirePoint)
+                    weaponController.firePoints.Add(firePoint);
             }
         }
         [SerializeField] private CannonType _cannonType = CannonType.Single;
@@ -498,8 +506,11 @@ namespace TankWars.Utility
 
         
         
+        
         #region Fields
 
+        public bool hideSection;
+        
         // Constant variable leading to the tank sprites.
         private const string Path = "TankWars/Sprites/";
         
@@ -511,6 +522,7 @@ namespace TankWars.Utility
         
         // Storage of built controllers.
         public TankController tankController;
+        public WeaponController weaponController;
         public CameraController cameraController;
         
         // Hull data.
@@ -536,6 +548,7 @@ namespace TankWars.Utility
         
         #endregion
 
+        
         
 
         #region Functions
@@ -586,6 +599,7 @@ namespace TankWars.Utility
             hull.parent = hullParent;
             hull.localPosition = Vector3.zero;
             hull.localRotation = Quaternion.identity;
+            hull.localScale = Vector2.one;
 
             // Add a sprite renderer to the hull game object and set it layer.
             hullSprite = hull.gameObject.AddComponent<SpriteRenderer>();
@@ -593,23 +607,18 @@ namespace TankWars.Utility
             hullSprite.sortingLayerID = sortingLayerID;
             hullSprite.color = hullColor;
             
-            // Get or create a collider and assign a material that has absolutely no
-            // friction (this will all be accomplished through script).
-            var cCollider = hull.gameObject.AddComponent<PolygonCollider2D>();
-            cCollider.sharedMaterial = new PhysicsMaterial2D("Frictionless")
-            {
-                friction = 0.0f,
-                bounciness = 0.0f,
-            };
-            
-            
-            
+            // Create a polygon collider.
+            hull.gameObject.AddComponent<PolygonCollider2D>();
+
+
+
             // Add a additional coloring object as a child of the (child) hull.
             var hullAdditionalColoring = new GameObject().transform;
             hullAdditionalColoring.name = "Additional Color";
             hullAdditionalColoring.parent = hull;
             hullAdditionalColoring.localPosition = Vector3.zero;
             hullAdditionalColoring.localRotation = Quaternion.identity;
+            hullAdditionalColoring.localScale = Vector2.one;
             
             // Again, add a sprite renderer to this object, set its layer/sorting order and the color.
             hullAdditionalColorSprite = hullAdditionalColoring.gameObject.AddComponent<SpriteRenderer>();
@@ -626,6 +635,7 @@ namespace TankWars.Utility
             hullShadows.parent = hull;
             hullShadows.localPosition = Vector3.zero;
             hullShadows.localRotation = Quaternion.identity;
+            hullShadows.localScale = Vector2.one;
          
             // Add the shadow sprite renderer.
             hullShadowsSprite = hullShadows.gameObject.AddComponent<SpriteRenderer>();
@@ -671,6 +681,7 @@ namespace TankWars.Utility
             cannonBase.parent = cannonRotor;
             cannonBase.localPosition = Vector3.zero;
             cannonBase.localRotation = Quaternion.identity;
+            cannonBase.localScale = Vector2.one;
 
             // Add a sprite renderer to the base.
             cannonBaseSprite = cannonBase.gameObject.AddComponent<SpriteRenderer>();
@@ -688,6 +699,7 @@ namespace TankWars.Utility
             baseSides.parent = cannonBase;
             baseSides.localPosition = Vector3.zero;
             baseSides.localRotation = Quaternion.identity;
+            baseSides.localScale = Vector2.one;
             
             // Again add a sprite to this object.
             cannonBaseSidesSprite = baseSides.gameObject.AddComponent<SpriteRenderer>();
@@ -726,14 +738,9 @@ namespace TankWars.Utility
                 cannonSprite[i].sortingLayerID = sortingLayerID;
                 cannonSprite[i].sortingOrder = 12;
                 
-                // Get or create a collider and assign a material that has absolutely no
-                // friction (this will all be accomplished through script).
-                var cCollider = cannon[i].gameObject.AddComponent<PolygonCollider2D>();
-                cCollider.sharedMaterial = new PhysicsMaterial2D("Frictionless")
-                {
-                    friction = 0.0f,
-                    bounciness = 0.0f,
-                };
+                // Get or create a polygon collider.
+                cannon[i].gameObject.AddComponent<PolygonCollider2D>();
+                
                 
                 
                 cannonFirePoint.Add(new GameObject().transform);
@@ -871,12 +878,8 @@ namespace TankWars.Utility
             if(tankController != null) DestroyImmediate(tankController);
 
             tankController = gameObject.AddComponent<TankController>();
-            tankController.hull = hull;
-            tankController.cannonRotor = cannonRotor;
+            tankController.CannonRotor = cannonRotor;
 
-            foreach (var firePoint in cannonFirePoint)
-                tankController.firePoints.Add(firePoint);
-            
             // Rigidbody initialisation.
             var rb = GetComponent<Rigidbody2D>();
             if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
@@ -885,9 +888,37 @@ namespace TankWars.Utility
             rb.isKinematic = false;
 
             // Reassign the cameras tank controller.
-            if (cameraController != null) cameraController.tankController = tankController;
+            if (cameraController != null)
+            {
+                cameraController.tankController = tankController;
+                tankController.camera = cameraController.Camera;
+            }
+            
+            // Rename the tank.
+            transform.name = "Player Tank";
             
             print("Tank Builder: Movement system added.");
+        }
+        
+        /// <summary>
+        /// Adds all movement components to the tanks game object.
+        /// </summary>
+        
+        public void AddWeaponSystem()
+        {
+            if (hull == null || cannonRotor == null) return;
+            
+            weaponController = GetComponent<WeaponController>();
+            if(weaponController != null) DestroyImmediate(weaponController);
+
+            weaponController = gameObject.AddComponent<WeaponController>();
+            
+            foreach (var firePoint in cannonFirePoint)
+                weaponController.firePoints.Add(firePoint);
+            
+            
+            
+            print("Tank Builder: Weapon system added.");
         }
         
         /// <summary>
@@ -915,6 +946,7 @@ namespace TankWars.Utility
             var cam = cameraGameObject.AddComponent<Camera>();
             cam.orthographic = true;
             cam.orthographicSize = cameraController.CameraDistance;
+            tankController.camera = cam;
 		        
             cameraGameObject.AddComponent<AudioListener>();
             

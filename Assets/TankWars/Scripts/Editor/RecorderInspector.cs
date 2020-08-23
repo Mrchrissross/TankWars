@@ -23,7 +23,7 @@ namespace TankWars.Editor
         {
             EditorTools.InitStyles(out _boxStyle);
             
-            EditorTools.Header("Recorder");
+            EditorTools.DrawHeader("Recorder");
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(370), GUILayout.MaxWidth(1000));
             {

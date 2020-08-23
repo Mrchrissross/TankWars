@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using TankWars.Controllers;
+using TankWars.Utility;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,30 +12,25 @@ namespace TankWars.Editor
     [CustomEditor(typeof(TankController))]
     public class TankControllerInspector : UnityEditor.Editor
     {
-        
         private const float BoxMinWidth = 300f;
         private const float BoxMaxWidth = 1000f;
         
         private GUIStyle _boxStyle;
         private GUIStyle _foldoutStyle;
-        
-        private Color _guiColorBackup;
-        private Texture2D _plusTexture;
-        private Texture2D _minusTexture;
-        private Texture2D _editTexture;
+
+        private bool _customCamera;
         
         private TankController TankController => target as TankController;
-        
-        private void OnEnable()
+
+        private void OnEnable() => EditorTools.InitTextures();
+
+        private void DrawActions()
         {
-            // Save the original background color.
-            _guiColorBackup = GUI.backgroundColor;
-            
-            // Setup the textures
-            const string path = "TankWars/EditorUI/";
-            _plusTexture = EditorTools.InitTexture(path + "plus");
-            _minusTexture = EditorTools.InitTexture(path + "minus");
-            _editTexture = EditorTools.InitTexture(path + "edit");
+            TankController.accelerateInput = EditorTools.StringField("Accelerate",
+                "Used to make the tank accelerate faster.",
+                TankController.accelerateInput, 100);
+
+            // Draw additional actions here.
         }
         
         public override void OnInspectorGUI()
@@ -42,7 +39,6 @@ namespace TankWars.Editor
             
             EditorGUI.BeginChangeCheck();
             Undo.RecordObject(target, "MovementController");
-            
             
             DrawSections();
 
@@ -56,19 +52,85 @@ namespace TankWars.Editor
 
         private void DrawSections()
         {
-            DrawInputSettings();
-            DrawSpeedSettings();
-            DrawAccelerationSettings();
-            DrawMaxSettings();
-            DrawFrictionSettings();
+            DrawInputSettings(0);
+            DrawSpeedSettings(1);
+            DrawAccelerationSettings(2);
+            DrawMaxSettings(3);
+            DrawFrictionSettings(4);
+            DrawRotorSettings(5);
         }
 
-        private void DrawInputSettings()
+        private void DrawInputSettings(int section)
         {
-            EditorTools.Header("Input");
+            GUILayout.BeginHorizontal();
+            {
+                if (!TankController.hideSection[section])
+                {
+                    if (EditorTools.TexturedButton(EditorTools.eyeOpenTexture,
+                        "Hides all the content in this section.", 20f))
+                        TankController.hideSection[section] = true;
+                    
+                    GUILayout.Space(-20);
+                }
+                else
+                {
+                    if (EditorTools.TexturedButton(EditorTools.eyeClosedTexture,
+                        "Shows all the content in this section.", 20f))
+                        TankController.hideSection[section] = false;
+                    
+                    GUILayout.Space(-20);
+                }
+                
+                var style = new GUIStyle(GUI.skin.label)
+                {
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 13
+                };
+            
+                EditorGUILayout.LabelField(new GUIContent("Input", ""), style);
 
+                if (!_customCamera)
+                {
+                    GUILayout.Space(-20);
+
+                    if (EditorTools.TexturedButton(EditorTools.cameraTexture,
+                        "Add a custom camera rather than the tank wars camera system.", 20f))
+                        _customCamera = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+            
+            EditorTools.DrawLine();
+            GUILayout.Space(5);
+
+            if (TankController.hideSection[section]) return;
+            
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
+                if (_customCamera)
+                {
+                    EditorTools.Label("Custom Camera:", "Custom camera that will be used by the tank.", 100);
+                    
+                    GUILayout.BeginVertical("box");
+                    {
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorGUIUtility.labelWidth = 100;
+                            TankController.camera = (Camera) EditorGUILayout.ObjectField(new GUIContent("Camera",
+                                "Custom camera that will be used by the tank."), TankController.camera, typeof(Camera), true);
+
+                            if (EditorTools.Button("Done", ""))
+                                _customCamera = false;
+                        }
+                        GUILayout.EndHorizontal();
+
+                    }
+                    GUILayout.EndVertical();
+                    
+                    EditorTools.DrawLine(0.5f, 2.5f, 0);
+                }
+                
                 EditorTools.Label("Keyboard:",
                     "Ensure these settings match those that are within the input manager.", 100);
                     
@@ -100,73 +162,116 @@ namespace TankWars.Editor
                 }
                 GUILayout.EndVertical();
 
-                EditorTools.DrawLine(0.5f, 7.5f, 0);
+                EditorTools.DrawLine(0.5f, 2.5f, 0);
                 
-                EditorTools.Label("Joystick:", "Ensure these settings match those that are within the input manager.",
+                EditorTools.Label("Gamepad:", "Ensure these settings match those that are within the input manager.",
                     60);
                     
                 GUILayout.BeginVertical("box");
                 {
-                    GUILayout.BeginHorizontal();
+                    EditorTools.Label("Left Joystick:", "Ensure these settings match those that are within the input manager.",
+                        100);
+                    
+                    GUI.backgroundColor = Color.grey;
+                    GUILayout.BeginVertical("box");
                     {
-                        EditorTools.Label("Invert:",
-                            "Inverts the input on select axis.", 95);
+                        GUI.backgroundColor = EditorTools.guiColorBackup;
+                        
+                        GUI.backgroundColor = Color.grey;
+                    
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorTools.Label("Invert:",
+                                "Inverts the input on select axis.", 95);
 
-                        EditorTools.Toggle("Horizontal", "",
-                            ref TankController.joystickInvertHorizontal, 75);
+                            EditorTools.Toggle("Horizontal", "",
+                                ref TankController.leftJoystickInvertHorizontal, 75);
 
-                        EditorTools.Toggle("Vertical", "",
-                            ref TankController.joystickInvertVertical, 60);
-                        GUILayout.Space(-10);
+                            EditorTools.Toggle("Vertical", "",
+                                ref TankController.leftJoystickInvertVertical, 60);
+                            GUILayout.Space(-10);
+                        }
+                        GUILayout.EndHorizontal();
+
+                        GUILayout.Space(2.5f);
+
+                        TankController.leftJoystickHorizontalInput = EditorTools.StringField("Horizontal",
+                            "This is the horizontal joystick input found in the input manager.",
+                            TankController.leftJoystickHorizontalInput, 100);
+
+                        TankController.leftJoystickVerticalInput = EditorTools.StringField("Vertical",
+                            "This is the vertical joystick input found in the input manager.",
+                            TankController.leftJoystickVerticalInput, 100);
+                        
+                        GUILayout.Space(4f);
+                        
+                        GUI.backgroundColor = EditorTools.guiColorBackup;
+
+                        TankController.leftDeadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold", 
+                            "This is the dead zone threshold of the joystick, if the joystick input is below this " +
+                            "threshold, no input is applied.", TankController.leftDeadZoneThreshold, 0.05f, 0.5f, 150);
                     }
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(2.5f);
-
-
-                    TankController.joystickHorizontalInput = EditorTools.StringField("Horizontal",
-                        "This is the horizontal joystick input found in the input manager.",
-                        TankController.joystickHorizontalInput, 100);
-
-                    TankController.joystickVerticalInput = EditorTools.StringField("Vertical",
-                        "This is the vertical joystick input found in the input manager.",
-                        TankController.joystickVerticalInput, 100);
+                    GUILayout.EndVertical();
                     
-                    EditorGUILayout.Space(7.5f);
-
-                    TankController.deadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold", 
-                        "This is the dead zone threshold of the joystick, if the joystick input is below this " +
-                        "threshold, no input is applied.", TankController.deadZoneThreshold, 0.05f, 0.5f, 150);
+                    EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
                     
+                    EditorTools.Label("Right Joystick:", "Ensure these settings match those that are within the input manager.",
+                        100);
+                    
+                    GUI.backgroundColor = Color.grey;
+                    GUILayout.BeginVertical("box");
+                    {
+                        GUI.backgroundColor = EditorTools.guiColorBackup;
+                        
+                        GUI.backgroundColor = Color.grey;
+                        
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorTools.Label("Invert:",
+                                "Inverts the input on select axis.", 95);
+
+
+                            EditorTools.Toggle("Horizontal", "",
+                                ref TankController.rightJoystickInvertHorizontal, 75);
+
+                            EditorTools.Toggle("Vertical", "",
+                                ref TankController.rightJoystickInvertVertical, 60);
+                            
+                            
+                            GUILayout.Space(-10);
+                        }
+                        GUILayout.EndHorizontal();
+
+                        GUILayout.Space(2.5f);
+
+                        TankController.rightJoystickHorizontalInput = EditorTools.StringField("Horizontal",
+                            "This is the horizontal joystick input found in the input manager.",
+                            TankController.rightJoystickHorizontalInput, 100);
+
+                        TankController.rightJoystickVerticalInput = EditorTools.StringField("Vertical",
+                            "This is the vertical joystick input found in the input manager.",
+                            TankController.rightJoystickVerticalInput, 100);
+                        
+                        GUILayout.Space(4f);
+                        
+                        GUI.backgroundColor = EditorTools.guiColorBackup;
+                        
+                        TankController.rightDeadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold", 
+                            "This is the dead zone threshold of the joystick, if the joystick input is below this " +
+                            "threshold, no input is applied.", TankController.rightDeadZoneThreshold, 0.05f, 0.5f, 150);
+                    }
+                    GUILayout.EndVertical();
                 }
                 GUILayout.EndVertical();
                 
-                EditorTools.DrawLine(0.5f, 7.5f, 0);
+                EditorTools.DrawLine(0.5f, 2.5f, 0);
                 
                 EditorTools.Label("Actions:",
                     "Ensure these settings match those that are within the input manager.", 100);
                     
                 GUILayout.BeginVertical("box");
                 {
-                    TankController.accelerateInput = EditorTools.StringField("Accelerate",
-                        "Used to make the tank accelerate faster.",
-                        TankController.accelerateInput, 100);
-
-                    if (TankController.firePoints.Count > 1)
-                    {
-                        TankController.leftCannonFire = EditorTools.StringField("Left Cannon",
-                            "Button used to fire the left cannon.",
-                            TankController.leftCannonFire, 100);
-                        
-                        TankController.rightCannonFire = EditorTools.StringField("Right Cannon",
-                            "Button used to fire the right cannon.",
-                            TankController.rightCannonFire, 100);
-                    }
-                    else
-                    {
-                        TankController.mainCannonFire = EditorTools.StringField("Main Cannon",
-                            "Button used to fire the main cannon.",
-                            TankController.mainCannonFire, 100);
-                    }
+                    DrawActions();
                 }
                 GUILayout.EndVertical();
                 
@@ -175,13 +280,12 @@ namespace TankWars.Editor
             EditorGUILayout.Space(5);
         }
 
-        private void DrawSpeedSettings()
+        private void DrawSpeedSettings(int section)
         {
-            EditorTools.Header("Speed");
-
+            if (EditorTools.DrawHeader("Speed", ref TankController.hideSection[section])) return;
+            
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                
                 EditorGUILayout.Space(1f);
              
                 EditorGUILayout.BeginHorizontal();
@@ -218,9 +322,9 @@ namespace TankWars.Editor
             EditorGUILayout.Space(5);
         }
 
-        private void DrawAccelerationSettings()
+        private void DrawAccelerationSettings(int section)
         {
-            EditorTools.Header("Acceleration");
+            if (EditorTools.DrawHeader("Acceleration", ref TankController.hideSection[section])) return;
 
             const float width = 100.0f;
             
@@ -243,9 +347,9 @@ namespace TankWars.Editor
             EditorGUILayout.Space(5);
         }
         
-        private void DrawMaxSettings()
+        private void DrawMaxSettings(int section)
         {
-            EditorTools.Header("Max Speed");
+            if (EditorTools.DrawHeader("Max Speed", ref TankController.hideSection[section])) return;
         
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
@@ -277,9 +381,9 @@ namespace TankWars.Editor
             EditorGUILayout.Space(5);
         }
         
-        private void DrawFrictionSettings()
+        private void DrawFrictionSettings(int section)
         {
-            EditorTools.Header("Friction", "This is how much grip the tank has to its surface.");
+            if (EditorTools.DrawHeader("Friction", ref TankController.hideSection[section])) return;
 
             const float width = 100.0f;
             
@@ -301,5 +405,66 @@ namespace TankWars.Editor
             EditorGUILayout.Space(5);
         }
         
+        private void DrawRotorSettings(int section)
+        {
+            if (EditorTools.DrawHeader("Rotor", ref TankController.hideSection[5])) return;
+            
+            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
+            {
+                EditorGUILayout.Space(1f);
+             
+                EditorGUILayout.BeginHorizontal();
+                { 
+                    GUILayout.FlexibleSpace();
+                    
+                    EditorTools.ReadOnlyValue("Current Rotation", "Current rotation of the tank (in degrees).", 
+                        TankController.CannonRotor.rotation.eulerAngles.z, "0.0", 100, 40);
+                    
+                    GUILayout.FlexibleSpace();
+                }
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.BeginHorizontal();
+                { 
+                    GUILayout.FlexibleSpace();
+
+                    var cannonAngle = TankController.cannonAngle > 0 ? 360.0f - TankController.cannonAngle :
+                        TankController.cannonAngle < 0 ? -TankController.cannonAngle : 0;
+                    
+                    EditorTools.ReadOnlyValue("Desired Rotation", "Desired rotation of the tank (in degrees).", 
+                        cannonAngle, "0.0", 100, 40);
+                    
+                    GUILayout.FlexibleSpace();
+                }
+                EditorGUILayout.EndHorizontal();
+                
+                EditorTools.DrawLine(0.5f, 5f, 5);
+                
+                GUILayout.BeginVertical("box");
+                {
+                    EditorGUIUtility.labelWidth = 100;
+                    TankController.rotorRotationMethod = (TankController.RotorRotationMethod) EditorGUILayout.EnumPopup(new GUIContent("Rotation Method",
+                        "The method used to rotate the rotor."), TankController.rotorRotationMethod);
+
+                    if (TankController.rotorRotationMethod != TankController.RotorRotationMethod.None)
+                    {
+                        if (TankController.rotorRotationMethod != TankController.RotorRotationMethod.SmoothDamp)
+                        {
+                            TankController.RotorSpeed = EditorTools.FloatField("Speed", 
+                                "Speed at which the tanks rotor turns.", TankController.RotorSpeed, 100);
+                        }
+                        else
+                        {
+                            TankController.RotorSmoothSpeed = EditorTools.FloatField("Speed", 
+                                "Speed at which the tanks rotor turns.", TankController.RotorSmoothSpeed, 100);
+                        }
+                    }
+                }
+                GUILayout.EndVertical();
+            }
+            EditorGUILayout.EndVertical();
+            
+            EditorGUILayout.Space(5);
+        }
     }
 }

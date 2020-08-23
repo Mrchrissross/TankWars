@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace TankWars.Managers
 {
@@ -10,21 +14,20 @@ namespace TankWars.Managers
     [System.Serializable]
     public class Sound
     {
-
         #region Fields
 
-        // variables.
+        // Unity Inspector.
+        [HideInInspector] public bool hideSection;
+        
+        // Variables.
         public string name;
         public AudioClip clip;
-        private AudioSource _audioSource;
+        public AudioSource audioSource;
+        public List<AudioSource> audioSourcePool = new List<AudioSource>();
 
         // Volume and pitch controller.
-        [Range(0.0f, 1.0f)] public float volume = 0.7f;
-        [Range(0.5f, 1.5f)] public float pitch = 1.0f;
-
-        // Randomizes volume and pitch.
-        [Range(0f, 0.5f)] public float randomVolume = 0.1f;
-        [Range(0f, 0.5f)] public float randomPitch = 0.1f;
+        public Vector2 audioVolume = new Vector2(0.5f, 0.9f);
+        public Vector2 audioPitch = new Vector2(0.8f, 1.2f);
 
         // Loops the sound.
         public bool loop;
@@ -40,12 +43,7 @@ namespace TankWars.Managers
         /// </summary>
         /// <param name="source">The audio source component.</param>
         
-        public void SetSource(AudioSource source)
-        {
-            _audioSource = source;
-            _audioSource.clip = clip;
-            _audioSource.loop = loop;
-        }
+        public void SetSource(AudioSource source) => audioSource = source;
 
         /// <summary>
         /// Plays a sound.
@@ -53,28 +51,95 @@ namespace TankWars.Managers
         
         public void Play()
         {
-            _audioSource.volume = volume * (1 + Random.Range(-randomVolume / 2f, randomVolume / 2f));
-            _audioSource.pitch = pitch * (1 + Random.Range(-randomPitch / 2f, randomPitch / 2f));
-            _audioSource.Play();
+            var sourceToPlay = audioSource;
+            
+            if (Application.isPlaying && IsPlaying())
+            {
+                while (true)
+                {
+                    var length = audioSourcePool.Count;
+
+                    if (length == 0)
+                    {
+                        sourceToPlay = AddSource(length);
+                        break;
+                    }
+                    
+                    foreach (var source in audioSourcePool.Where(source => !source.isPlaying))
+                    {
+                        sourceToPlay = source;
+                        break;
+                    }
+                    
+                    if(sourceToPlay == audioSource)
+                        sourceToPlay = AddSource(length);
+                    
+                    break;
+                }
+            }
+            
+            sourceToPlay.clip = clip;
+            sourceToPlay.loop = loop;
+            
+            sourceToPlay.volume = Random.Range(audioVolume.x, audioVolume.y);
+            sourceToPlay.pitch = Random.Range(audioPitch.x, audioPitch.y);
+            
+            sourceToPlay.Play();
         }
 
         /// <summary>
         /// Stops a sound.
         /// </summary>
         
-        public void Stop() => _audioSource.Stop();
+        public void Stop() => audioSource.Stop();
 
         /// <summary>
         /// Pauses a sound.
         /// </summary>
         
-        public void Pause() => _audioSource.Pause();
+        public void Pause() => audioSource.Pause();
 
         /// <summary>
         /// Checks if sound is playing.
         /// </summary>
         
-        public bool IsPlaying() => _audioSource.isPlaying;
+        public bool IsPlaying() => audioSource.isPlaying;
+
+        /// <summary>
+        /// Adds an audio source to the pool.
+        /// </summary>
+        
+        public AudioSource AddSource(int index)
+        {
+            var go = new GameObject("Sound " + index);
+            go.transform.SetParent(audioSource.transform);
+            
+            var source = go.AddComponent<AudioSource>();
+            source.playOnAwake = false;
+            
+            audioSourcePool.Add(source);
+            
+            return source;
+        }
+        
+        /// <summary>
+        /// Creates a new sound.
+        /// </summary>
+        
+        public Sound() => name = "new Sound";
+
+        /// <summary>
+        /// Creates a copy from another sound.
+        /// </summary>
+        
+        public Sound(Sound copy)
+        {
+            name = copy.name + "copy";
+            clip = copy.clip;
+            audioVolume = copy.audioVolume;
+            audioPitch = copy.audioPitch;
+            loop = copy.loop;
+        }
         
         #endregion
         
@@ -95,7 +160,7 @@ namespace TankWars.Managers
 
         // Storage of sounds, also disable warning saying it is unused.
         #pragma warning disable 0649
-        [SerializeField] private Sound[] sounds;
+        public List<Sound> sounds = new List<Sound>();
         #pragma warning restore 0649
         
         #endregion
@@ -105,68 +170,25 @@ namespace TankWars.Managers
         #region Functions
 
         /// <summary>
-        /// Initialises all sounds.
-        /// </summary>
-        
-        private void Start()
-        {
-            for (var i = 0; i < sounds.Length; i++)
-            {
-                var go = new GameObject("Sound_" + i + "_" + sounds[i].name);
-                go.transform.SetParent(this.transform);
-                sounds[i].SetSource(go.AddComponent<AudioSource>());
-            }
-        }
-
-        /// <summary>
         /// Plays the named sound. 
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void PlaySound(string soundName)
-        {
-            foreach (var sound in sounds)
-            {
-                if (sound.name != soundName) continue;
-                
-                sound.Play();
-                return;
-            }
-
-            Debug.LogWarning("Audio Manager: Sound not found in list." + soundName);
-        }
+        public void PlaySound(string soundName) => GetSound(soundName)?.Play();
 
         /// <summary>
         /// Stops the named sound.
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void StopSound(string soundName)
-        {
-            foreach (var sound in sounds)
-            {
-                if (sound.name != soundName) continue;
-                
-                sound.Stop();
-                return;
-            }
-        }
+        public void StopSound(string soundName) => GetSound(soundName)?.Stop();
 
         /// <summary>
         /// Pauses the named sound.
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void PauseSound(string soundName)
-        {
-            foreach (var sound in sounds)
-            {
-                if (sound.name != soundName) continue;
-                
-                sound.Pause();
-                return;
-            }
-        }
+        public void PauseSound(string soundName) => GetSound(soundName)?.Pause();
 
         /// <summary>
         /// Checks if the named sound is playing.
@@ -174,8 +196,79 @@ namespace TankWars.Managers
         /// <param name="soundName">The name of the sound.</param>
         
         public bool IsPlaying(string soundName) => (from sound in sounds where sound.name == soundName select sound.IsPlaying()).FirstOrDefault();
+
+        /// <summary>
+        /// Returns the specified sound from the sound list.
+        /// </summary>
+        /// <param name="soundName">Name of the desired sound.</param>
         
-        #endregion 
+        public Sound GetSound(string soundName)
+        {
+            if (soundName == "None") return null;
+            
+            foreach (var sound in sounds.Where(sound => sound.name == soundName))
+                return sound;
+            
+            Debug.LogWarning("Audio Manager: Sound not found in list." + soundName);
+            return null;
+        }
+
+        /// <summary>
+        /// Creates a new sound.
+        /// </summary>
+
+        public void AddSound()
+        {
+            var sound = new Sound();
+            sounds.Add(sound);
+        } 
         
+        /// <summary>
+        /// Creates a copy of specified sound.
+        /// </summary>
+        /// <param name="sound">Sound to copy.</param>
+        
+        public void CopySound(Sound sound) => sounds.Add(new Sound(sound));
+
+        /// <summary>
+        /// Creates the audio source for a sound.
+        /// </summary>
+        /// <param name="index">Index within the list of sounds.</param>
+        /// <param name="sound"></param>
+        
+        public void CreateSource(int index, Sound sound)
+        {
+            var goName = "Sound " + index + ": " + sound.name;
+
+            if (sound.audioSource != null)
+            {
+                sound.audioSource.name = goName;
+                return;
+            }
+            
+            var go = new GameObject(goName);
+            go.transform.SetParent(transform);
+            sound.SetSource(go.AddComponent<AudioSource>());
+            sound.audioSource.playOnAwake = false;
+        }
+        
+        #endregion
+
+        
+        
+        
+        #region MonoBehaviour
+
+        /// <summary>
+        /// Initialises all sounds.
+        /// </summary>
+        
+        private void Start()
+        {
+            for (var index = 0; index < sounds.Count; index++) 
+                CreateSource(index, sounds[index]);
+        }
+
+        #endregion        
     }
 }

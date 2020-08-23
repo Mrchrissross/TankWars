@@ -13,7 +13,51 @@ namespace TankWars.Editor
     
     public static class EditorTools
     {
-        public static void Header(string label, string tooltip = "", float space = 5, GUIStyle style = null)
+        #region Textures
+
+        private const string Path = "TankWars/EditorUI/";
+        public static Texture2D plusTexture;
+        public static Texture2D minusTexture;
+        public static Texture2D editTexture;
+        public static Texture2D cameraTexture;
+        public static Texture2D eyeOpenTexture;
+        public static Texture2D eyeClosedTexture;
+        
+        public static Color guiColorBackup;
+        
+        /// <summary>
+        /// Initialises a texture.
+        /// </summary>
+        /// <param name="path">The path to the texture.</param>
+        
+        public static Texture2D InitTexture(string path)
+        {
+            return Resources.Load<Texture2D>(path);
+        }
+
+        /// <summary>
+        /// Initialises all textures.
+        /// </summary>
+        
+        public static void InitTextures()
+        {
+            plusTexture = InitTexture(Path + "plus");
+            minusTexture = InitTexture(Path + "minus");
+            editTexture = InitTexture(Path + "edit");
+            cameraTexture = InitTexture(Path + "camera");
+            eyeOpenTexture = InitTexture(Path + "eye_open");
+            eyeClosedTexture = InitTexture(Path + "eye_closed");
+
+            guiColorBackup = GUI.backgroundColor;
+        }
+        
+        #endregion
+
+        
+        
+        #region Labels
+
+        public static void DrawHeader(string label, string tooltip = "", float space = 5, GUIStyle style = null)
         {
             if (style == null)
             {
@@ -30,15 +74,46 @@ namespace TankWars.Editor
             Space(space);
         }
         
-        public static void DrawLine(float thickness = 1, float spaceBefore = 0, float spaceAfter = 0)
+        public static bool DrawHeader(string header, ref bool hideToggle, string tooltip = "", float space = 5, 
+            GUIStyle style = null)
         {
-            Space(spaceBefore);
+            GUILayout.BeginHorizontal();
             {
-                var rect = EditorGUILayout.GetControlRect(false, thickness );
-                rect.height = thickness;
-                EditorGUI.DrawRect(rect, new Color ( 0.5f,0.5f,0.5f, 1 ) );
+                if (!hideToggle)
+                {
+                    if (TexturedButton(eyeOpenTexture,
+                        "Hides all the content in this section.", 20f))
+                        hideToggle = true;
+                    
+                    GUILayout.Space(-20);
+                }
+                else
+                {
+                    if (TexturedButton(eyeClosedTexture,
+                        "Shows all the content in this section.", 20f))
+                        hideToggle = false;
+                    
+                    GUILayout.Space(-20);
+                }
+
+                if (style == null)
+                {
+                    style = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        alignment = TextAnchor.MiddleCenter,
+                        fontSize = 13
+                    };
+                }
+            
+                EditorGUILayout.LabelField(new GUIContent(header, tooltip), style);
             }
-            Space(spaceAfter);
+            GUILayout.EndHorizontal();
+            
+            DrawLine();
+            GUILayout.Space(space);
+
+            return hideToggle;
         }
         
         public static void Label(string label, string tooltip, float width = 50, float space = 0, GUIStyle style = null)
@@ -47,28 +122,6 @@ namespace TankWars.Editor
             Space(space);
         }
 
-        private static void BeginHorizontalGroup(params GUILayoutOption[] options)
-        {
-            EditorGUILayout.BeginHorizontal(options);
-        }
-
-        private static void EndHorizontalGroup(float space = 0)
-        {
-            EditorGUILayout.EndHorizontal();
-            Space(space);
-        }
-        
-        public static void BeginVerticalGroup(params GUILayoutOption[] options)
-        {
-            EditorGUILayout.BeginVertical(options);
-        }
-        
-        public static void EndVerticalGroup(float space = 0)
-        {
-            EditorGUILayout.EndVertical();
-            Space(space);
-        }
-        
         public static void ReadOnlyValue(string label, string tooltip, float value, string decimalPlaces = "0.00", float labelWidth = 50, float valueWidth = 50, float space = 0, 
             GUIStyle labelStyle = null, GUIStyle valueStyle = null)
         {
@@ -77,32 +130,12 @@ namespace TankWars.Editor
             
             Space(space);
         }
-
-        private static void Space(float value) => EditorGUILayout.Space(value);
         
-        /// <summary>
-        /// Draws a documentation icon at the top-right corner of the component displayed in the inspector.
-        /// </summary>
-        /// <param name="texture">The texture of the documentation.</param>
-        /// <param name="size">The size of the icon.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the element.</param>
-        /// <param name="space">Amount of space after the element.</param>
-        /// <returns>Returns true when the button is pressed.</returns>
-        public static bool DrawDocumentationIcon(Texture2D texture, float size, string tooltip, float space = -20)
-        {
-            GUILayout. BeginHorizontal();
-            
-            GUILayout.FlexibleSpace();
-            
-            var pressed = GUILayout.Button(new GUIContent(texture, tooltip), GUIStyle.none, GUILayout.Width(size),
-                GUILayout.Height(size));
-            
-            GUILayout.EndHorizontal();
-                    
-            Space(space);
+        #endregion
 
-            return pressed;
-        }
+        
+        
+        #region Buttons
 
         /// <summary>
         /// Draws an icon in the inspector.
@@ -143,58 +176,14 @@ namespace TankWars.Editor
         public static bool Button(string text, string tooltip, float width = 100, float height = 20) => GUILayout.Button(new GUIContent(text, tooltip),
             GUILayout.Width(width), GUILayout.Height(height));
         
-        /// <summary>
-        /// Draws a toggle in the inspector.
-        /// </summary>
-        /// <param name="label">Label of the toggle.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="value">The bool within the script.</param>
-        /// <param name="side">true = color field is displayed beside label.
-        ///                     false = color field is displayed under label.</param>
-        /// <param name="width">Width of the displayed Label.</param>
-        /// <param name="space">Amount of space after the element.</param>
-        public static void ColorField(string label, string tooltip, ref Color value, bool side = true, float width = 50, float space = 0)
-        {
-            if(side)EditorGUILayout.BeginHorizontal();
-            else EditorGUILayout.BeginVertical();
-            
-            EditorGUIUtility.labelWidth = width;
-            value = EditorGUILayout.ColorField(new GUIContent(label, tooltip), value, true, true, false);
-            
-            if(side)EditorGUILayout.EndHorizontal();
-            else EditorGUILayout.EndVertical();
-            
-            Space(space);
-        }
-        
-        /// <summary>
-        /// Draws a toggle in the inspector.
-        /// </summary>
-        /// <param name="label">Label of the toggle.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="value">The bool within the script.</param>
-        /// <param name="side">true = color field is displayed beside label.
-        ///                     false = color field is displayed under label.</param>
-        /// <param name="width">Width of the displayed Label.</param>
-        /// <param name="space">Amount of space after the element.</param>
-        public static Color ColorField(string label, string tooltip, Color value, bool side = true, float width = 50, float space = 0)
-        {
-            if(side)EditorGUILayout.BeginHorizontal();
-            else EditorGUILayout.BeginVertical();
-            
-            EditorGUIUtility.labelWidth = width;
-            var newColor = EditorGUILayout.ColorField(new GUIContent(label, tooltip), value, true, true, false);
-            
-            if(side)EditorGUILayout.EndHorizontal();
-            else EditorGUILayout.EndVertical();
-            
-            Space(space);
+        #endregion
 
-            return newColor;
-        }
+        
+        
+        #region Fields
         
         /// <summary>
-        /// Draws a float field in the inspector.
+        /// Draws a int field in the inspector.
         /// </summary>
         /// <param name="label">Label of the slider.</param>
         /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
@@ -254,7 +243,6 @@ namespace TankWars.Editor
         /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
         /// <param name="value">The transform within the script.</param>
         /// <param name="labelWidth">Width of the displayed Label.</param>
-        /// <param name="barWidth">Width of the object area.</param>
         /// <param name="space">Amount of space after the element. </param>
         public static Transform TransformField(string label, string tooltip, Transform value, float labelWidth = 50, float space = 0)
         {
@@ -265,6 +253,114 @@ namespace TankWars.Editor
             if(space > 0) Space(space);
 
             return value;
+        }
+
+        /// <summary>
+        /// Draws a color field in the inspector.
+        /// </summary>
+        /// <param name="label">Label of the toggle.</param>
+        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+        /// <param name="value">The bool within the script.</param>
+        /// <param name="side">true = color field is displayed beside label.
+        ///                     false = color field is displayed under label.</param>
+        /// <param name="width">Width of the displayed Label.</param>
+        /// <param name="space">Amount of space after the element.</param>
+        public static Color ColorField(string label, string tooltip, Color value, bool side = true, float width = 50, float space = 0)
+        {
+            if(side)EditorGUILayout.BeginHorizontal();
+            else EditorGUILayout.BeginVertical();
+            
+            EditorGUIUtility.labelWidth = width;
+            var newColor = EditorGUILayout.ColorField(new GUIContent(label, tooltip), value, true, true, false);
+            
+            if(side)EditorGUILayout.EndHorizontal();
+            else EditorGUILayout.EndVertical();
+            
+            Space(space);
+
+            return newColor;
+        }
+        
+        /// <summary>
+        /// Draws the layer mask dropdown.
+        /// </summary>
+        /// <param name="label">Label of the toggle.</param>
+        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+        /// <param name="layerMask">The current layer mask.</param>
+        /// <param name="width">Width of the displayed Label.</param>
+        /// <param name="space">Amount of space after the element. </param>
+        /// <returns></returns>
+        public static LayerMask LayerMaskField (string label, string tooltip, LayerMask layerMask, float width = 50, float space = 0) 
+        {
+            var layers = new List<string>();
+            var layerNumbers = new List<int>();
+ 
+            for (var i = 0; i < 32; i++) 
+            {
+                var layerName = LayerMask.LayerToName(i);
+                
+                if (layerName == "") continue;
+                layers.Add(layerName);
+                layerNumbers.Add(i);
+            }
+            
+            var maskWithoutEmpty = 0;
+            for (var i = 0; i < layerNumbers.Count; i++) 
+            {
+                if (((1 << layerNumbers[i]) & layerMask.value) > 0)
+                    maskWithoutEmpty |= (1 << i);
+            }
+            
+            EditorGUIUtility.labelWidth = width;
+            maskWithoutEmpty = EditorGUILayout.MaskField(new GUIContent(label, tooltip), maskWithoutEmpty, layers.ToArray());
+            
+            var mask = layerNumbers.Where((t, i) => (maskWithoutEmpty & (1 << i)) > 0).Aggregate(0, 
+                (current, t) => current | (1 << t));
+            
+            layerMask.value = mask;
+            
+            Space(space);
+            
+            return layerMask;
+        }
+        
+        /// <summary>
+        /// Draws a popup of the project's existing sorting layers.
+        /// </summary>
+        /// <param name="label">Label of the field.</param>
+        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+        /// <param name="layerID">A serialized property must be created in the calling script.</param>
+        /// <param name="boxStyle">Style of the popup box.</param>
+        /// <param name="labelStyle">Style of the label.</param>
+        public static void SortingLayerField(string label, string tooltip, SerializedProperty layerID, GUIStyle boxStyle, GUIStyle labelStyle)
+        {
+            var methodInfo = typeof(EditorGUILayout).GetMethod("SortingLayerField", 
+                BindingFlags.Static | BindingFlags.NonPublic, null, new[] 
+                    { typeof(GUIContent), typeof(SerializedProperty), typeof(GUIStyle), typeof(GUIStyle) }, null);
+
+            if (methodInfo == null) return;
+            
+            var parameters = new object[] { new GUIContent(label, tooltip), layerID, boxStyle, labelStyle };
+            methodInfo.Invoke(null, parameters);
+        }
+        
+        /// <summary>
+        /// Draws a KeyCode dropdown. 
+        /// </summary>
+        /// <param name="label">Label of the toggle.</param>
+        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+        /// <param name="key">The current key code.</param>
+        /// <param name="width">Width of the displayed Label.</param>
+        /// <param name="space">Amount of space after the element. </param>
+        /// <returns></returns>
+        public static KeyCode KeyCodeDropdown(string label, string tooltip, KeyCode key, float width = 50, float space = 0)
+        {
+            EditorGUIUtility.labelWidth = width;
+            var newKey = (KeyCode)EditorGUILayout.EnumPopup(new GUIContent(label, tooltip), key);
+            
+            Space(space);
+
+            return newKey;
         }
         
         /// <summary>
@@ -288,6 +384,31 @@ namespace TankWars.Editor
             return value;
         }
         
+        /// <summary>
+        /// Draws a slider in the inspector.
+        /// </summary>
+        /// <param name="label">Label of the slider.</param>
+        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+        /// <param name="minValue">The current minimum value within the script</param>
+        /// <param name="maxValue">The current maximum value within the script</param>
+        /// <param name="minimum">Minimum possible range.</param>
+        /// <param name="maximum">Maximum possible range.</param>
+        /// <param name="width">Width of the displayed Label.</param>
+        /// <param name="space">Amount of space after the element. </param>
+        public static void MinMaxSlider(string label, string tooltip, ref float minValue, ref float maxValue, float minimum, float maximum, float width = 50, float space = 0)
+        {
+            EditorGUIUtility.labelWidth = width;
+            EditorGUILayout.MinMaxSlider(new GUIContent(label, tooltip), ref minValue, ref maxValue, minimum, maximum);
+            
+            Space(space);
+        }
+        
+        #endregion
+
+        
+        
+        #region Toggles
+
         /// <summary>
         /// Draws a toggle in the inspector.
         /// </summary>
@@ -378,98 +499,32 @@ namespace TankWars.Editor
 
             return value;
         }
+        
+        #endregion
 
-        /// <summary>
-        /// Draws the layer mask dropdown.
-        /// </summary>
-        /// <param name="label">Label of the toggle.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="layerMask">The current layer mask.</param>
-        /// <param name="width">Width of the displayed Label.</param>
-        /// <param name="space">Amount of space after the element. </param>
-        /// <returns></returns>
-        public static LayerMask LayerMaskField (string label, string tooltip, LayerMask layerMask, float width = 50, float space = 0) 
+        
+        
+        #region Util
+
+        public static void DrawLine(float thickness = 1, float spaceBefore = 0, float spaceAfter = 0)
         {
-            var layers = new List<string>();
-            var layerNumbers = new List<int>();
- 
-            for (var i = 0; i < 32; i++) 
+            Space(spaceBefore);
             {
-                var layerName = LayerMask.LayerToName(i);
-                
-                if (layerName == "") continue;
-                layers.Add(layerName);
-                layerNumbers.Add(i);
+                var rect = EditorGUILayout.GetControlRect(false, thickness );
+                rect.height = thickness;
+                EditorGUI.DrawRect(rect, new Color ( 0.5f,0.5f,0.5f, 1 ) );
             }
-            
-            var maskWithoutEmpty = 0;
-            for (var i = 0; i < layerNumbers.Count; i++) 
-            {
-                if (((1 << layerNumbers[i]) & layerMask.value) > 0)
-                    maskWithoutEmpty |= (1 << i);
-            }
-            
-            EditorGUIUtility.labelWidth = width;
-            maskWithoutEmpty = EditorGUILayout.MaskField(new GUIContent(label, tooltip), maskWithoutEmpty, layers.ToArray());
-            
-            var mask = layerNumbers.Where((t, i) => (maskWithoutEmpty & (1 << i)) > 0).Aggregate(0, 
-                (current, t) => current | (1 << t));
-            
-            layerMask.value = mask;
-            
-            Space(space);
-            
-            return layerMask;
+            Space(spaceAfter);
         }
 
-        /// <summary>
-        /// Draws a slider in the inspector.
-        /// </summary>
-        /// <param name="label">Label of the slider.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="minValue">The current minimum value within the script</param>
-        /// <param name="maxValue">The current maximum value within the script</param>
-        /// <param name="minimum">Minimum possible range.</param>
-        /// <param name="maximum">Maximum possible range.</param>
-        /// <param name="width">Width of the displayed Label.</param>
-        /// <param name="space">Amount of space after the element. </param>
-        public static void MinMaxSlider(string label, string tooltip, ref float minValue, ref float maxValue, float minimum, float maximum, float width = 50, float space = 0)
-        {
-            EditorGUIUtility.labelWidth = width;
-            EditorGUILayout.MinMaxSlider(new GUIContent(label, tooltip), ref minValue, ref maxValue, minimum, maximum);
-            
-            Space(space);
-        }
-        
-        /// <summary>
-        /// Draws a KeyCode dropdown. 
-        /// </summary>
-        /// <param name="label">Label of the toggle.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="key">The current key code.</param>
-        /// <param name="width">Width of the displayed Label.</param>
-        /// <param name="space">Amount of space after the element. </param>
-        /// <returns></returns>
-        public static KeyCode KeyCodeDropdown(string label, string tooltip, KeyCode key, float width = 50, float space = 0)
-        {
-            EditorGUIUtility.labelWidth = width;
-            var newKey = (KeyCode)EditorGUILayout.EnumPopup(new GUIContent(label, tooltip), key);
-            
-            Space(space);
+        private static void Space(float value) => EditorGUILayout.Space(value);
 
-            return newKey;
-        }
+        #endregion
 
-        /// <summary>
-        /// Initialises the script texture.
-        /// </summary>
-        /// <param name="path">The path to the texture.</param>
+
         
-        public static Texture2D InitTexture(string path)
-        {
-            return Resources.Load<Texture2D>(path);
-        }
-        
+        #region Styles
+
         /// <summary>
         /// Initialises the only the box style.
         /// </summary>
@@ -499,24 +554,7 @@ namespace TankWars.Editor
             };
         }
 
-        /// <summary>
-        /// Draws a popup of the project's existing sorting layers.
-        /// </summary>
-        /// <param name="label">Label of the field.</param>
-        /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-        /// <param name="layerID">A serialized property must be created in the calling script.</param>
-        /// <param name="boxStyle">Style of the popup box.</param>
-        /// <param name="labelStyle">Style of the label.</param>
-        public static void SortingLayerField(string label, string tooltip, SerializedProperty layerID, GUIStyle boxStyle, GUIStyle labelStyle)
-        {
-            var methodInfo = typeof(EditorGUILayout).GetMethod("SortingLayerField", 
-                BindingFlags.Static | BindingFlags.NonPublic, null, new[] 
-                    { typeof(GUIContent), typeof(SerializedProperty), typeof(GUIStyle), typeof(GUIStyle) }, null);
+        #endregion
 
-            if (methodInfo == null) return;
-            
-            var parameters = new object[] { new GUIContent(label, tooltip), layerID, boxStyle, labelStyle };
-            methodInfo.Invoke(null, parameters);
-        }
     }
 }

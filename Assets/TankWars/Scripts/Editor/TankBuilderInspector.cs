@@ -23,43 +23,24 @@ namespace TankWars.Editor
         private string _newCategoryName;
         private string _newFolderLocation;
         
-        private Color _guiColorBackup;
-        
-        private const string Path = "TankWars/Sprites/";
         private string[] _accessoryStyles;
-        
-        private Texture2D _plusTexture;
-        private Texture2D _minusTexture;
-        private Texture2D _editTexture;
-        
-        private TankBuilder tankBuilder => target as TankBuilder;
+
+        private TankBuilder TankBuilder => target as TankBuilder;
 
         private void OnEnable()
         {
-            // Save the original background color.
-            _guiColorBackup = GUI.backgroundColor;
-            
-            // Setup the SerializedProperties
+            EditorTools.InitTextures();
             _sortingLayerId = serializedObject.FindProperty("sortingLayerID");
-            
-            // Setup the textures
-            const string path = "TankWars/EditorUI/";
-            _plusTexture = EditorTools.InitTexture(path + "plus");
-            _minusTexture = EditorTools.InitTexture(path + "minus");
-            _editTexture = EditorTools.InitTexture(path + "edit");
         }
-
-        
         
         private void InitAccessoryStyle(string folderName, ref string[] styles)
         {
-            var sprites = Resources.LoadAll<Sprite>(Path + folderName);
+            const string path = "TankWars/Sprites/";
+            var sprites = Resources.LoadAll<Sprite>(path + folderName);
             styles = new string[sprites.Length];
             for (var i = 0; i < sprites.Length; i++)
                 styles[i] = sprites[i].name;
         }
-        
-        
         
         public override void OnInspectorGUI()
         {
@@ -82,7 +63,8 @@ namespace TankWars.Editor
         
         private void DrawSpawnElements()
         {
-            EditorTools.Header("Tank Creation Tool");
+            if(EditorTools.DrawHeader("Tank Creation Tool", ref TankBuilder.hideSection))
+                return;
 
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
@@ -139,7 +121,7 @@ namespace TankWars.Editor
                     GUILayout.BeginHorizontal();
                     EditorTools.Label("Are you sure?", "", 100);
                     if (EditorTools.Button("Yes", "Erases everything."))
-                        tankBuilder.EraseAll();
+                        TankBuilder.EraseAll();
                     
                     if (EditorTools.Button("No", "")) _eraseAll = false;
                     
@@ -149,7 +131,7 @@ namespace TankWars.Editor
                     GUILayout.EndVertical(); 
                 }
                 
-                GUI.backgroundColor = _guiColorBackup;
+                GUI.backgroundColor = EditorTools.guiColorBackup;
             }
 
             if (!_eraseAll)
@@ -180,7 +162,7 @@ namespace TankWars.Editor
                     GUILayout.BeginHorizontal();
                     if (EditorTools.Button("Add", "Adds the category."))
                     {
-                        tankBuilder.AddCategory(_categoryName, _folderLocation);
+                        TankBuilder.AddCategory(_categoryName, _folderLocation);
                         _addCategory = false;
                         _categoryName = "";
                         _folderLocation = "";
@@ -204,20 +186,25 @@ namespace TankWars.Editor
             
             EditorTools.DrawLine(0.5f, 5, 5);
 
-            if (tankBuilder.hull != null && tankBuilder.cannonRotor != null)
-            {
-                if (EditorTools.Button("Add Movement System", "Adds and sets up all the necessary " +
-                                                              "components for the tank to move."))
-                    tankBuilder.AddMovementSystem();
-            }
+            if (TankBuilder.hull == null && TankBuilder.cannonRotor == null) return;
 
-            if (tankBuilder.tankController == null) return;
+            if (EditorTools.Button("Add Movement System", "Adds and sets up all the necessary " +
+                                                          "components for the tank to move."))
+                TankBuilder.AddMovementSystem();
+
+            if (TankBuilder.tankController == null) return;
+            
+            GUILayout.Space(1.5f);
+                
+            if (EditorTools.Button("Add Weapon System", "Adds and sets up all the necessary " +
+                                                        "components for the tank to shoot."))
+                TankBuilder.AddWeaponSystem();
             
             GUILayout.Space(1.5f);
                 
             if (EditorTools.Button("Add Camera System", "Adds and sets up all the necessary " +
                                                         "components for the camera."))
-                tankBuilder.AddCameraSystem();
+                TankBuilder.AddCameraSystem();
         }
 
 
@@ -227,29 +214,29 @@ namespace TankWars.Editor
             GUILayout.BeginHorizontal();
 
             if (EditorTools.Foldout("Hull", "Spawn, toggles, or destroys the tanks hull.",
-                ref tankBuilder.expandHull))
+                ref TankBuilder.expandHull))
             {
                 GUILayout.Space(-100);
 
-                if (EditorTools.TexturedButton(_plusTexture, "Spawns a new hull, destroying the old one.", 20f))
-                    tankBuilder.SpawnHull();
+                if (EditorTools.TexturedButton(EditorTools.plusTexture, "Spawns a new hull, destroying the old one.", 20f))
+                    TankBuilder.SpawnHull();
 
-                if (tankBuilder.hull != null)
+                if (TankBuilder.hull != null)
                 {
-                    if (EditorTools.TexturedButton(_minusTexture, "Destroys the tanks current hull.", 20f))
-                        DestroyImmediate(tankBuilder.hull.gameObject);
+                    if (EditorTools.TexturedButton(EditorTools.minusTexture, "Destroys the tanks current hull.", 20f))
+                        DestroyImmediate(TankBuilder.hull.gameObject);
                 }
 
                 GUILayout.EndHorizontal();
 
                 EditorTools.DrawLine(0.5f, 5f, 5);
 
-                if (tankBuilder.hull == null) return;
+                if (TankBuilder.hull == null) return;
 
                 GUILayout.BeginVertical("box");
 
                 if (EditorTools.Button("Toggle", "Toggles the current hull."))
-                    Selection.activeGameObject = tankBuilder.hull.gameObject;
+                    Selection.activeGameObject = TankBuilder.hull.gameObject;
 
 
 
@@ -261,13 +248,13 @@ namespace TankWars.Editor
                 {
                     EditorGUI.indentLevel++;
 
-                    tankBuilder.hullColor = EditorTools.ColorField("Overall Color",
+                    TankBuilder.hullColor = EditorTools.ColorField("Overall Color",
                         "Changes the color of the tanks hull.",
-                        tankBuilder.hullColor, true, 120);
-                    tankBuilder.hullAdditionalColor = EditorTools.ColorField("Additional Color",
-                        "Changes the additional colors on the tanks hull.", tankBuilder.hullAdditionalColor, true, 120);
-                    tankBuilder.hullShadowsColor = EditorTools.ColorField("Shadows Color",
-                        "Changes the color of the shadows on the tanks hull.", tankBuilder.hullShadowsColor, true, 120);
+                        TankBuilder.hullColor, true, 120);
+                    TankBuilder.hullAdditionalColor = EditorTools.ColorField("Additional Color",
+                        "Changes the additional colors on the tanks hull.", TankBuilder.hullAdditionalColor, true, 120);
+                    TankBuilder.hullShadowsColor = EditorTools.ColorField("Shadows Color",
+                        "Changes the color of the shadows on the tanks hull.", TankBuilder.hullShadowsColor, true, 120);
 
                     EditorGUI.indentLevel--;
                 }
@@ -284,30 +271,30 @@ namespace TankWars.Editor
             GUILayout.BeginHorizontal();
 
             if (EditorTools.Foldout("Cannon", "Spawn, toggles, or destroys the tanks Cannon.",
-                ref tankBuilder.expandCannon))
+                ref TankBuilder.expandCannon))
             {
 
                 GUILayout.Space(-100);
 
-                if (EditorTools.TexturedButton(_plusTexture, "Spawns a new cannon, destroying the old one.", 20f))
-                    tankBuilder.SpawnCannon();
+                if (EditorTools.TexturedButton(EditorTools.plusTexture, "Spawns a new cannon, destroying the old one.", 20f))
+                    TankBuilder.SpawnCannon();
 
-                if (tankBuilder.cannonBase != null)
+                if (TankBuilder.cannonBase != null)
                 {
-                    if (EditorTools.TexturedButton(_minusTexture, "Destroys the tanks current cannon.", 20f))
-                        DestroyImmediate(tankBuilder.cannonBase.gameObject);
+                    if (EditorTools.TexturedButton(EditorTools.minusTexture, "Destroys the tanks current cannon.", 20f))
+                        DestroyImmediate(TankBuilder.cannonBase.gameObject);
                 }
 
                 GUILayout.EndHorizontal();
 
                 EditorTools.DrawLine(0.5f, 5f, 5);
 
-                if (tankBuilder.cannonBase == null) return;
+                if (TankBuilder.cannonBase == null) return;
 
                 GUILayout.BeginVertical("box");
                 {
                     if (EditorTools.Button("Toggle", "Toggles the current cannon."))
-                        Selection.activeGameObject = tankBuilder.cannonBase.gameObject;
+                        Selection.activeGameObject = TankBuilder.cannonBase.gameObject;
 
 
 
@@ -316,9 +303,9 @@ namespace TankWars.Editor
 
 
                     EditorGUIUtility.labelWidth = 100;
-                    tankBuilder.cannonType = (TankBuilder.CannonType) EditorGUILayout.EnumPopup(new GUIContent(
+                    TankBuilder.cannonType = (TankBuilder.CannonType) EditorGUILayout.EnumPopup(new GUIContent(
                         "Cannon Type",
-                        "The method used to follow the target."), tankBuilder.cannonType);
+                        "The method used to follow the target."), TankBuilder.cannonType);
 
 
 
@@ -333,27 +320,27 @@ namespace TankWars.Editor
                         GUILayout.FlexibleSpace();
 
                         if (EditorTools.Button("Toggle", "Toggles the current cannon."))
-                            Selection.activeGameObject = tankBuilder.cannonRotor.gameObject;
+                            Selection.activeGameObject = TankBuilder.cannonRotor.gameObject;
                     }
                     GUILayout.EndHorizontal();
                     
                     GUILayout.Space(3);
 
-                    tankBuilder.cannonCurrentTab = GUILayout.Toolbar(tankBuilder.cannonCurrentTab,
+                    TankBuilder.cannonCurrentTab = GUILayout.Toolbar(TankBuilder.cannonCurrentTab,
                         new string[] {"Position", "Size"});
                     
-                    if (tankBuilder.cannonCurrentTab == 0)
+                    if (TankBuilder.cannonCurrentTab == 0)
                     {
                         EditorTools.Label("Position:", "Changes the position of the base.", 100);
 
                         EditorGUI.indentLevel++;
 
-                        var position = tankBuilder.cannonRotorPosition;
+                        var position = TankBuilder.cannonRotorPosition;
                         position.x = EditorTools.Slider("X", "Changes the base's position along the x axis.",
                             position.x, -3.0f, 3.0f, 100);
                         position.y = EditorTools.Slider("Y", "Changes the base's position along the y axis.",
                             position.y, -7.0f, 5.0f, 100);
-                        tankBuilder.cannonRotorPosition = position;
+                        TankBuilder.cannonRotorPosition = position;
 
                         EditorGUI.indentLevel--;
                     }
@@ -363,12 +350,12 @@ namespace TankWars.Editor
 
                         EditorGUI.indentLevel++;
 
-                        var size = tankBuilder.cannonRotorSize;
+                        var size = TankBuilder.cannonRotorSize;
                         size.x = EditorTools.Slider("X", "Changes the base's size along the x axis.",
                             size.x, -2.0f, 2.0f, 100);
                         size.y = EditorTools.Slider("Y", "Changes the base's size along the y axis.",
                             size.y, 0.0f, 2.0f, 100);
-                        tankBuilder.cannonRotorSize = size;
+                        TankBuilder.cannonRotorSize = size;
 
                         EditorGUI.indentLevel--;
                     }
@@ -379,7 +366,7 @@ namespace TankWars.Editor
 
                     
                     
-                    if (tankBuilder.cannonType == TankBuilder.CannonType.Single)
+                    if (TankBuilder.cannonType == TankBuilder.CannonType.Single)
                     {
                         GUILayout.BeginHorizontal();
                         {
@@ -388,7 +375,7 @@ namespace TankWars.Editor
                             GUILayout.FlexibleSpace();
 
                             if (EditorTools.Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = tankBuilder.cannonHolder[0].gameObject;
+                                Selection.activeGameObject = TankBuilder.cannonHolder[0].gameObject;
                         }
                         GUILayout.EndHorizontal();
                         
@@ -396,12 +383,12 @@ namespace TankWars.Editor
 
                         EditorGUI.indentLevel++;
 
-                        tankBuilder.singleCannonPosition = EditorTools.Slider("Position",
+                        TankBuilder.singleCannonPosition = EditorTools.Slider("Position",
                             "Position of the cannon on the x axis.",
-                            tankBuilder.singleCannonPosition, -2.5f, 2.5f, 100.0f);
+                            TankBuilder.singleCannonPosition, -2.5f, 2.5f, 100.0f);
 
-                        tankBuilder.singleCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
-                            tankBuilder.singleCannonSize, 0.5f, 1.0f, 100.0f);
+                        TankBuilder.singleCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
+                            TankBuilder.singleCannonSize, 0.5f, 1.0f, 100.0f);
 
                         EditorGUI.indentLevel--;
                     }
@@ -414,7 +401,7 @@ namespace TankWars.Editor
                             GUILayout.FlexibleSpace();
 
                             if (EditorTools.Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = tankBuilder.cannonHolder[0].gameObject;
+                                Selection.activeGameObject = TankBuilder.cannonHolder[0].gameObject;
                         }
                         GUILayout.EndHorizontal();
                         
@@ -422,12 +409,12 @@ namespace TankWars.Editor
 
                         EditorGUI.indentLevel++;
 
-                        tankBuilder.leftCannonPosition = EditorTools.Slider("Position",
+                        TankBuilder.leftCannonPosition = EditorTools.Slider("Position",
                             "Position of the cannon on the x axis.",
-                            tankBuilder.leftCannonPosition, -2.5f, 0.0f, 100.0f);
+                            TankBuilder.leftCannonPosition, -2.5f, 0.0f, 100.0f);
 
-                        tankBuilder.leftCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
-                            tankBuilder.leftCannonSize, 0.5f, 1.0f, 100.0f);
+                        TankBuilder.leftCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
+                            TankBuilder.leftCannonSize, 0.5f, 1.0f, 100.0f);
 
                         EditorGUI.indentLevel--;
 
@@ -440,7 +427,7 @@ namespace TankWars.Editor
                             GUILayout.FlexibleSpace();
 
                             if (EditorTools.Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = tankBuilder.cannonHolder[1].gameObject;
+                                Selection.activeGameObject = TankBuilder.cannonHolder[1].gameObject;
                         }
                         GUILayout.EndHorizontal();
                         
@@ -448,12 +435,12 @@ namespace TankWars.Editor
 
                         EditorGUI.indentLevel++;
 
-                        tankBuilder.rightCannonPosition = EditorTools.Slider("Position",
+                        TankBuilder.rightCannonPosition = EditorTools.Slider("Position",
                             "Position of the cannon on the x axis.",
-                            tankBuilder.rightCannonPosition, 0.0f, 2.5f, 100.0f);
+                            TankBuilder.rightCannonPosition, 0.0f, 2.5f, 100.0f);
 
-                        tankBuilder.rightCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
-                            tankBuilder.rightCannonSize, 0.5f, 1.0f, 100.0f);
+                        TankBuilder.rightCannonSize = EditorTools.Slider("Size", "Size of the tanks cannon.",
+                            TankBuilder.rightCannonSize, 0.5f, 1.0f, 100.0f);
 
                         EditorGUI.indentLevel--;
                     }
@@ -468,9 +455,9 @@ namespace TankWars.Editor
                         {
                             EditorTools.Label("Base", "Changes the color of the cannons base.", 100);
 
-                            tankBuilder.cannonBaseColor = EditorGUILayout.ColorField(tankBuilder.cannonBaseColor);
-                            tankBuilder.cannonBaseSidesColor =
-                                EditorGUILayout.ColorField(tankBuilder.cannonBaseSidesColor);
+                            TankBuilder.cannonBaseColor = EditorGUILayout.ColorField(TankBuilder.cannonBaseColor);
+                            TankBuilder.cannonBaseSidesColor =
+                                EditorGUILayout.ColorField(TankBuilder.cannonBaseSidesColor);
 
                             GUILayout.FlexibleSpace();
                         }
@@ -478,18 +465,18 @@ namespace TankWars.Editor
                         
                         GUILayout.Space(5);
 
-                        if (tankBuilder.cannonType == TankBuilder.CannonType.Single)
+                        if (TankBuilder.cannonType == TankBuilder.CannonType.Single)
                         {
-                            tankBuilder.cannonColor = EditorTools.ColorField("Cannon",
-                                "Changes the color of the tanks cannon.", tankBuilder.cannonColor, true, 120);
+                            TankBuilder.cannonColor = EditorTools.ColorField("Cannon",
+                                "Changes the color of the tanks cannon.", TankBuilder.cannonColor, true, 120);
                         }
                         else
                         {
-                            tankBuilder.leftCannonColor = EditorTools.ColorField("Left Cannon",
-                                "Changes the color of the tanks left cannon.", tankBuilder.leftCannonColor, true,
+                            TankBuilder.leftCannonColor = EditorTools.ColorField("Left Cannon",
+                                "Changes the color of the tanks left cannon.", TankBuilder.leftCannonColor, true,
                                 120);
-                            tankBuilder.rightCannonColor = EditorTools.ColorField("Right Cannon",
-                                "Changes the color of the tanks right cannon.", tankBuilder.rightCannonColor, true,
+                            TankBuilder.rightCannonColor = EditorTools.ColorField("Right Cannon",
+                                "Changes the color of the tanks right cannon.", TankBuilder.rightCannonColor, true,
                                 120);
                         }
 
@@ -506,7 +493,7 @@ namespace TankWars.Editor
         private void DrawCategories()
         {
             var index = 0;
-            foreach (var category in tankBuilder.categories)
+            foreach (var category in TankBuilder.categories)
             {
                 GUILayout.BeginHorizontal();
 
@@ -520,7 +507,7 @@ namespace TankWars.Editor
 
                     if (!category.editCategory)
                     {
-                        if (EditorTools.TexturedButton(_editTexture, "Edit Category?", 20f))
+                        if (EditorTools.TexturedButton(EditorTools.editTexture, "Edit Category?", 20f))
                         {
                             category.editCategory = true;
                             _newCategoryName = category.categoryName;
@@ -528,12 +515,12 @@ namespace TankWars.Editor
                         }
                     }
 
-                    if (EditorTools.TexturedButton(_plusTexture, "Creates a completely new accessory.", 20f))
-                        tankBuilder.SpawnAccessory(index, category.categoryName, category.categoryFolder);
+                    if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a completely new accessory.", 20f))
+                        TankBuilder.SpawnAccessory(index, category.categoryName, category.categoryFolder);
 
-                    if (EditorTools.TexturedButton(_minusTexture, "Removes this category.", 20f))
+                    if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this category.", 20f))
                     {
-                        tankBuilder.RemoveCategory(index);
+                        TankBuilder.RemoveCategory(index);
                         break;
                     }
 
@@ -564,7 +551,7 @@ namespace TankWars.Editor
                                     foreach (var accessory in category.accessories)
                                         accessory.parentName = _newCategoryName;
                                     
-                                    var transform = tankBuilder.transform;
+                                    var transform = TankBuilder.transform;
                                         
                                     for (var i = 0; i < 2; i++)
                                     {
@@ -604,7 +591,7 @@ namespace TankWars.Editor
                         EditorTools.DrawLine(0.5f, 2.5f, 5);
                     }
 
-                    if (tankBuilder.hull == null) return;
+                    if (TankBuilder.hull == null) return;
                     
                     InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
                     
@@ -612,7 +599,7 @@ namespace TankWars.Editor
                 }
                 else GUILayout.EndHorizontal();
 
-                if(index != tankBuilder.categories.Count - 1) EditorTools.DrawLine(0.5f, 2.5f, 5);
+                if(index != TankBuilder.categories.Count - 1) EditorTools.DrawLine(0.5f, 2.5f, 5);
                 else GUILayout.Space(2.5f);
                 
                 category.expandCategory = expandCategory;
@@ -641,20 +628,20 @@ namespace TankWars.Editor
 
                         if (!accessory.editName)
                         {
-                            if (EditorTools.TexturedButton(_editTexture, "Rename object?", 20f))
+                            if (EditorTools.TexturedButton(EditorTools.editTexture, "Rename object?", 20f))
                             {
                                 accessory.editName = true;
                                 accessory.newName = accessory.Name;
                             }
                         }
 
-                        if (EditorTools.TexturedButton(_plusTexture, "Create a copy of this object?.", 20f))
+                        if (EditorTools.TexturedButton(EditorTools.plusTexture, "Create a copy of this object?.", 20f))
                         {
-                            tankBuilder.CopyAccessory(index, accessory);
+                            TankBuilder.CopyAccessory(index, accessory);
                             break;
                         }
 
-                        if (EditorTools.TexturedButton(_minusTexture, "Remove this object?", 20f))
+                        if (EditorTools.TexturedButton(EditorTools.minusTexture, "Remove this object?", 20f))
                         {
                             if (accessory.transform != null) DestroyImmediate(accessory.transform.gameObject);
                             accessories.RemoveAt(i);
@@ -669,9 +656,9 @@ namespace TankWars.Editor
                         
                         
                         
-                        GUI.backgroundColor = Color.black;
+                        GUI.backgroundColor = Color.grey;
                         GUILayout.BeginVertical("box");
-                        GUI.backgroundColor = _guiColorBackup;
+                        GUI.backgroundColor = EditorTools.guiColorBackup;
                         
                         if (accessory.editName)
                         {
@@ -681,7 +668,7 @@ namespace TankWars.Editor
                             accessory.newName = EditorGUILayout.TextField(new GUIContent("Name", 
                                 "Automatically renames the game object."), accessory.newName);
                             
-                            GUI.backgroundColor = _guiColorBackup;
+                            GUI.backgroundColor = EditorTools.guiColorBackup;
                                 
                             GUILayout.BeginHorizontal();
                             {
