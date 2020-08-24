@@ -69,7 +69,12 @@ namespace TankWars.Editor
                         if (!EditorTools.Foldout(sound.name, "", ref sound.hideSection))
                         {
                             GUILayout.EndHorizontal();
-                            break;
+                            
+                            if(index < AudioManager.sounds.Count - 1) 
+                                EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                            
+                            index++;
+                            continue;
                         }
                 
                         GUILayout.Space(-100);
@@ -86,16 +91,13 @@ namespace TankWars.Editor
                     }
                     GUILayout.EndHorizontal();
             
-                    EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                    if(index < AudioManager.sounds.Count - 1) 
+                        EditorTools.DrawLine(0.5f, 1.5f, 5f);
                     
                     DrawSound(index, sound);
-                    
-                    if(index < AudioManager.sounds.Count - 1) 
-                        EditorTools.DrawLine(0.5f, 0, 2.5f);
 
                     index++;
                 }
-                
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(5);

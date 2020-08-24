@@ -178,7 +178,7 @@ namespace TankWars.Controllers
 
 		#region Unity Inspector
 
-		[HideInInspector] public bool[] hideSection = new bool[2];
+		public bool[] hideSection = new bool[3];
 
 		#endregion
 		

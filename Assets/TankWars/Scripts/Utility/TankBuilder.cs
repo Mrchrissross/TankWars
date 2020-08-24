@@ -191,6 +191,7 @@ namespace TankWars.Utility
                 transform.parent = parent;
                 transform.localPosition = Vector3.zero;
                 transform.localRotation = Quaternion.identity;
+                transform.localScale = Vector3.one;
 
                 // Sprite
                 accessorySprite = transform.gameObject.AddComponent<SpriteRenderer>();
@@ -818,6 +819,7 @@ namespace TankWars.Utility
                 parent.parent = grandParent;
                 parent.localPosition = Vector3.zero;
                 parent.localRotation = Quaternion.identity;
+                parent.localScale = Vector3.one;
             }
         }
 
@@ -860,6 +862,7 @@ namespace TankWars.Utility
                 parent.parent = parentHull;
                 parent.localPosition = Vector3.zero;
                 parent.localRotation = Quaternion.identity;
+                parent.localScale = Vector3.one;
             }
             
             categories[index].accessories.Add(new Accessory(parent, projectFolder, sortingLayerID));
