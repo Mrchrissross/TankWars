@@ -157,7 +157,7 @@ namespace TankWars.Controllers
         /// </summary>
         private void Explode()
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
             AssetManager.Instance.SpawnObject(explosion, transform.position, transform.rotation);
             AudioManager.Instance.PlaySound(explosionSound);
         }

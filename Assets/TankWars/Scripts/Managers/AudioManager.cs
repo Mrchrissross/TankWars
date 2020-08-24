@@ -39,7 +39,7 @@ namespace TankWars.Managers
         #region Functions
 
         /// <summary>
-        /// Assigns the source clip.
+        /// Assigns the audio source.
         /// </summary>
         /// <param name="source">The audio source component.</param>
         

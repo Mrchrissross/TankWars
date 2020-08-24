@@ -12,13 +12,6 @@ namespace TankWars.Controllers
     
     public class WeaponController : MonoBehaviour
     {
-        #region Properties
-
-        
-
-        #endregion
-
-        
         
         #region Fields
 
@@ -56,6 +49,8 @@ namespace TankWars.Controllers
             for (; index < end; index++)
             {
                 ref var weapon = ref weapons[index];
+
+                if (weapon == null) continue;
                 
                 var shotTimer = weapon.ShotTimer;
                 if(shotTimer.y > 0f) shotTimer.y -= Time.deltaTime;
@@ -77,10 +72,15 @@ namespace TankWars.Controllers
                 
                 // Muzzle Flash
 
-                var ammoController = ammo.AddComponent<AmmoController>();
+                var ammoController = ammo.GetComponent<AmmoController>();
+                
+                if(ammoController == null)
+                    ammoController = ammo.AddComponent<AmmoController>();
+                
                 ammoController.InitialiseAmmo(weapon);
                 
-                ammo.AddComponent<Rigidbody2D>();
+                if(ammo.GetComponent<Rigidbody2D>() == null)
+                    ammo.AddComponent<Rigidbody2D>();
                 
                 //Recoil
                 

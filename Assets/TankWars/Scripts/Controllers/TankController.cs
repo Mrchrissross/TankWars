@@ -659,6 +659,8 @@ namespace TankWars.Controllers
         
         private float GetCannonInput()
         {
+            if (camera == null) return 0;
+            
             // Check for any mouse input.
             var mouseInput = Input.mousePosition.xy();
             
@@ -713,8 +715,10 @@ namespace TankWars.Controllers
         
         private void UpdateCannon()
         {
-            var newRotation = Quaternion.AngleAxis(cannonAngle, Vector3.back);
+            if (camera == null) return;
             
+            var newRotation = Quaternion.AngleAxis(cannonAngle, Vector3.back);
+         
             switch(rotorRotationMethod)
             {
                 case RotorRotationMethod.None:

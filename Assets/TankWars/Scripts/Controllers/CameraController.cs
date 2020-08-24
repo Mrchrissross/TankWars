@@ -49,12 +49,7 @@ namespace TankWars.Controllers
 
 	    public Transform Target
 	    {
-		    get
-		    {
-			    if(cameraTarget == null) Debug.LogError("Camera Controller: No camera target has been set.");
-			    
-			    return cameraTarget;
-		    }
+		    get => cameraTarget;
 		    set => cameraTarget = value;
 	    }
 	    public Transform cameraTarget;

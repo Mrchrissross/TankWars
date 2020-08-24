@@ -27,11 +27,15 @@ namespace TankWars.Editor
 
         private TankBuilder TankBuilder => target as TankBuilder;
 
+        
+        
         private void OnEnable()
         {
             EditorTools.InitTextures();
             _sortingLayerId = serializedObject.FindProperty("sortingLayerID");
         }
+        
+        
         
         private void InitAccessoryStyle(string folderName, ref string[] styles)
         {
@@ -41,6 +45,8 @@ namespace TankWars.Editor
             for (var i = 0; i < sprites.Length; i++)
                 styles[i] = sprites[i].name;
         }
+        
+        
         
         public override void OnInspectorGUI()
         {
@@ -94,11 +100,14 @@ namespace TankWars.Editor
         {
             EditorGUILayout.BeginHorizontal();
             EditorTools.Label("Sorting Layer:", "The sorting layer to assign to the tank.", 110);
-
             EditorTools.SortingLayerField("", "", _sortingLayerId, EditorStyles.popup, EditorStyles.label);
+
+            if(EditorTools.Button("Set", "Sets the sorting layer to all sprite renderers among children.", 60))
+                TankBuilder.SetSortingLayer();
+            
             EditorGUILayout.EndHorizontal();
 
-            EditorTools.DrawLine(0.5f, 10f, 5);
+            EditorTools.DrawLine(0.5f, 8f, 5);
             
             GUI.backgroundColor = Color.grey;
 

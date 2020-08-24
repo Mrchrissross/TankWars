@@ -267,7 +267,7 @@ namespace TankWars.Utility
             }
         }
         [SerializeField] private CannonType _cannonType = CannonType.Single;
-
+        
         
         
         #region Hull Colors
@@ -552,12 +552,19 @@ namespace TankWars.Utility
         
 
         #region Functions
+
+        public void SetSortingLayer()
+        {
+            var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+            foreach (var spriteRenderer in spriteRenderers)
+                spriteRenderer.sortingLayerID = sortingLayerID;
+        }
         
         /// <summary>
         /// Use with caution: Remove absolutely everything from the tank
         /// and deletes is all.
         /// </summary>
-        
         public void EraseAll()
         {
             transform.DestroyChildren();
@@ -586,6 +593,7 @@ namespace TankWars.Utility
             // Reset the hulls position to zero.
             hullParent.localPosition = Vector3.zero;
             hullParent.localRotation = Quaternion.identity;
+            hullParent.localScale = Vector2.one;
             
             
             
