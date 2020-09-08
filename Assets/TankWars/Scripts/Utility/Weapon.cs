@@ -9,6 +9,8 @@ namespace TankWars.Utility
         
         #region Properties
 
+        #if UNITY_EDITOR
+        
         /// <summary>
         /// The name of the weapon.
         /// </summary>
@@ -29,6 +31,8 @@ namespace TankWars.Utility
         } 
         [Tooltip("The name of the weapon.")]
         [Space, SerializeField] private string _name = "New Weapon";
+
+        #endif
         
         /// <summary>
         /// The asset to spawn from asset manager (Ensure this matches the settings in the Asset Manager).
@@ -159,6 +163,8 @@ namespace TankWars.Utility
         
         #region Functions
 
+        #if UNITY_EDITOR
+        
         public void OnValidate()
         {
             Name = _name;
@@ -170,6 +176,8 @@ namespace TankWars.Utility
             MuzzleFlash = muzzleFlash;
             Explosion = explosion;
         }
+
+        #endif
 
         #endregion
     }

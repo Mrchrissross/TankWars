@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+
+using UnityEditor;
 using UnityEngine;
 
 namespace TankWars.Utility
@@ -38,3 +40,5 @@ namespace TankWars.Utility
         }
     }
 }
+
+#endif
