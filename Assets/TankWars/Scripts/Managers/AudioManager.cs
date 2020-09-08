@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -254,7 +252,6 @@ namespace TankWars.Managers
         
         #endregion
 
-        
         
         
         #region MonoBehaviour

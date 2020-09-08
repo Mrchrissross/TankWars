@@ -23,7 +23,7 @@ namespace TankWars.Editor
             EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
             
             EditorGUI.BeginChangeCheck();
-            Undo.RecordObject(target, "MovementController");
+            Undo.RecordObject(target, "AssetManager");
             
             DrawSections();
 

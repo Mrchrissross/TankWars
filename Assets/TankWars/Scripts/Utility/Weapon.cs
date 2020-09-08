@@ -1,5 +1,4 @@
-﻿using TankWars.Controllers;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace TankWars.Utility
@@ -43,18 +42,6 @@ namespace TankWars.Utility
         [Tooltip("The asset to spawn from asset manager (Ensure this matches the settings in the Asset Manager).")]
         [SerializeField] private string asset;
         [HideInInspector] public int assetIndex;
-        
-        /// <summary>
-        /// The type of ammo fired.
-        /// </summary>
-            
-        public AmmoController.AmmoType AmmoType
-        {
-            get => ammoType;
-            set => ammoType = value;
-        }
-        [Space, Tooltip("The type of ammo fired.")]
-        [SerializeField] private AmmoController.AmmoType ammoType;
         
         /// <summary>
         /// Layers that the ammo can collide with.
@@ -178,7 +165,6 @@ namespace TankWars.Utility
             ShotTimer = shotTimer;
             Speed = speed;
             Damage = damage;
-            AmmoType = ammoType;
             ShotSound = shotSound;
             ExplosionSound = explosionSound;
             MuzzleFlash = muzzleFlash;

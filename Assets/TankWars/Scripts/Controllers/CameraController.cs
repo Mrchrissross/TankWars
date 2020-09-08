@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Collections;
 using TankWars.Utility;
 using UnityEngine;
 
@@ -441,6 +439,7 @@ namespace TankWars.Controllers
 				yield return new WaitForFixedUpdate();
 				LateFixedUpdate();
 			}
+			// ReSharper disable once IteratorNeverReturns
 		}
 
 		#endregion

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -98,7 +97,7 @@ namespace TankWars.Managers
             foreach (var asset in assets.Where(asset => asset.name == assetName))
                 return asset;
             
-            Debug.LogWarning("Asset Manager: Asset not found in list." + assetName);
+            Debug.LogWarning("Asset Manager: Asset not found in list. (" + assetName + ")");
             return null;
         }
         
@@ -118,7 +117,7 @@ namespace TankWars.Managers
 
             if (asset == null)
             {
-                Debug.LogWarning("Asset Manager: Asset not found in list." + assetName);
+                Debug.LogWarning("Asset Manager: Asset not found in list. (" + assetName + ")");
                 return null;
             }
 

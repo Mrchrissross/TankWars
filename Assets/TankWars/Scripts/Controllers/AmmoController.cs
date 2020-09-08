@@ -1,5 +1,4 @@
-﻿using System;
-using TankWars.Managers;
+﻿using TankWars.Managers;
 using TankWars.Utility;
 using UnityEngine;
 
@@ -11,16 +10,6 @@ namespace TankWars.Controllers
     
     public class AmmoController : MonoBehaviour
     {
-        
-        /// <summary>
-        ///  The type of bullet that the tank will fire.
-        /// </summary>
-        
-        public enum AmmoType
-        {
-            Forward,
-            Guided
-        }
         
         #region Properties
 
@@ -90,9 +79,6 @@ namespace TankWars.Controllers
 
         #region Bullet Information
         
-        // The type of ammo fired.
-        public AmmoType ammoType;
-        
         // (Ensure below matches the settings found in the Audio Manager)
         public string explosionSound;        // Sound effect when the ammo explodes.
 
@@ -116,7 +102,6 @@ namespace TankWars.Controllers
 
         public void InitialiseAmmo(Weapon copy)
         {
-            ammoType = copy.AmmoType;
             Speed = copy.Speed;
             Damage = copy.Damage;
             explosionSound = copy.ExplosionSound;
@@ -145,7 +130,7 @@ namespace TankWars.Controllers
                 case "Mine":
                 {
                     AssetManager.Instance.SpawnObject("Mine Explosion", impactTarget.position, impactTarget.rotation);
-                    AudioManager.Instance.PlaySound(explosionSound);
+                    AudioManager.Instance.PlaySound("Mine Explosion");
                     Destroy(impactTarget.gameObject);
                     break;
                 }
@@ -158,7 +143,7 @@ namespace TankWars.Controllers
         private void Explode()
         {
             gameObject.SetActive(false);
-            AssetManager.Instance.SpawnObject(explosion, transform.position, transform.rotation);
+            AssetManager.Instance.SpawnObject(explosion, transform.position, Quaternion.Euler(transform.rotation.eulerAngles.WithZ(0)));
             AudioManager.Instance.PlaySound(explosionSound);
         }
         

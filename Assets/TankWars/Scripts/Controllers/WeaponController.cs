@@ -43,47 +43,69 @@ namespace TankWars.Controllers
         
         void Shoot()
         {
+            // Iterate through the fire points.
             var index = firePoints.Count == 1 ? 0 : 1;
             var end = firePoints.Count == 1 ? 1 : 3;
             
             for (; index < end; index++)
             {
+                // Acquire the fire points weapon information.
                 ref var weapon = ref weapons[index];
 
+                // If no weapon has been assigned, return.
                 if (weapon == null) continue;
                 
+                // Check the shot timer.
                 var shotTimer = weapon.ShotTimer;
                 if(shotTimer.y > 0f) shotTimer.y -= Time.deltaTime;
                 weapon.ShotTimer = shotTimer;
 
+                // Check for user input.
                 var input = Input.GetButtonDown(cannonInput[index]) || 
                             Math.Abs(Input.GetAxisRaw(cannonInput[index])) > 0.0f;
                 
+                // If there has been no user input or the shot timer is not depleted,
+                // continue on to next fire point.
                 if (!input || !(shotTimer.y < Mathf.Epsilon)) continue;
+                
+                // The cannon has been fired.
                 shootCannon[index] = false;
 
+                // Acquire fire point.
                 var firePoint =
                     index == 0 ? firePoints[0] :
                     index == 1 ? firePoints[0] :
                     firePoints[1];
+
+                var firePointPosition = firePoint.position;
+                var firePointRotation = firePoint.rotation;
                 
-                var ammo = AssetManager.Instance.SpawnObject(weapon.Asset, firePoint.position, firePoint.rotation);
+                // Spawn the fired ammo, at the fire point, location and rotation.
+                var ammo = AssetManager.Instance.SpawnObject(weapon.Asset, firePointPosition, firePointRotation);
                 AudioManager.Instance.PlaySound(weapon.ShotSound);
                 
-                // Muzzle Flash
-
+                // Perform the muzzle flash.
+                AssetManager.Instance.SpawnObject(weapon.MuzzleFlash, firePointPosition, firePointRotation);
+                
+                // Acquire ammo controller.
                 var ammoController = ammo.GetComponent<AmmoController>();
                 
+                // If null, create one.
                 if(ammoController == null)
                     ammoController = ammo.AddComponent<AmmoController>();
                 
+                // Initialise the ammo with all the weapons information.
                 ammoController.InitialiseAmmo(weapon);
                 
+                // Ensure a rigidbody exists on the ammo.
                 if(ammo.GetComponent<Rigidbody2D>() == null)
                     ammo.AddComponent<Rigidbody2D>();
                 
-                //Recoil
+                //
+                // Perform the recoil (working progress).
+                //
                 
+                // Restart the shot timer.
                 weapon.ShotTimer = shotTimer.WithY(shotTimer.x);
             }
         }

@@ -1,11 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using TankWars.Managers;
 using TankWars.Utility;
-using Debug = UnityEngine.Debug;
 
 namespace TankWars.Controllers
 {
@@ -756,87 +751,6 @@ namespace TankWars.Controllers
         }
 
         #endregion
-        
-        // /// <summary>
-        // /// Ensures the main camera stays on top of the player tank.
-        // /// </summary>
-        // void UpdateCamera()
-        // {
-        //     Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10.0f);
-        // }
-        //
-        // /// <summary>
-        // /// Rotates the players cannon to the direction of the mouse.
-        // /// </summary>
-        // void RotateCannon()
-        // {
-        //     Vector3 mousePos = Input.mousePosition;                                                                        
-        //     Vector3 screenPos = Camera.main.WorldToScreenPoint(cannonRotor.position);                              
-        //     Vector3 offset = new Vector3(mousePos.x - screenPos.x, mousePos.y - screenPos.y);   
-        //
-        //     float angle = Mathf.Atan2(offset.x, offset.y) * Mathf.Rad2Deg;                      
-        //     cannonRotor.rotation = Quaternion.AngleAxis(angle, Vector3.back);                        
-        // }
-        //
-        // /// <summary>
-        // /// Shoots when the player clicks the left mouse button.
-        // /// </summary>
-        // void Shoot()
-        // {
-        //     if(shotTimer.y > 0f) shotTimer.y -= Time.deltaTime;
-        //
-        //     if (!Input.GetMouseButtonDown(0) || !(shotTimer.y < Mathf.Epsilon)) return;
-        //     
-        //     var bullet = AssetManager.Instance.SpawnObject("Shoot", firePoint.position, firePoint.rotation, true);                 
-        //     var newBullet = bullet.transform.GetComponent<BulletController>();
-        //     newBullet.BulletSpeed = bulletSpeed;                                                                                    
-        //     newBullet.BulletDamage = bulletDamage;                                                                                  
-        //     muzzleFlash.Play();                                                                                                     
-        //     Recoil();                                                                                                               
-        //     shotTimer.y = shotTimer.x;
-        // }
-        //
-        // /// <summary>
-        // /// Recoils the tank in the opposite direction to the shot.
-        // /// </summary>
-        // void Recoil()
-        // {
-        //     if((cannonRotor.localEulerAngles.z > 0.0f && cannonRotor.localEulerAngles.z < 43.0f) || (cannonRotor.localEulerAngles.z > 318.0f && cannonRotor.localEulerAngles.z < 360.0f))
-        //         rb.AddForce(transform.up * -extra.y, ForceMode2D.Impulse);
-        //
-        //     else if (cannonRotor.localEulerAngles.z > 150.0f && cannonRotor.localEulerAngles.z < 210.0f)
-        //         rb.AddForce(transform.up * extra.y, ForceMode2D.Impulse);
-        // }
-        //
-        // // /// <summary>
-        // // /// Performs a health check on the tank.
-        // // /// </summary>
-        // // void CheckHealth()
-        // // {
-        // //     if (playerHealth <= 0f)                                                                                     
-        // //     {
-        // //         Destroy(gameObject);                                                                                    
-        // //         AssetManager.Instance.SpawnObject("TankExplosion", transform.position, transform.rotation);                             
-        // //         GameObject destroyedTank = AssetManager.Instance.SpawnObject("DestroyedPlayerTank", transform.position, transform.rotation); 
-        // //         destroyedTank.name = "DeadPlayer";
-        // //     }
-        // // }
-        //
-        // /// <summary>
-        // /// Moves the player tank in the desired direction.
-        // /// </summary>
-        // void Move()
-        // {
-        //     rb.velocity = transform.up * Vector2.Dot(rb.velocity, transform.up);    
-        //
-        //     if (Input.GetButton("Accelerate"))                                      
-        //         rb.AddForce(transform.up * (slow ? extra.z : vertical.x));                                  
-        //
-        //     if (Input.GetButton("Reverse"))                                         
-        //         rb.AddForce(transform.up * (slow ? extra.z : -vertical.y));                          
-        //
-        //     rb.AddTorque(Input.GetAxis("Left/Right") * (slow ? (-extra.x / 2) : -extra.x));                
-        // }
 
         #endregion
 
@@ -856,51 +770,6 @@ namespace TankWars.Controllers
             // Processes the users input by moving the character
             ProcessInput();
         }
-        
-        
-        // private void Update()
-        // {
-        //     UpdateCamera();
-        //     RotateCannon();
-        //     Shoot();
-        //     CheckHealth();
-        // }
-        //
-        // private void FixedUpdate()
-        // {
-        //     Move();
-        // }
-        //
-        // private void OnTriggerEnter2D(Collider2D other)
-        // {
-        //     switch (other.gameObject.tag)
-        //     {
-        //         case "Mine":
-        //             {
-        //                 playerHealth = 0;
-        //                 AssetManager.Instance.SpawnObject("MineExplosion", other.transform.position, other.transform.rotation);
-        //                 Destroy(other.gameObject);
-        //                 break;
-        //             }
-        //         case "DestroyedTank":
-        //             {
-        //                 slow = true;
-        //                 break;
-        //             }
-        //     }
-        // }
-        //
-        // private void OnTriggerExit2D(Collider2D other)
-        // {
-        //     switch (other.gameObject.tag)
-        //     {
-        //         case "DestroyedTank":
-        //             {
-        //                 slow = false;
-        //                 break;
-        //             }
-        //     }
-        // }
 
         #endregion
         

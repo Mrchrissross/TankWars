@@ -3,7 +3,6 @@ using TankWars.Controllers;
 using TankWars.Managers;
 using TankWars.Utility;
 using UnityEngine;
-using UnityEngine.Monetization;
 
 namespace TankWars.Editor
 {
@@ -166,10 +165,6 @@ namespace TankWars.Editor
 
                 GUILayout.Space(1.5f);
                 
-                EditorGUIUtility.labelWidth = 100;
-                weapon.AmmoType = (AmmoController.AmmoType) EditorGUILayout.EnumPopup(new GUIContent("Ammo Type",
-                    "The type ammo this weapon uses."), weapon.AmmoType);
-
                 weapon.CollisionLayer = EditorTools.LayerMaskField("Collision",
                     "Layers that the ammo can collide with.", weapon.CollisionLayer, 100);
 

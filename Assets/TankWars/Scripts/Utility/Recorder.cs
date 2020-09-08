@@ -1,60 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-// using MoveBot.Controllers;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace TankWars.Utility
 {
     
     /// <summary>
-    /// The recorder component is a tool that rewinds and fast forwards the character allowing better debugging.
+    /// The recorder component is a tool that rewinds and fast forwards an object allowing for better debugging.
     /// </summary>
     
     public class Recorder : MonoBehaviour
     {
+        
+        #region Classes
+        
         /// <summary>
-        /// Class used for the storage of recorded character data.
+        /// Class used for the storage of recorded object data.
         /// </summary>
         
         public class Record
         {
-            public Vector3 position;
+            public Vector2 position;
             public Quaternion rotation;
-            public Vector3 velocity;
-            public Vector3 angularVelocity;
         
-            public Record(Vector3 _position, Quaternion _rotation, Vector3 _velocity, Vector3 _angularVelocity)
+            public Record(Vector3 _position, Quaternion _rotation)
             {
                 position = _position;
                 rotation = _rotation;
-                velocity = _velocity;
-                angularVelocity = _angularVelocity;
             }
         }
-        
-        
-        
-        
-        
-        #region Cached Components
-        
-        private new Rigidbody rigidbody
-        {
-            get
-            {
-                if (_rigidbody) return _rigidbody;
-        
-                _rigidbody = GetComponent<Rigidbody>();
-                ExtensionsLibrary.CheckComponent(_rigidbody, "Rigidbody Component", name);
-                return _rigidbody;
-            }
-        }
-        
-        [Tooltip("Cached 'Rigidbody' component.")]
-        private Rigidbody _rigidbody;
 
         #endregion
-        
         
         
         
@@ -63,88 +39,93 @@ namespace TankWars.Utility
         #region Properties
         
         /// <summary>
-        /// Pauses the character and pauses the recording.
+        /// Pauses the object and pauses the recording.
         /// Be aware that when unpaused, the previous velocity and angular velocity is reapplied and all rewound data is erased.
         /// </summary>
         
-        public bool isPaused
+        public bool IsPaused
         {
-            get => _isPaused;
+            get => isPaused;
             set
             {
-                _isPaused = value;
-                rigidbody.isKinematic = value;
-        
-                if (_isPaused) return;
-        
-                rigidbody.velocity = records[index].velocity;
-                rigidbody.angularVelocity = records[index].angularVelocity;
-        
+                isPaused = value;
+
+                if (isPaused)
+                {
+                    onPauseEvents.Invoke();
+                    return;
+                }
+                
+                onResumeEvents.Invoke();
+                
                 for (var i = 0; i < index; i++) records.RemoveAt(0);
         
                 index = 0;
             }
         }
-        [SerializeField] public bool _isPaused;
+        [SerializeField] public bool isPaused;
         public KeyCode pause = KeyCode.Keypad5;
         
         /// <summary>
-        /// Rewinds the character, moving to previous positions.
+        /// Rewinds the object, moving to previous positions.
         /// </summary>
         
-        public bool isRewinding
+        public bool IsRewinding
         {
-            get => _isRewinding;
+            get => isRewinding;
             set
             {
-                _isRewinding = value;
-                if (_isRewinding) isPaused = true;
+                isRewinding = value;
+                if (isRewinding) IsPaused = true;
             }
         }
-        [SerializeField] private bool _isRewinding;
+        [SerializeField] private bool isRewinding;
         public KeyCode rewind = KeyCode.Keypad4;
         
         /// <summary>
-        /// Fast forwards the character, moving to future positions that may have been rewound past.
+        /// Fast forwards the object, moving to future positions that may have been rewound past.
         /// </summary>
         
-        public bool isFastForwarding
+        public bool IsFastForwarding
         {
-            get => _isFastForwarding;
+            get => isFastForwarding;
             set
             {
-                _isFastForwarding = value;
-                if (_isFastForwarding) isPaused = true;
+                isFastForwarding = value;
+                if (isFastForwarding) IsPaused = true;
             }
         }
-        [SerializeField] private bool _isFastForwarding;
+        [SerializeField] private bool isFastForwarding;
         public KeyCode fastForward = KeyCode.Keypad6;
-        
-        
         
         /// <summary>
         /// This is the maximum record time (in sec). Be aware recording requires memory.
         /// </summary>
         
-        private float recordTime
+        private float RecordTime
         {
-            get => Mathf.Round(_recordTime / Time.fixedDeltaTime);
-            set => _recordTime = Mathf.Max(0.0f, value);
+            get => Mathf.Round(recordTime / Time.fixedDeltaTime);
+            set => recordTime = Mathf.Max(0.0f, value);
         }
-        [Space] public float _recordTime = 5f;
+        [Space] public float recordTime = 5f;
         
-        /// <summary>
-        /// This list holds all the currently recorded data.
-        /// </summary>
+        #endregion
+
         
+        
+        
+        
+        #region Fields
+
+        [SerializeField] private UnityEvent onPauseEvents;
+        [SerializeField] private UnityEvent onResumeEvents;
+        
+        // This list holds all the currently recorded data.
         [HideInInspector] public List<Record> records = new List<Record>();
         
-        /// <summary>
-        /// This is the frame index.
-        /// </summary>
-        
+        // This is the frame index.
         public int index = 0;
-        
+
         #endregion
         
         
@@ -159,25 +140,24 @@ namespace TankWars.Utility
         
         private void HandleInput()
         {
-            if (Input.GetKeyDown(rewind)) isRewinding = true;
-            if (Input.GetKeyUp(rewind)) isRewinding = false;
+            if (Input.GetKeyDown(rewind)) IsRewinding = true;
+            if (Input.GetKeyUp(rewind)) IsRewinding = false;
         
-            if (Input.GetKeyDown(pause)) isPaused = !_isPaused;
+            if (Input.GetKeyDown(pause)) IsPaused = !isPaused;
         
-            if (Input.GetKeyDown(fastForward)) isFastForwarding = true;
-            if (Input.GetKeyUp(fastForward)) isFastForwarding = false;
+            if (Input.GetKeyDown(fastForward)) IsFastForwarding = true;
+            if (Input.GetKeyUp(fastForward)) IsFastForwarding = false;
         }
         
         /// <summary>
-        /// Records the characters rigidbody data.
+        /// Records the objects tranform data.
         /// </summary>
         
-        private void RecordCharacter()
+        private void RecordObject()
         {
-            if (records.Count > recordTime) records.RemoveAt(records.Count - 1);
+            if (records.Count > RecordTime) records.RemoveAt(records.Count - 1);
         
-            records.Insert(0,
-                new Record(rigidbody.position, rigidbody.rotation, rigidbody.velocity, rigidbody.angularVelocity));
+            records.Insert(0, new Record(transform.position, transform.rotation));
         }
         
         #endregion
@@ -188,29 +168,33 @@ namespace TankWars.Utility
         
         #region Monobehaviour
         
-        private void Update()
-        {
-            // Handle user input.
-            HandleInput();
-        }
+        /// <summary>
+        ///  Handle user input.
+        /// </summary>
+        
+        private void Update() => HandleInput();
+        
+        /// <summary>
+        /// Perform recording.
+        /// </summary>
         
         public void FixedUpdate()
         {
             // If paused, apply the recorded data.            
-            if (isPaused)
+            if (IsPaused)
             {
-                if (isRewinding && records.Count - 1 > index) index++;
-                if (isFastForwarding && index > 0) index--;
+                if (IsRewinding && records.Count - 1 > index) index++;
+                if (IsFastForwarding && index > 0) index--;
         
                 var record = records[index];
-                rigidbody.position = record.position;
-                rigidbody.rotation = record.rotation;
+                transform.position = record.position;
+                transform.rotation = record.rotation;
         
                 return;
             }
         
-            // If not paused, continue recording the character.
-            RecordCharacter();
+            // If not paused, continue recording the object.
+            RecordObject();
         }
         
         #endregion

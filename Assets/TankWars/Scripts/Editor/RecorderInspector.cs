@@ -1,31 +1,53 @@
 ﻿using TankWars.Utility;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Events;
 
 namespace TankWars.Editor
 {
     [CustomEditor(typeof(Recorder))]
     public class RecorderInspector : UnityEditor.Editor
     {
+        private const float BoxMinWidth = 300f;
+        private const float BoxMaxWidth = 1000f;
+        
         private GUIStyle _boxStyle;
+        private GUIStyle _foldoutStyle;
+
+        private SerializedProperty onPauseEvents;
+        private SerializedProperty onResumeEvents;
+        
         private Recorder recorder => target as Recorder;
         
-        private void InitStyles()
+        private void OnEnable()
         {
-            _boxStyle = new GUIStyle(GUI.skin.button)
-            {
-                padding = new RectOffset(5, 5, 5, 2), 
-                normal = {background = Texture2D.whiteTexture}
-            };
+            EditorTools.InitTextures();
+            onPauseEvents = serializedObject.FindProperty("onPauseEvents");
+            onResumeEvents = serializedObject.FindProperty("onResumeEvents");
         }
-        
+
         public override void OnInspectorGUI()
         {
-            EditorTools.InitStyles(out _boxStyle);
+            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
             
+            EditorGUI.BeginChangeCheck();
+            Undo.RecordObject(target, "Recorder");
+            
+            DrawContent();
+
+            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(target);
+            serializedObject.ApplyModifiedProperties();
+            
+            EditorGUIUtility.labelWidth = 150;
+            
+            // base.OnInspectorGUI();
+        }
+
+        private void DrawContent()
+        {
             EditorTools.DrawHeader("Recorder");
             
-            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(370), GUILayout.MaxWidth(1000));
+            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
                 GUILayout.Space(2.5f);
                 
@@ -38,9 +60,9 @@ namespace TankWars.Editor
 
                         var recorderLabel = "Recording";
                         
-                        if (recorder.isRewinding) recorderLabel = "<b>Rewinding</b>";
-                        else if (recorder.isFastForwarding) recorderLabel = "<b>Fast Forwarding</b>";
-                        else if (recorder.isPaused) recorderLabel = "<b>Paused</b>";
+                        if (recorder.IsRewinding) recorderLabel = "<b>Rewinding</b>";
+                        else if (recorder.IsFastForwarding) recorderLabel = "<b>Fast Forwarding</b>";
+                        else if (recorder.IsPaused) recorderLabel = "<b>Paused</b>";
 
                         if (recorderLabel != "Recording") showIndex = true;
                         
@@ -58,12 +80,11 @@ namespace TankWars.Editor
                     }
                     GUILayout.EndHorizontal();
                     
-                    GUILayout.Space(4);
 
                     if (showIndex)
                     {
                         var rect = GUILayoutUtility.GetLastRect();
-                        rect.y += 2.5f;
+                        rect.y += 20.0f;
                 
                         recorder.index = (int)GUI.HorizontalSlider(rect, recorder.index, 0, recorder.records.Count - 1);
                         
@@ -73,42 +94,57 @@ namespace TankWars.Editor
                     EditorTools.DrawLine(0.5f, 5, 5f);
                 }
                 
-                recorder._recordTime = EditorTools.Slider("Record Length", "", recorder._recordTime, 0, 10, 100);
+                recorder.recordTime = EditorTools.Slider("Record Length", "", recorder.recordTime, 0, 10, 100);
 
                 EditorTools.DrawLine(0.5f, 5, 2.5f);
                 
-                EditorTools.Label("Keys: ", "");                
-                GUILayout.BeginHorizontal();
+                EditorTools.Label("Keys: ", "");
+                
+                GUILayout.BeginVertical("box");
                 {
-                    recorder.pause = EditorTools.KeyCodeDropdown("Pause", "The keyboard key to pause the recorder.", recorder.pause, 125);
+                    recorder.pause = EditorTools.KeyCodeDropdown("Pause", "The keyboard key to pause the recorder.", recorder.pause, 100);
+                        
+                    GUILayout.Space(5);
+
+                    GUILayout.BeginVertical("box");
+                    {
+                        recorder.fastForward = EditorTools.KeyCodeDropdown("Fast Forward",
+                            "The keyboard key to fast forward.", recorder.fastForward, 100);
+
+                        recorder.rewind = EditorTools.KeyCodeDropdown("Rewind",
+                            "The keyboard key to rewind.", recorder.rewind, 100);
+                    }
+                    GUILayout.EndVertical();
                 }
-                GUILayout.EndHorizontal();
-                    
+                GUILayout.EndVertical(); 
+                
                 GUILayout.Space(5);
                 
-                GUILayout.BeginHorizontal();
+                EditorTools.DrawLine(0.5f, 5, 2.5f);
+                
+                EditorTools.Label("On Pause: ", "These events will be called when the recorder is paused, " +
+                                                "rewinding, or fast forwarding.", 100);
+                
+                GUILayout.BeginVertical("box");
                 {
-                    recorder.rewind = EditorTools.KeyCodeDropdown("Rewind",
-                        "The keyboard key to rewind.", recorder.rewind, 55);
+                    EditorGUIUtility.LookLikeControls();
+
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(onPauseEvents);
+                    EditorGUI.indentLevel--;
                     
-                    recorder.fastForward = EditorTools.KeyCodeDropdown("Fast Forward",
-                        "The keyboard key to fast forward.", recorder.fastForward, 85);
+                    EditorGUIUtility.LookLikeControls();
+
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(onResumeEvents);
+                    EditorGUI.indentLevel--;
                 }
-                GUILayout.EndHorizontal();
-                    
-                GUILayout.Space(5);
+                GUILayout.EndVertical();
+                
             }
             EditorGUILayout.EndVertical();
             
             GUILayout.Space(5);
-
-            Undo.RecordObject(target, "character");
-            serializedObject.ApplyModifiedProperties();
-            EditorUtility.SetDirty(target);
-            
-            EditorGUIUtility.labelWidth = 150;
-            
-            // base.OnInspectorGUI();
         }
     }
 }
