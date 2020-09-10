@@ -127,13 +127,20 @@ namespace TankWars.Editor
                 
                 GUILayout.BeginVertical("box");
                 {
+                    
+                    // LookLikeControls Obsolete.
+                    
+#pragma warning disable 618
                     EditorGUIUtility.LookLikeControls();
+#pragma warning restore 618
 
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(onPauseEvents);
                     EditorGUI.indentLevel--;
                     
+#pragma warning disable 618
                     EditorGUIUtility.LookLikeControls();
+#pragma warning restore 618
 
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(onResumeEvents);
