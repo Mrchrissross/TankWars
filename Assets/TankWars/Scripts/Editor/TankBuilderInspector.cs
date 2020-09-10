@@ -130,7 +130,10 @@ namespace TankWars.Editor
                     GUILayout.BeginHorizontal();
                     EditorTools.Label("Are you sure?", "", 100);
                     if (EditorTools.Button("Yes", "Erases everything."))
+                    {
                         TankBuilder.EraseAll();
+                        _eraseAll = false;
+                    }
                     
                     if (EditorTools.Button("No", "")) _eraseAll = false;
                     
