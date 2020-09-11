@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 
+using TankWars.Managers;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +12,68 @@ namespace TankWars.Utility
     
     public class MenuItems : MonoBehaviour
     {
+        /// <summary>
+        /// Creates an audio manager.
+        /// </summary>
+
+        [MenuItem("GameObject/Tank Wars/Create Audio Manager", false, -10)]
+        public static void CreateAudioManager()
+        {
+            var audioManager = GameObject.Find("Audio Manager");
+            
+            if (audioManager == null)
+            {
+                // Cache the object.
+                audioManager = new GameObject();
+                var audioManagerTransform = audioManager.transform;
+
+                audioManager.isStatic = true;
+                audioManager.name = "Audio Manager";
+                
+                audioManagerTransform.position = Vector3.zero;
+                audioManagerTransform.rotation = Quaternion.identity;
+                audioManagerTransform.localScale = Vector3.one;
+
+                audioManager.AddComponent<AudioManager>();
+            }
+            
+            // Select the object.
+            Selection.activeGameObject = audioManager;
+            
+            Debug.Log("Audio Manager: An audio manager already exists in the hierarchy.");
+        }
+        
+        /// <summary>
+        /// Creates an asset manager.
+        /// </summary>
+
+        [MenuItem("GameObject/Tank Wars/Create Asset Manager", false, -10)]
+        public static void CreateAssetManager()
+        {
+            var assetManager = GameObject.Find("Asset Manager");
+            
+            if (assetManager == null)
+            {
+                // Cache the object.
+                assetManager = new GameObject();
+                var assetManagerTransform = assetManager.transform;
+
+                assetManager.isStatic = true;
+                assetManager.name = "Asset Manager";
+                
+                assetManagerTransform.position = Vector3.zero;
+                assetManagerTransform.rotation = Quaternion.identity;
+                assetManagerTransform.localScale = Vector3.one;
+
+                assetManager.AddComponent<AssetManager>();
+            }
+            
+            // Select the object.
+            Selection.activeGameObject = assetManager;
+            
+            Debug.Log("Asset Manager: An asset manager already exists in the hierarchy.");
+        }
+
         /// <summary>
         /// Builds a tank.
         /// </summary>

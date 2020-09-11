@@ -12,6 +12,54 @@ namespace TankWars.Controllers
     
     public class WeaponController : MonoBehaviour
     {
+        #region Properties
+
+        // The storage of components for easy access.
+        #region Cached Components
+            
+        /// <summary>
+        /// Cached 'AudioManager' component.
+        /// </summary>
+        
+        private new AudioManager AudioManager
+        {
+            get
+            {
+                if (_audioManager) return _audioManager;
+
+                _audioManager = AudioManager.Instance;
+                
+                if(_audioManager == null) Debug.LogError("Ammo Controller: An audio manager was not found in the scene.");
+
+                return _audioManager;
+            }
+        }
+        private AudioManager _audioManager;
+        
+        /// <summary>
+        /// Cached 'AssetManager' component.
+        /// </summary>
+        
+        private new AssetManager AssetManager
+        {
+            get
+            {
+                if (_assetManager) return _assetManager;
+
+                _assetManager = AssetManager.Instance;
+                
+                if(_assetManager == null) Debug.LogError("Ammo Controller: An asset manager was not found in the scene.");
+
+                return _assetManager;
+            }
+        }
+        private AssetManager _assetManager;
+            
+        #endregion
+        
+        #endregion
+        
+        
         
         #region Fields
 
@@ -81,11 +129,11 @@ namespace TankWars.Controllers
                 var firePointRotation = firePoint.rotation;
                 
                 // Spawn the fired ammo, at the fire point, location and rotation.
-                var ammo = AssetManager.Instance.SpawnObject(weapon.Asset, firePointPosition, firePointRotation);
-                AudioManager.Instance.PlaySound(weapon.ShotSound);
+                var ammo = AssetManager.SpawnObject(weapon.Asset, firePointPosition, firePointRotation);
+                AudioManager.PlaySound(weapon.ShotSound);
                 
                 // Perform the muzzle flash.
-                AssetManager.Instance.SpawnObject(weapon.MuzzleFlash, firePointPosition, firePointRotation);
+                AssetManager.SpawnObject(weapon.MuzzleFlash, firePointPosition, firePointRotation);
                 
                 // Acquire ammo controller.
                 var ammoController = ammo.GetComponent<AmmoController>();

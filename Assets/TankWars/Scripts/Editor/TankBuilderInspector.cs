@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TankWars.Utility;
 using UnityEditor;
 using UnityEngine;
@@ -24,6 +27,11 @@ namespace TankWars.Editor
         private string _newFolderLocation;
         
         private string[] _accessoryStyles;
+        
+        private HashSet<string> _resourceCategories;
+        private string[] _resourceCategoriesArray;
+        private int _resourceCategoriesIndex;
+        private int _editResourceCategoriesIndex;
 
         private TankBuilder TankBuilder => target as TankBuilder;
 
@@ -33,6 +41,30 @@ namespace TankWars.Editor
         {
             EditorTools.InitTextures();
             _sortingLayerId = serializedObject.FindProperty("sortingLayerID");
+            
+            var dir = new DirectoryInfo("Assets/Resources/TankWars/Sprites");
+            var info = dir.GetFiles();
+            info.Select(f => f.FullName).ToArray();
+            _resourceCategories = new HashSet<string>();
+
+            foreach (var f in info)
+            {
+                var fileName = f.Name;
+                
+                var charIndex = fileName.IndexOf(".", StringComparison.Ordinal);
+                if (charIndex > 0) fileName = fileName.Substring(0, charIndex);
+
+                _resourceCategories.Add(fileName);
+            }
+            
+            _resourceCategoriesArray = new string[_resourceCategories.Count];
+
+            var index = 0;
+            foreach (var category in _resourceCategories)
+            {
+                _resourceCategoriesArray[index] = category;
+                index++;
+            }        
         }
         
         
@@ -151,7 +183,10 @@ namespace TankWars.Editor
                 if (!_addCategory)
                 {
                     if (EditorTools.Button("Add Category", "Add a new category."))
+                    {
                         _addCategory = true;
+                        _resourceCategoriesIndex = 0;
+                    }
                 }
                 else if(_addCategory)
                 {
@@ -165,16 +200,19 @@ namespace TankWars.Editor
                         _categoryName);
                     
                     EditorGUIUtility.labelWidth = 100;
-                    _folderLocation = EditorGUILayout.TextField(
-                        new GUIContent("Folder Location:", "Location of the folder in resources."),
-                        _folderLocation);
+                    _resourceCategoriesIndex = EditorGUILayout.Popup(new GUIContent("Folder Location:",
+                        "Location of the folder in resources."), _resourceCategoriesIndex, _resourceCategoriesArray);
+                    _folderLocation = _resourceCategoriesArray[_resourceCategoriesIndex];
                     
                     GUILayout.Space(5);
                     
                     GUILayout.BeginHorizontal();
                     if (EditorTools.Button("Add", "Adds the category."))
                     {
+                        if (_categoryName == "") _categoryName = _folderLocation;
+                        
                         TankBuilder.AddCategory(_categoryName, _folderLocation);
+                        _resourceCategoriesIndex = 0;
                         _addCategory = false;
                         _categoryName = "";
                         _folderLocation = "";
@@ -183,6 +221,7 @@ namespace TankWars.Editor
 
                     if (EditorTools.Button("Back", "Goes back to main."))
                     {
+                        _resourceCategoriesIndex = 0;
                         _addCategory = false;
                         _categoryName = "";
                         _folderLocation = "";
@@ -523,6 +562,11 @@ namespace TankWars.Editor
                         {
                             category.editCategory = true;
                             _newCategoryName = category.categoryName;
+
+                            for(; _editResourceCategoriesIndex < _resourceCategoriesArray.Length; _editResourceCategoriesIndex++)
+                                if (_resourceCategoriesArray[_editResourceCategoriesIndex] == category.categoryFolder)
+                                    break;
+                            
                             _newFolderLocation = category.categoryFolder;   
                         }
                     }
@@ -550,9 +594,11 @@ namespace TankWars.Editor
                             EditorGUIUtility.labelWidth = 100;
                             _newCategoryName = EditorGUILayout.TextField(new GUIContent("Name:", 
                             "Name of the category."), _newCategoryName);
-                            
-                            _newFolderLocation = EditorGUILayout.TextField(new GUIContent("Folder Location:", 
-                            "Location of the folder in resources."), _newFolderLocation);
+
+                            EditorGUIUtility.labelWidth = 100;
+                            _editResourceCategoriesIndex = EditorGUILayout.Popup(new GUIContent("Folder Location:",
+                                "Location of the folder in resources."), _editResourceCategoriesIndex, _resourceCategoriesArray);
+                            _newFolderLocation = _resourceCategoriesArray[_editResourceCategoriesIndex];
                         
                             GUILayout.Space(5);
                         
@@ -560,6 +606,8 @@ namespace TankWars.Editor
                             {
                                 if (EditorTools.Button("Apply", "Applies the changes."))
                                 {
+                                    if (_newCategoryName == "") _newCategoryName = _newFolderLocation;
+                                    
                                     foreach (var accessory in category.accessories)
                                         accessory.parentName = _newCategoryName;
                                     
@@ -579,6 +627,7 @@ namespace TankWars.Editor
                                     category.categoryName = _newCategoryName;
                                     category.categoryFolder = _newFolderLocation;
                                     
+                                    _editResourceCategoriesIndex = 0;
                                     category.editCategory = false;
                                     _newCategoryName = "";
                                     _newFolderLocation = "";
@@ -589,6 +638,7 @@ namespace TankWars.Editor
 
                                 if (EditorTools.Button("Back", "Goes back to main."))
                                 {
+                                    _editResourceCategoriesIndex = 0;
                                     category.editCategory = false;
                                     _newCategoryName = "";
                                     _newFolderLocation = "";
@@ -647,7 +697,7 @@ namespace TankWars.Editor
                             }
                         }
 
-                        if (EditorTools.TexturedButton(EditorTools.plusTexture, "Create a copy of this object?.", 20f))
+                        if (EditorTools.TexturedButton(EditorTools.plusTexture, "Create a copy of this object?", 20f))
                         {
                             TankBuilder.CopyAccessory(index, accessory);
                             break;
@@ -676,9 +726,11 @@ namespace TankWars.Editor
                         {
                             GUI.backgroundColor = Color.grey;
                             
+                            ref var newName = ref accessory.newName ; 
+                            
                             EditorGUIUtility.labelWidth = 50;
-                            accessory.newName = EditorGUILayout.TextField(new GUIContent("Name", 
-                                "Automatically renames the game object."), accessory.newName);
+                            newName = EditorGUILayout.TextField(new GUIContent("Name", 
+                                "Automatically renames the game object."), newName);
                             
                             GUI.backgroundColor = EditorTools.guiColorBackup;
                                 
@@ -686,7 +738,9 @@ namespace TankWars.Editor
                             {
                                 if (EditorTools.Button("Apply", "Finish renaming the accessory."))
                                 {
-                                    accessory.Name = accessory.newName;
+                                    if (newName == "") newName = _accessoryStyles[accessory.Style];
+                                    
+                                    accessory.Name = newName;
                                     accessory.editName = false;
                                     GUI.FocusControl(null);
                                     

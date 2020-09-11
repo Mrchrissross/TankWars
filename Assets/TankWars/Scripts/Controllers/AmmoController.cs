@@ -13,21 +13,14 @@ namespace TankWars.Controllers
         
         #region Properties
 
-        /// <summary>
-        /// The storage of components for easy access.
-        /// </summary>
-            
-        [Header("Cached Components")]
-
+        // The storage of components for easy access.
         #region Cached Components
             
-        private Rigidbody2D _rigidbody2D;
-        
         /// <summary>
         /// Cached 'Rigidbody' component.
         /// </summary>
         
-        private new Rigidbody2D rigidbody2D
+        private new Rigidbody2D Rigidbody2D
         {
             get
             {
@@ -38,6 +31,45 @@ namespace TankWars.Controllers
                 return _rigidbody2D;
             }
         }
+        private Rigidbody2D _rigidbody2D;
+
+        /// <summary>
+        /// Cached 'AudioManager' component.
+        /// </summary>
+        
+        private new AudioManager AudioManager
+        {
+            get
+            {
+                if (_audioManager) return _audioManager;
+
+                _audioManager = AudioManager.Instance;
+                
+                if(_audioManager == null) Debug.LogError("Ammo Controller: An audio manager was not found in the scene.");
+
+                return _audioManager;
+            }
+        }
+        private AudioManager _audioManager;
+        
+        /// <summary>
+        /// Cached 'AssetManager' component.
+        /// </summary>
+        
+        private new AssetManager AssetManager
+        {
+            get
+            {
+                if (_assetManager) return _assetManager;
+
+                _assetManager = AssetManager.Instance;
+                
+                if(_assetManager == null) Debug.LogError("Ammo Controller: An asset manager was not found in the scene.");
+
+                return _assetManager;
+            }
+        }
+        private AssetManager _assetManager;
             
         #endregion
 
@@ -112,7 +144,7 @@ namespace TankWars.Controllers
         private void Move()
         {
             Vector2 velocity = transform.up * (Speed * Time.fixedDeltaTime);
-            rigidbody2D.MovePosition(rigidbody2D.position + velocity);
+            Rigidbody2D.MovePosition(Rigidbody2D.position + velocity);
         } 
 
         private void PerformCollisionCheck()
@@ -129,8 +161,8 @@ namespace TankWars.Controllers
             {
                 case "Mine":
                 {
-                    AssetManager.Instance.SpawnObject("Mine Explosion", impactTarget.position, impactTarget.rotation);
-                    AudioManager.Instance.PlaySound("Mine Explosion");
+                    AssetManager.SpawnObject("Mine Explosion", impactTarget.position, impactTarget.rotation);
+                    AudioManager.PlaySound("Mine Explosion");
                     Destroy(impactTarget.gameObject);
                     break;
                 }
@@ -143,8 +175,8 @@ namespace TankWars.Controllers
         private void Explode()
         {
             gameObject.SetActive(false);
-            AssetManager.Instance.SpawnObject(explosion, transform.position, Quaternion.Euler(transform.rotation.eulerAngles.WithZ(0)));
-            AudioManager.Instance.PlaySound(explosionSound);
+            AssetManager.SpawnObject(explosion, transform.position, Quaternion.Euler(transform.rotation.eulerAngles.WithZ(0)));
+            AudioManager.PlaySound(explosionSound);
         }
         
         #endregion
