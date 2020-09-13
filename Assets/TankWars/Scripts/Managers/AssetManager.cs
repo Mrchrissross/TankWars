@@ -33,9 +33,8 @@ namespace TankWars.Managers
         public Dictionary<GameObject, bool> objectPool = new Dictionary<GameObject, bool>();
 
         #endregion
+        
 
-        
-        
         
         #region Functions
 

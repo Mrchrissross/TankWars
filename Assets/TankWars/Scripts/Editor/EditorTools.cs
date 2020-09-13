@@ -20,6 +20,7 @@ namespace TankWars.Editor
         public static Texture2D minusTexture;
         public static Texture2D editTexture;
         public static Texture2D cameraTexture;
+        public static Texture2D tankTexture;
         public static Texture2D eyeOpenTexture;
         public static Texture2D eyeClosedTexture;
         
@@ -45,6 +46,7 @@ namespace TankWars.Editor
             minusTexture = InitTexture(Path + "minus");
             editTexture = InitTexture(Path + "edit");
             cameraTexture = InitTexture(Path + "camera");
+            tankTexture = InitTexture(Path + "tank");
             eyeOpenTexture = InitTexture(Path + "eye_open");
             eyeClosedTexture = InitTexture(Path + "eye_closed");
 

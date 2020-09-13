@@ -384,8 +384,19 @@ namespace TankWars.Controllers
 		/// Resets the target as tank.
 		/// </summary>
 		
-		public void ResetTarget() => Target = tankController.transform;
-		
+		public void ResetTarget()
+		{
+			if(tankController == null)
+			{
+				Debug.LogError("Camera Controller: A tank controller component was not found, " +
+			                                          "please add one manually.");
+
+				return;
+			}
+			
+			Target = tankController.transform;
+		}
+
 		///<summary>
 		/// Completely resets the camera.
 		/// </summary>

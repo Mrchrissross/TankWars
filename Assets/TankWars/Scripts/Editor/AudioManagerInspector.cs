@@ -58,48 +58,52 @@ namespace TankWars.Editor
             GUILayout.EndHorizontal();
             
             EditorTools.DrawLine(0.5f, 0, 2.5f);
-            
-            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
+
+            if (AudioManager.sounds.Count > 0)
             {
-                var index = 0;
-                foreach (var sound in AudioManager.sounds)
+                EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
                 {
-                    GUILayout.BeginHorizontal();
+                    var index = 0;
+                    foreach (var sound in AudioManager.sounds)
                     {
-                        if (!EditorTools.Foldout(sound.name, "", ref sound.hideSection))
+                        GUILayout.BeginHorizontal();
                         {
-                            GUILayout.EndHorizontal();
-                            
-                            if(index < AudioManager.sounds.Count - 1) 
-                                EditorTools.DrawLine(0.5f, 1.5f, 5f);
-                            
-                            index++;
-                            continue;
-                        }
-                
-                        GUILayout.Space(-100);
-
-                        if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a copy of this sound.", 20f))
-                            AudioManager.CopySound(sound);
-
-                        if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this sound.", 20f))
-                        {
-                            AudioManager.sounds.RemoveAt(index);
-                            GUILayout.EndHorizontal();
-                            break;
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-            
-                    if(index < AudioManager.sounds.Count - 1) 
-                        EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                            if (!EditorTools.Foldout(sound.name, "", ref sound.hideSection))
+                            {
+                                GUILayout.EndHorizontal();
+                                
+                                if(index < AudioManager.sounds.Count - 1) 
+                                    EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                                
+                                index++;
+                                continue;
+                            }
                     
-                    DrawSound(index, sound);
+                            GUILayout.Space(-100);
 
-                    index++;
+                            if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a copy of this sound.", 20f))
+                                AudioManager.CopySound(sound);
+
+                            if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this sound.", 20f))
+                            {
+                                AudioManager.sounds.RemoveAt(index);
+                                GUILayout.EndHorizontal();
+                                break;
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+                
+                        if(index < AudioManager.sounds.Count - 1) 
+                            EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                        
+                        DrawSound(index, sound);
+
+                        index++;
+                    }
                 }
+                EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndVertical();
+            
             EditorGUILayout.Space(5);
         }
 

@@ -14,6 +14,8 @@ namespace TankWars.Editor
         private GUIStyle _boxStyle;
         private GUIStyle _foldoutStyle;
         
+        private bool _customTankController;
+        
         private CameraController CameraController => target as CameraController;
 
         private void OnEnable() => EditorTools.InitTextures();
@@ -39,10 +41,75 @@ namespace TankWars.Editor
         
         private void DrawTargetSettings(int section)
         {
-            if (EditorTools.DrawHeader("Targeting", ref CameraController.hideSection[section])) return;
+            GUILayout.BeginHorizontal();
+            {
+                if (!CameraController.hideSection[section])
+                {
+                    if (EditorTools.TexturedButton(EditorTools.eyeOpenTexture,
+                        "Hides all the content in this section.", 20f))
+                        CameraController.hideSection[section] = true;
+                    
+                    GUILayout.Space(-20);
+                }
+                else
+                {
+                    if (EditorTools.TexturedButton(EditorTools.eyeClosedTexture,
+                        "Shows all the content in this section.", 20f))
+                        CameraController.hideSection[section] = false;
+                    
+                    GUILayout.Space(-20);
+                }
+                
+                var style = new GUIStyle(GUI.skin.label)
+                {
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 13
+                };
+            
+                EditorGUILayout.LabelField(new GUIContent("Targeting", ""), style);
 
+                if (!_customTankController)
+                {
+                    GUILayout.Space(-20);
+
+                    if (EditorTools.TexturedButton(EditorTools.tankTexture,
+                        "Manually input the Tank Controller into the camera system.", 20f))
+                        _customTankController = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+            
+            EditorTools.DrawLine();
+            GUILayout.Space(5);
+
+            if (CameraController.hideSection[section]) return;
+            
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
+                if (_customTankController)
+                {
+                    EditorTools.Label("Tank Controller:", "The tank controller to be used in this camera system.", 100);
+                    
+                    GUILayout.BeginVertical("box");
+                    {
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorGUIUtility.labelWidth = 100;
+                            CameraController.tankController = (TankController) EditorGUILayout.ObjectField(new GUIContent("",
+                                ""), CameraController.tankController, typeof(TankController), true);
+
+                            if (EditorTools.Button("Done", ""))
+                                _customTankController = false;
+                        }
+                        GUILayout.EndHorizontal();
+
+                    }
+                    GUILayout.EndVertical();
+                    
+                    EditorTools.DrawLine(0.5f, 2.5f, 0);
+                }
+                
                 GUILayout.BeginHorizontal();
                 {
                     CameraController.cameraTarget = EditorTools.TransformField("Target:",

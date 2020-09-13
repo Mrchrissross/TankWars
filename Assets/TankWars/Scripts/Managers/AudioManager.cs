@@ -12,6 +12,7 @@ namespace TankWars.Managers
     [System.Serializable]
     public class Sound
     {
+        
         #region Fields
 
         // Unity Inspector.

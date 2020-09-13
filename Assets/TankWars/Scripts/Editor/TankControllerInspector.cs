@@ -22,7 +22,11 @@ namespace TankWars.Editor
         
         private TankController TankController => target as TankController;
 
-        private void OnEnable() => EditorTools.InitTextures();
+        private void OnEnable()
+        {
+            EditorTools.InitTextures();
+            _customCamera = false;
+        }
 
         private void DrawActions()
         {
@@ -117,8 +121,8 @@ namespace TankWars.Editor
                         GUILayout.BeginHorizontal();
                         {
                             EditorGUIUtility.labelWidth = 100;
-                            TankController.camera = (Camera) EditorGUILayout.ObjectField(new GUIContent("Camera",
-                                "Custom camera that will be used by the tank."), TankController.camera, typeof(Camera), true);
+                            TankController.camera = (Camera) EditorGUILayout.ObjectField(new GUIContent("",
+                                ""), TankController.camera, typeof(Camera), true);
 
                             if (EditorTools.Button("Done", ""))
                                 _customCamera = false;

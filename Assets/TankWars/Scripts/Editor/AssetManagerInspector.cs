@@ -59,42 +59,45 @@ namespace TankWars.Editor
             GUILayout.EndHorizontal();
             
             EditorTools.DrawLine(0.5f, 0, 2.5f);
-            
-            EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
+
+            if (AssetManager.assets.Count > 0)
             {
-                var index = 0;
-                foreach (var asset in AssetManager.assets)
+                EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
                 {
-                    GUILayout.BeginHorizontal();
-                    if (EditorTools.Foldout(asset.name, "", ref asset.hideSection))
+                    var index = 0;
+                    foreach (var asset in AssetManager.assets)
                     {
-                        GUILayout.Space(-100);
-
-                        if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a copy of this sound.", 20f))
-                            AssetManager.CopyAsset(asset);
-
-                        if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this sound.", 20f))
+                        GUILayout.BeginHorizontal();
+                        if (EditorTools.Foldout(asset.name, "", ref asset.hideSection))
                         {
-                            AssetManager.assets.RemoveAt(index);
+                            GUILayout.Space(-100);
+
+                            if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a copy of this sound.", 20f))
+                                AssetManager.CopyAsset(asset);
+
+                            if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this sound.", 20f))
+                            {
+                                AssetManager.assets.RemoveAt(index);
+                                GUILayout.EndHorizontal();
+                                return;
+                            }
                             GUILayout.EndHorizontal();
-                            return;
+                            
+                            EditorTools.DrawLine(0.5f, 2.5f, 5f);
+                            
+                            DrawAsset(index, asset);
                         }
-                        GUILayout.EndHorizontal();
-                        
-                        EditorTools.DrawLine(0.5f, 2.5f, 5f);
-                        
-                        DrawAsset(index, asset);
+                        else GUILayout.EndHorizontal();
+
+                        if(index < AssetManager.assets.Count - 1) 
+                            EditorTools.DrawLine(0.5f, 0, 2.5f);
+
+                        index++;
                     }
-                    else GUILayout.EndHorizontal();
-
-                    if(index < AssetManager.assets.Count - 1) 
-                        EditorTools.DrawLine(0.5f, 0, 2.5f);
-
-                    index++;
                 }
-                
+                EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndVertical();
+            
             EditorGUILayout.Space(5);
         }
 

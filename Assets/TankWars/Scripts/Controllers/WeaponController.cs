@@ -7,11 +7,13 @@ using UnityEngine;
 namespace TankWars.Controllers
 {
     /// <summary>
-    /// 
+    /// The weapon controller, controls all aspects of the tanks weapons. Once a weapon scriptable object has been added,
+    /// it will manage all data within, use it and send the rest to the individual ammo controllers.
     /// </summary>
     
     public class WeaponController : MonoBehaviour
     {
+        
         #region Properties
 
         // The storage of components for easy access.
@@ -170,5 +172,6 @@ namespace TankWars.Controllers
         }
 
         #endregion
+        
     }
 }
