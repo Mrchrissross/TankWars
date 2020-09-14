@@ -107,7 +107,7 @@ namespace TankWars.Utility
                     if (value == position) return;
                     
                     position.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
-                    position.y = Mathf.Clamp(value.y, -13.0f, 13.0f);
+                    position.y = Mathf.Clamp(value.y, -15.0f, 15.0f);
                     transform.localPosition = position;
                 }
             }
@@ -218,8 +218,8 @@ namespace TankWars.Utility
                 transform.parent = copy.transform.parent;
                 CurrentParent = copy.CurrentParent;
                 Position = copy.transform.localPosition;
-                Rotation = copy.Rotation;
-                Scale = copy.Scale;
+                transform.localEulerAngles = transform.localEulerAngles.WithZ(copy.Rotation);
+                transform.localScale = copy.Scale;
 
                 // Copy the sprite renderer.
                 var copySprite = copy.accessorySprite;

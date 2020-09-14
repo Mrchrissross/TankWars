@@ -249,7 +249,8 @@ namespace TankWars.Editor
                     EditorGUIUtility.labelWidth = 100;
                     weapon.explosionIndex = EditorGUILayout.Popup(new GUIContent("Explosion",
                         "The particle system to play when the bullet explodes."), weapon.explosionIndex, assets);
-                    weapon.Explosion = assets[weapon.explosionIndex];
+                    
+                    if(weapon.explosionIndex < assets.Length) weapon.Explosion = assets[weapon.explosionIndex];
 
                     GUILayout.Space(1.5f);
                 }

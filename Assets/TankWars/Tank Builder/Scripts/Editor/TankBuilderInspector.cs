@@ -42,7 +42,7 @@ namespace TankWars.Editor
             EditorTools.InitTextures();
             _sortingLayerId = serializedObject.FindProperty("sortingLayerID");
             
-            var dir = new DirectoryInfo("Assets/Resources/TankWars/Sprites");
+            var dir = new DirectoryInfo("Assets/TankWars/Tank Builder/Resources/TankWars/Sprites");
             var info = dir.GetFiles();
             info.Select(f => f.FullName).ToArray();
             _resourceCategories = new HashSet<string>();
@@ -209,7 +209,7 @@ namespace TankWars.Editor
                     GUILayout.BeginHorizontal();
                     if (EditorTools.Button("Add", "Adds the category."))
                     {
-                        if (_categoryName == "") _categoryName = _folderLocation;
+                        if (string.IsNullOrEmpty(_categoryName)) _categoryName = _folderLocation;
                         
                         TankBuilder.AddCategory(_categoryName, _folderLocation);
                         _resourceCategoriesIndex = 0;
@@ -606,7 +606,7 @@ namespace TankWars.Editor
                             {
                                 if (EditorTools.Button("Apply", "Applies the changes."))
                                 {
-                                    if (_newCategoryName == "") _newCategoryName = _newFolderLocation;
+                                    if (string.IsNullOrEmpty(_newCategoryName)) _newCategoryName = _newFolderLocation;
                                     
                                     foreach (var accessory in category.accessories)
                                         accessory.parentName = _newCategoryName;
@@ -738,7 +738,7 @@ namespace TankWars.Editor
                             {
                                 if (EditorTools.Button("Apply", "Finish renaming the accessory."))
                                 {
-                                    if (newName == "") newName = _accessoryStyles[accessory.Style];
+                                    if (string.IsNullOrEmpty(newName)) newName = _accessoryStyles[accessory.Style];
                                     
                                     accessory.Name = newName;
                                     accessory.editName = false;
@@ -809,7 +809,7 @@ namespace TankWars.Editor
                                 position.x = EditorTools.Slider("X", "Changes the accessories position along the x axis.",
                                     position.x, -10.0f, 10.0f, 100);
                                 position.y = EditorTools.Slider("Y", "Changes the accessories position along the y axis.",
-                                    position.y, -13, 13.0f, 100);
+                                    position.y, -15.0f, 15.0f, 100);
                                 accessory.Position = position;
 
                                 EditorGUI.indentLevel--;
