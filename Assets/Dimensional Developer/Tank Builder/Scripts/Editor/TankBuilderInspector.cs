@@ -42,7 +42,7 @@ namespace TankWars.Editor
             EditorTools.InitTextures();
             _sortingLayerId = serializedObject.FindProperty("sortingLayerID");
             
-            var dir = new DirectoryInfo("Assets/TankWars/Tank Builder/Resources/TankWars/Sprites");
+            var dir = new DirectoryInfo("Assets/Dimensional Developer/Resources/Tank Builder/Sprites");
             var info = dir.GetFiles();
             info.Select(f => f.FullName).ToArray();
             _resourceCategories = new HashSet<string>();

@@ -1,0 +1,20 @@
+Asset is governed by the Asset Store EULA; however, the following components are governed by the licenses indicated below:
+
+182429__qubodup__explosion.flac
+CC0 1.0 Universal
+[license and copyright/accreditation details—determined by relevant license]
+
+quaker540__hq-explosion.wav
+CC0 1.0 Universal
+[license and copyright/accreditation details—determined by relevant license]
+
+Assets\Dimensional Developer\Tank Builder\Demo\Sprites\Explosions
+CC0 1.0 Universal
+[license and copyright/accreditation details—determined by relevant license]
+
+427596__michorvath__ar15-rifle-shot.wav
+CC0 1.0 Universal
+[license and copyright/accreditation details—determined by relevant license]
+
+License link:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt

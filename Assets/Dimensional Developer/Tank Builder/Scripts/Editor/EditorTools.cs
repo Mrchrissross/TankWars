@@ -15,7 +15,7 @@ namespace TankWars.Editor
     {
         #region Textures
 
-        private const string Path = "TankWars/EditorUI/";
+        private const string Path = "Tank Builder/EditorUI/";
         public static Texture2D plusTexture;
         public static Texture2D minusTexture;
         public static Texture2D editTexture;
