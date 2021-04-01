@@ -40,7 +40,7 @@ As I am still very new to this industry, any reviews would be greatly appreciate
 
 Images of the project can be found below:
 
-[![Imgur]()](https://assetstorev1-prd-cdn.unity3d.com/key-image/ac50d224-c2e3-4219-b091-de8eb3e96fbf.webp)
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/key-image/ac50d224-c2e3-4219-b091-de8eb3e96fbf.webp)]()
 
 [![Imgur](https://i.imgur.com/Dggvbrl.png)](https://i.imgur.com/Dggvbrl.png)
 
