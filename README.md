@@ -12,7 +12,6 @@ This asset comes with many additional features and handmade art including all Ph
 
 
 #
-
 # Managers
 
 • Audio Manager
