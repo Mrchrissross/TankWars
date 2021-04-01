@@ -36,9 +36,6 @@ This asset comes with many additional features and handmade art including all Ph
 
 #
 
-Each object comes with its own custom inspector.
-
-
 As I am still very new to this industry, any reviews would be greatly appreciated. Thank you!
 
 Images of the project can be found below:
