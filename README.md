@@ -1,28 +1,51 @@
 # TankWars
 
-Tanks Wars is a project created for public use, although I would like to be referenced.
+Tanks Wars is a project created for public use, and is available on the Unity Asset Store.
 
-This package is perfect for those who want to make a 2D tank game that is either single player or multiplayer. 
+Asset Store Link:
+https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991
 
-It includes the following items: 
+Tank Builder offers you a quick and efficient way of building your own 2D top-down tank. It comes with a reliable controller that is easy use and a smooth camera system that can be changed effectively. Every component comes with its very own custom script that has tooltips on every visible field. The code has been fully commented and is game ready.
 
-8 different player colours (Hulls + Cannons), 
-2 additional jeeps, 
-1 Mine, 
-4 Rocks, 
-1 Scrap item to used as a pickup, 
-1 destroyed tank, 
-1 Bullet. 
 
-The package also comes with 3 scripts including a fully functioning player script allowing you to instantly change the colour of the tank. 
-A bullet script and a fully functioning audio manager script. 
-All scripts have been coded in a way that is easy to understand with room to add your own elements. 
+This asset comes with many additional features and handmade art including all Photoshop PSDs.
 
-Enjoy!
+
+The additional features are:
+
+# Managers
+
+• Audio Manager
+
+• Asset Manager
+
+
+# Controllers
+
+• Tank Controller
+
+• Weapon Controller
+
+• Ammo Controller
+
+
+# Utility
+
+• Recorder
+
+• Weapon (scriptable object)
+
+
+Custom Inspectors!
+
+Each object comes with its own custom inspector.
+
+
+As I am still very new to this industry, any reviews would be greatly appreciated. Thank you!
 
 Images of the project can be found below:
 
-[![Imgur](https://i.imgur.com/1WgD8uA.png)](https://imgur.com/1WgD8uA.png)
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/key-image/ac50d224-c2e3-4219-b091-de8eb3e96fbf.webp)](https://assetstorev1-prd-cdn.unity3d.com/key-image/ac50d224-c2e3-4219-b091-de8eb3e96fbf.webp)
 
 [![Imgur](https://i.imgur.com/Dggvbrl.png)](https://i.imgur.com/Dggvbrl.png)
 
