@@ -11,7 +11,7 @@ Tank Builder offers you a quick and efficient way of building your own 2D top-do
 This asset comes with many additional features and handmade art including all Photoshop PSDs.
 
 
-The additional features are:
+#
 
 # Managers
 
@@ -37,7 +37,6 @@ The additional features are:
 
 • Custom Inspectors
 
-#
 #
 
 Each object comes with its own custom inspector.
