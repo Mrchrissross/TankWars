@@ -35,8 +35,10 @@ The additional features are:
 
 • Weapon (scriptable object)
 
+• Custom Inspectors
 
-Custom Inspectors!
+#
+#
 
 Each object comes with its own custom inspector.
 
