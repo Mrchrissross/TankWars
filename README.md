@@ -38,15 +38,23 @@ This asset comes with many additional features and handmade art including all Ph
 
 As I am still very new to this industry, any reviews would be greatly appreciated. Thank you!
 
+A video of the asset can be seen below:
+
+[![TankWars](https://img.youtube.com/vi/xKNka2dr0Ok/0.jpg)](https://youtu.be/xKNka2dr0Ok)
+
 Images of the project can be found below:
 
 [![Imgur](https://assetstorev1-prd-cdn.unity3d.com/key-image/ac50d224-c2e3-4219-b091-de8eb3e96fbf.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
-[![Imgur](https://i.imgur.com/Dggvbrl.png)](https://i.imgur.com/Dggvbrl.png)
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/ab97ce4b-6efe-41f8-8a64-60a49e905016.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
-[![Imgur](https://i.imgur.com/FU8Q26d.png)](https://i.imgur.com/FU8Q26d.png)
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/902cc54c-4250-4fcb-a684-414a38f63417.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
-[![Imgur](https://i.imgur.com/FaXciGW.png)](https://i.imgur.com/FaXciGW.png)
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/1ff72f18-25c7-453a-bc7b-ef50b01a4609.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
+
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/da04ad45-d4c4-46fc-9048-ef53366893bb.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
+
+[![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/e81792d5-3c0a-4168-9b8c-47156ac01f64.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
 Before this asset pack was created, this game was used in my first ever assignment however all the code since then has been revamped and upgraded as my knowledge of programming increased. The game can be downloaded from the first commit or seen below:
 
