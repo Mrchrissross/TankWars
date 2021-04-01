@@ -38,9 +38,7 @@ This asset comes with many additional features and handmade art including all Ph
 
 As I am still very new to this industry, any reviews would be greatly appreciated. Thank you!
 
-A video of the asset can be seen below:
-
-[![TankWars](https://img.youtube.com/vi/xKNka2dr0Ok/0.jpg)](https://youtu.be/xKNka2dr0Ok)
+# Images
 
 Images of the project can be found below:
 
@@ -55,6 +53,12 @@ Images of the project can be found below:
 [![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/da04ad45-d4c4-46fc-9048-ef53366893bb.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
 [![Imgur](https://assetstorev1-prd-cdn.unity3d.com/package-screenshot/e81792d5-3c0a-4168-9b8c-47156ac01f64.webp)](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
+
+# Videos
+
+A video of the asset can be seen below:
+
+[![TankWars](https://img.youtube.com/vi/xKNka2dr0Ok/0.jpg)](https://youtu.be/xKNka2dr0Ok)
 
 Before this asset pack was created, this game was used in my first ever assignment however all the code since then has been revamped and upgraded as my knowledge of programming increased. The game can be downloaded from the first commit or seen below:
 
