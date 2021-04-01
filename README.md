@@ -1,9 +1,4 @@
-# TankWars
-
-Tanks Wars is a project created for public use, and is available on the Unity Asset Store.
-
-Asset Store Link:
-https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991
+Unity 2020.1.01f | [Demo](https://mrchrissross.github.io/Tank-Wars-WebGL/) | [Tutorial](https://youtu.be/xKNka2dr0Ok) | [Asset Store](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
 Tank Builder offers you a quick and efficient way of building your own 2D top-down tank. It comes with a reliable controller that is easy use and a smooth camera system that can be changed effectively. Every component comes with its very own custom script that has tooltips on every visible field. The code has been fully commented and is game ready.
 
