@@ -1,8 +1,8 @@
-Unity 2020.1.01f | [Demo](https://mrchrissross.github.io/Tank-Wars-WebGL/) | [Tutorial](https://youtu.be/xKNka2dr0Ok) | [Asset Store](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
+Unity 2020.3.2f1 | [Demo](https://mrchrissross.github.io/Tank-Wars-WebGL/) | [Tutorial](https://youtu.be/xKNka2dr0Ok) | [Asset Store](https://assetstore.unity.com/packages/templates/packs/2d-tank-builder-178991)
 
-Tank Builder offers you a quick and efficient way of building your own 2D top-down tank. It comes with a reliable controller that is easy use and a smooth camera system that can be changed effectively. Every component comes with its very own custom script that has tooltips on every visible field. The code has been fully commented and is game ready.
+Tank Builder offers you a quick and efficient way of building your own 2D top-down tank. It comes with a reliable controller that is easy to use as well as a smooth camera system that can be changed effectively. Each component comes with its own custom inspector that has tooltips on every visible field. The code has been fully commented on and is game-ready.
 
-This asset comes with many additional features and handmade art including all Photoshop PSDs and as I am still very new to this industry, any reviews, comments, and etc, would be greatly appreciated. Thank you!
+This asset also comes with many additional features and handmade art including all Photoshop PSDs and as I am still very new to this industry, any reviews, comments, and etc, would be greatly appreciated. Thank you!
 
 # Managers
 
@@ -27,6 +27,20 @@ This asset comes with many additional features and handmade art including all Ph
 • Weapon (scriptable object)
 
 • Custom Inspectors
+
+
+# Currently In Development
+
+• Android controls
+
+• New collection of tank sprites
+
+• New collection of environment sprites
+
+• Custom inspector improvements and updates
+
+• Other various updates
+
 
 # Images
 
