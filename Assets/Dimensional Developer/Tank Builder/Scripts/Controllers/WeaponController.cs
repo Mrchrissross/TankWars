@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using TankWars.Managers;
-using TankWars.Utility;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Utility;
+using DimensionalDeveloper.TankBuilder.Managers;
 
-namespace TankWars.Controllers
+namespace DimensionalDeveloper.TankBuilder.Controllers
 {
     /// <summary>
     /// The weapon controller, controls all aspects of the tanks weapons. Once a weapon scriptable object has been added,
@@ -137,6 +137,10 @@ namespace TankWars.Controllers
                 // Perform the muzzle flash.
                 AssetManager.SpawnObject(weapon.MuzzleFlash, firePointPosition, firePointRotation);
                 
+                // Ensure a rigidbody exists on the ammo.
+                if(ammo.GetComponent<Rigidbody2D>() == null)
+                    ammo.AddComponent<Rigidbody2D>();
+                
                 // Acquire ammo controller.
                 var ammoController = ammo.GetComponent<AmmoController>();
                 
@@ -146,10 +150,6 @@ namespace TankWars.Controllers
                 
                 // Initialise the ammo with all the weapons information.
                 ammoController.InitialiseAmmo(weapon);
-                
-                // Ensure a rigidbody exists on the ammo.
-                if(ammo.GetComponent<Rigidbody2D>() == null)
-                    ammo.AddComponent<Rigidbody2D>();
                 
                 //
                 // Perform the recoil (working progress).

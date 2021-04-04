@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     /// <summary>
     /// Tools used to assist in the creation of editor scripts. Redistribution is not allowed.
@@ -15,7 +14,7 @@ namespace TankWars.Editor
     {
         #region Textures
 
-        private const string Path = "Tank Builder/EditorUI/";
+        private const string Path = "Editor UI/";
         public static Texture2D plusTexture;
         public static Texture2D minusTexture;
         public static Texture2D editTexture;
@@ -31,10 +30,7 @@ namespace TankWars.Editor
         /// </summary>
         /// <param name="path">The path to the texture.</param>
         
-        public static Texture2D InitTexture(string path)
-        {
-            return Resources.Load<Texture2D>(path);
-        }
+        public static Texture2D InitTexture(string path) => Resources.Load<Texture2D>(path);
 
         /// <summary>
         /// Initialises all textures.
@@ -42,13 +38,13 @@ namespace TankWars.Editor
         
         public static void InitTextures()
         {
-            plusTexture = InitTexture(Path + "plus");
-            minusTexture = InitTexture(Path + "minus");
-            editTexture = InitTexture(Path + "edit");
             cameraTexture = InitTexture(Path + "camera");
-            tankTexture = InitTexture(Path + "tank");
-            eyeOpenTexture = InitTexture(Path + "eye_open");
+            editTexture = InitTexture(Path + "edit");
             eyeClosedTexture = InitTexture(Path + "eye_closed");
+            eyeOpenTexture = InitTexture(Path + "eye_open");
+            minusTexture = InitTexture(Path + "minus");
+            plusTexture = InitTexture(Path + "plus");
+            tankTexture = InitTexture(Path + "tank");
 
             guiColorBackup = GUI.backgroundColor;
         }

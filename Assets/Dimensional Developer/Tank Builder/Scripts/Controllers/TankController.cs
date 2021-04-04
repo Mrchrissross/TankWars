@@ -1,8 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using TankWars.Utility;
+using DimensionalDeveloper.TankBuilder.Utility;
 
-namespace TankWars.Controllers
+namespace DimensionalDeveloper.TankBuilder.Controllers
 {
     /// <summary>
     /// Controls the movement, style and shooting of the player tank.

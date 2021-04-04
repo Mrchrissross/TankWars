@@ -1,9 +1,8 @@
-﻿using System;
-using TankWars.Controllers;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Controllers;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(CameraController))]
     public class CameraControllerInspector : UnityEditor.Editor

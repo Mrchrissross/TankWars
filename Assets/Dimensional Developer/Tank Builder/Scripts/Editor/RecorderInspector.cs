@@ -1,9 +1,8 @@
-﻿using TankWars.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
-using UnityEngine.Events;
+using DimensionalDeveloper.TankBuilder.Utility;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(Recorder))]
     public class RecorderInspector : UnityEditor.Editor

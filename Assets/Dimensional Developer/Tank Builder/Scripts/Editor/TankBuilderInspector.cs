@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TankWars.Utility;
 using UnityEditor;
 using UnityEngine;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
-    [CustomEditor(typeof(TankBuilder)), CanEditMultipleObjects]
+    [CustomEditor(typeof(Utility.TankBuilder)), CanEditMultipleObjects]
     public class TankBuilderInspector : UnityEditor.Editor
     {
         private const float BoxMinWidth = 300f;
@@ -33,7 +32,7 @@ namespace TankWars.Editor
         private int _resourceCategoriesIndex;
         private int _editResourceCategoriesIndex;
 
-        private TankBuilder TankBuilder => target as TankBuilder;
+        private Utility.TankBuilder TankBuilder => target as Utility.TankBuilder;
 
         
         
@@ -354,7 +353,7 @@ namespace TankWars.Editor
 
 
                     EditorGUIUtility.labelWidth = 100;
-                    TankBuilder.cannonType = (TankBuilder.CannonType) EditorGUILayout.EnumPopup(new GUIContent(
+                    TankBuilder.cannonType = (Utility.TankBuilder.CannonType) EditorGUILayout.EnumPopup(new GUIContent(
                         "Cannon Type",
                         "The method used to follow the target."), TankBuilder.cannonType);
 
@@ -417,7 +416,7 @@ namespace TankWars.Editor
 
                     
                     
-                    if (TankBuilder.cannonType == TankBuilder.CannonType.Single)
+                    if (TankBuilder.cannonType == Utility.TankBuilder.CannonType.Single)
                     {
                         GUILayout.BeginHorizontal();
                         {
@@ -516,7 +515,7 @@ namespace TankWars.Editor
                         
                         GUILayout.Space(5);
 
-                        if (TankBuilder.cannonType == TankBuilder.CannonType.Single)
+                        if (TankBuilder.cannonType == Utility.TankBuilder.CannonType.Single)
                         {
                             TankBuilder.cannonColor = EditorTools.ColorField("Cannon",
                                 "Changes the color of the tanks cannon.", TankBuilder.cannonColor, true, 120);
@@ -671,7 +670,7 @@ namespace TankWars.Editor
         
         
         
-        private void DrawAccessories(int index, ref List<TankBuilder.Accessory> accessories)
+        private void DrawAccessories(int index, ref List<Utility.TankBuilder.Accessory> accessories)
         {
             if (accessories.Count == 0) return;
             

@@ -1,10 +1,10 @@
 ﻿using UnityEditor;
-using TankWars.Controllers;
-using TankWars.Managers;
-using TankWars.Utility;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Controllers;
+using DimensionalDeveloper.TankBuilder.Managers;
+using DimensionalDeveloper.TankBuilder.Utility;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(WeaponController))]
     public class WeaponControllerInspector : UnityEditor.Editor

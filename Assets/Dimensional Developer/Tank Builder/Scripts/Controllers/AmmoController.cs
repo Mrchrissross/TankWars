@@ -1,8 +1,8 @@
-﻿using TankWars.Managers;
-using TankWars.Utility;
-using UnityEngine;
+﻿using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Managers;
+using DimensionalDeveloper.TankBuilder.Utility;
 
-namespace TankWars.Controllers
+namespace DimensionalDeveloper.TankBuilder.Controllers
 {
     /// <summary>
     /// Performs bullet movement, collision detection and damage.
@@ -139,6 +139,8 @@ namespace TankWars.Controllers
             explosionSound = copy.ExplosionSound;
             explosion = copy.Explosion;
             collisionLayer = copy.CollisionLayer;
+            
+            Rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
         }
 
         private void Move()

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using TankWars.Utility;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Utility;
 
-namespace TankWars.Controllers
+namespace DimensionalDeveloper.TankBuilder.Controllers
 {
 	
 	/// <summary>

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace TankWars.Utility
+namespace DimensionalDeveloper.TankBuilder.Utility
 {
     public static class ExtensionsLibrary
     {

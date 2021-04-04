@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
 
-using TankWars.Managers;
 using UnityEditor;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Managers;
 
-namespace TankWars.Utility
+namespace DimensionalDeveloper.TankBuilder.Utility
 {
     /// <summary>
     /// This script holds all menu item functions, such as creating a tank, camera, etc.

@@ -1,8 +1,8 @@
-﻿using TankWars.Managers;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Managers;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(AudioManager))]
     public class AudioManagerInspector : UnityEditor.Editor

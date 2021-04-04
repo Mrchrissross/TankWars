@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using TankWars.Controllers;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Controllers;
 
-namespace TankWars.Utility
+namespace DimensionalDeveloper.TankBuilder.Utility
 {
     /// <summary>
     /// A utility script used to quickly and efficiently build tanks from scratch.

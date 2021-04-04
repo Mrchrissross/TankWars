@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace TankWars.Utility
+namespace DimensionalDeveloper.TankBuilder.Utility
 {
     [CreateAssetMenu(fileName = "Weapon", menuName = "Tank Wars/New Weapon", order = 1)]
     public class Weapon : ScriptableObject

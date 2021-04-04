@@ -1,9 +1,8 @@
-﻿using NUnit.Framework;
-using TankWars.Managers;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Managers;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(AssetManager))]
     public class AssetManagerInspector : UnityEditor.Editor

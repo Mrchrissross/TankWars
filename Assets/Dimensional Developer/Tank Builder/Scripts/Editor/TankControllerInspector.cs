@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using TankWars.Controllers;
-using TankWars.Utility;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using DimensionalDeveloper.TankBuilder.Controllers;
 
-namespace TankWars.Editor
+namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(TankController))]
     public class TankControllerInspector : UnityEditor.Editor
