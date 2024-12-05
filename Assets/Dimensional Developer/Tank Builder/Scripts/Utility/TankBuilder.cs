@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DimensionalDeveloper.TankBuilder.Controllers;
+using UnityEngine.Serialization;
 
 namespace DimensionalDeveloper.TankBuilder.Utility
 {
@@ -21,7 +22,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             public bool expandCategory;
             public bool editCategory;
             public List<Accessory> accessories;
-            
+
             /// <summary>
             /// Creates an exact copy of the input accessory.
             /// </summary>
@@ -277,7 +278,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         
         
         
-        #region Hull Colors
+        #region Hull Properties
 
             public Color hullColor
             {
@@ -318,8 +319,44 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             }
             [SerializeField] private Color _hullShadowsColor = Color.white;
 
-        #endregion
+            public Vector2 hullPosition
+            {
+                get => _hullPosition;
+                set
+                {
+                    if (value == _hullPosition) return;
+                        
+                    _hullPosition.x = Mathf.Clamp(value.x, -3.0f, 3.0f);
+                    _hullPosition.y = Mathf.Clamp(value.y, -7.0f, 5.0f);
 
+                    if (hull == null) return;
+                    
+                    hull.parent.localPosition = _hullPosition;
+                    hull.parent.localPosition = _hullPosition;
+                }
+            }
+            [SerializeField] private Vector2 _hullPosition = Vector2.zero;
+
+            public Vector2 hullSize
+            {
+                get => _hullSize;
+                set
+                {
+                    if (value == _hullSize) return;
+                    
+                    _hullSize.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
+                    _hullSize.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
+
+                    if (hull == null) return;
+                    
+                    hull.parent.localScale = _hullSize;
+                    hull.parent.localScale = _hullSize;
+                }
+            }
+            [SerializeField] private Vector2 _hullSize = Vector2.one;
+            
+        #endregion
+        
         
 
         #region Cannon Colors
@@ -454,7 +491,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         
         #region Cannon Sizes
 
-        public Vector2 cannonRotorSize
+            public Vector2 cannonRotorSize
             {
                 get => _cannonRotorSize;
                 set
@@ -518,9 +555,6 @@ namespace DimensionalDeveloper.TankBuilder.Utility
 
         // Constant variable leading to the tank sprites.
         private const string Path = "Tank Builder/Sprites/";
-        
-        // Current tab that the cannon is current on. eg. position, size.        
-        public int cannonCurrentTab = 0;
         
         // The sorting layer ID, used to assign the tank parts to a sorting layer.
         [HideInInspector] public int sortingLayerID = 0;
@@ -761,16 +795,15 @@ namespace DimensionalDeveloper.TankBuilder.Utility
                 var grandParent = transform.Find(i == 0 ? "Hull" : "Cannon");
                 if (grandParent == null) continue;
                 
-                var parent = grandParent.Find(nameOfCategory);
+                var categoryTransform = grandParent.Find(nameOfCategory);
+                if (categoryTransform != null) continue;
 
-                if (parent != null) continue;
-                
-                parent = new GameObject().transform;
-                parent.name = nameOfCategory;
-                parent.parent = grandParent;
-                parent.localPosition = Vector3.zero;
-                parent.localRotation = Quaternion.identity;
-                parent.localScale = Vector3.one;
+                categoryTransform = new GameObject().transform;
+                categoryTransform.name = nameOfCategory;
+                categoryTransform.parent = grandParent;
+                categoryTransform.localPosition = Vector3.zero;
+                categoryTransform.localRotation = Quaternion.identity;
+                categoryTransform.localScale = Vector3.one;
             }
         }
 

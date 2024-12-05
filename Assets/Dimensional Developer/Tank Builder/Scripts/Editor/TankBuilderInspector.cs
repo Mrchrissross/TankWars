@@ -30,6 +30,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         private string[] _resourceCategoriesArray;
         private int _resourceCategoriesIndex;
         private int _editResourceCategoriesIndex;
+        
+        public int hullCurrentTab = 0;
+        public int cannonCurrentTab = 0;
 
         protected override void OnEnable()
         {
@@ -311,30 +314,72 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 GUILayout.EndHorizontal();
 
+                
+                
                 DrawLine(0.5f, 5f, 5);
-
+                
+                
+                
                 if (TankBuilder.hull == null) return;
-
-                BeginVertical();
-
+                
                 if (Button("Toggle", "Toggles the current hull."))
                     Selection.activeGameObject = TankBuilder.hull.gameObject;
 
 
 
                 DrawLine(0.5f, 5f, 5);
+                
+                
+                
+                hullCurrentTab = GUILayout.Toolbar(hullCurrentTab,
+                    new string[] {"Position", "Size"});
+                    
+                if (hullCurrentTab == 0)
+                {
+                    Label("Position:", "Changes the position of the base.", LabelWidth);
+
+                    EditorGUI.indentLevel++;
+
+                    var position = TankBuilder.hullPosition;
+                    position.x = Slider("X", "Changes the base's position along the x axis.",
+                        position.x, -3.0f, 3.0f, LabelWidth);
+                    position.y = Slider("Y", "Changes the base's position along the y axis.",
+                        position.y, -7.0f, 5.0f, LabelWidth);
+                    TankBuilder.hullPosition = position;
+
+                    EditorGUI.indentLevel--;
+                }
+                else
+                {
+                    Label("Local Scale:", "Changes the size of the overall cannon.", LabelWidth);
+
+                    EditorGUI.indentLevel++;
+
+                    var size = TankBuilder.hullSize;
+                    size.x = Slider("X", "Changes the base's size along the x axis.",
+                        size.x, -2.0f, 2.0f, LabelWidth);
+                    size.y = Slider("Y", "Changes the base's size along the y axis.",
+                        size.y, 0.0f, 2.0f, LabelWidth);
+                    TankBuilder.hullSize = size;
+
+                    EditorGUI.indentLevel--;
+                }
+                
+                
+                
+                DrawLine(0.5f, 5f, 5);
+
+                
 
                 InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
                     
                 DrawAccessories(category, ref category.accessories);
 
-                EndVertical();
             }
             else GUILayout.EndHorizontal();
             
             category.expandCategory = expandCategory;
         }
-        
         
         
 
@@ -396,10 +441,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                     Space(3);
 
-                    TankBuilder.cannonCurrentTab = GUILayout.Toolbar(TankBuilder.cannonCurrentTab,
+                    cannonCurrentTab = GUILayout.Toolbar(cannonCurrentTab,
                         new string[] {"Position", "Size"});
                     
-                    if (TankBuilder.cannonCurrentTab == 0)
+                    if (cannonCurrentTab == 0)
                     {
                         Label("Position:", "Changes the position of the base.", LabelWidth);
 
@@ -882,10 +927,13 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         DrawLine(0.5f, 5f, 5);
 
-                        accessory.CurrentParent = Popup("Parent",
-                                "The current parent of the accessory.\n\n" +
-                                "eg. if parent to the cannon, this accessory will rotate with it.", accessory.CurrentParent,
-                            new string[] {"Hull", "Cannon"}, LabelWidth);
+                        if (category.categoryName is not "Hull" or "Cannon")
+                        {
+                            accessory.CurrentParent = Popup("Parent",
+                                    "The current parent of the accessory.\n\n" +
+                                    "eg. if parent to the cannon, this accessory will rotate with it.", accessory.CurrentParent,
+                                new string[] {"Hull", "Cannon"}, LabelWidth);
+                        }
                         
                         Space(2.5f);
                         
