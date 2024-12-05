@@ -102,6 +102,36 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         #region Utilities
 
+            #region Layout
+
+            public static void BeginVertical()
+            {
+                SetBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+                GUILayout.BeginVertical("box");
+                ResetBackgroundColor();
+            }
+            
+            public static void BeginVertical(Color color)
+            {
+                SetBackgroundColor(color);
+                GUILayout.BeginVertical("box");
+                ResetBackgroundColor();
+            }
+            
+            public static void EndVertical()
+            {
+                GUILayout.EndVertical();
+                ResetBackgroundColor();
+            }
+            
+            public static void SetBackgroundColor(Color color) => GUI.backgroundColor = color;
+            
+            public static void ResetBackgroundColor() =>
+                GUI.backgroundColor = guiColorBackup;
+
+            #endregion
+        
+        
         
             #region Textures
 
@@ -293,7 +323,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             /// </summary>
             /// <param name="label">Label of the slider.</param>
             /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
-            /// <param name="value">The float within the script.</param>
+            /// <param name="value">The int within the script.</param>
             /// <param name="width">Width of the displayed Label.</param>
             /// <param name="space">Amount of space after the element. </param>
             public static int IntField(string label, string tooltip, int value, float width = 50, float space = 0)
@@ -629,6 +659,47 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 return newKey;
             }
+
+            /// <summary>
+            /// Draws an enum popup.
+            /// </summary>
+            /// <param name="label">Label of the toggle.</param>
+            /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+            /// <param name="value">The int / enum value within the script.</param>
+            /// <param name="width">Width of the displayed Label.</param>
+            /// <param name="space">Amount of space after the element. </param>
+            /// <returns></returns>
+
+            public static Enum EnumPopup(string label, string tooltip, Enum value, float width = 50, float space = 0)
+            {
+                EditorGUIUtility.labelWidth = width;
+                value = EditorGUILayout.EnumPopup(new GUIContent(label, tooltip), value);
+                
+                Space(space);
+
+                return value;
+            }
+            
+            /// <summary>
+            /// Draws an enum popup.
+            /// </summary>
+            /// <param name="label">Label of the toggle.</param>
+            /// <param name="tooltip">The tooltip to display when hovering over the label.</param>
+            /// <param name="value">The int / enum value within the script.</param>
+            /// <param name="array">A list of strings that will popup when the pop is selected.</param>
+            /// <param name="width">Width of the displayed Label.</param>
+            /// <param name="space">Amount of space after the element. </param>
+            /// <returns></returns>
+
+            public static int Popup(string label, string tooltip, int value, string[] array, float width = 50, float space = 0)
+            {
+                EditorGUIUtility.labelWidth = width;
+                value = EditorGUILayout.Popup(new GUIContent(label, tooltip), value, array);
+                
+                Space(space);
+
+                return value;
+            }
             
             // ---------------------------------------------------------------------------------------------------------
             
@@ -716,6 +787,25 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             
             #region Toggles
 
+            /// <summary>
+            /// Draws a tool.
+            /// </summary>
+            /// <param name="value">The int / enum value within the script.</param>
+            /// <param name="array">A list of strings that will be used as the tabs.</param>
+            /// <param name="width">Width of the displayed Label.</param>
+            /// <param name="space">Amount of space after the element. </param>
+            /// <returns></returns>
+
+            public static int TabsToggle(int value, string[] array, float width = 50, float space = 0)
+            {
+                EditorGUIUtility.labelWidth = width;
+                value = GUILayout.Toolbar(value, array);
+                
+                Space(space);
+
+                return value;
+            }
+            
             /// <summary>
             /// Draws a toggle in the inspector.
             /// </summary>
@@ -813,6 +903,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             
             #region Utility
 
+            public static void Print(string log) => Debug.Log(log);
+            
             public static void DrawLine(float thickness = 0.5f, float spaceBefore = 2.5f, float spaceAfter = 2.5f)
             {
                 Space(spaceBefore);

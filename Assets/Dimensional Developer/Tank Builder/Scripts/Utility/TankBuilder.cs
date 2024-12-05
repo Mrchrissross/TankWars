@@ -21,6 +21,14 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             public bool expandCategory;
             public bool editCategory;
             public List<Accessory> accessories;
+            
+            /// <summary>
+            /// Creates an exact copy of the input accessory.
+            /// </summary>
+            /// <param name="accessory">The accessory to be copied.</param>
+        
+            public void CopyAccessory(Accessory accessory) => 
+                accessories.Add(new Accessory(accessory));
         }
         
         [Serializable]
@@ -67,8 +75,6 @@ namespace DimensionalDeveloper.TankBuilder.Utility
                     if (currentParent == value) return;
                     currentParent = value;
                     
-                    if (transform.parent.name == (CurrentParent == 0 ? "Cannon" : "Hull")) return;
-
                     var grParent = transform.parent.parent.parent.Find(CurrentParent == 0 ? "Hull" : "Cannon");
                     var parent = grParent.Find(parentName);
                 
@@ -525,25 +531,29 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         public CameraController cameraController;
         
         // Hull data.
+        public Category hullCategory = new()
+        {
+            categoryName = "Hull",
+            categoryFolder = "Hull"
+        };
         public Transform hull;
         public SpriteRenderer hullSprite;
         public SpriteRenderer hullAdditionalColorSprite;
         public SpriteRenderer hullShadowsSprite;
-        public bool expandHull;
         
         // Cannon data.
         public Transform cannonRotor;
         public Transform cannonBase;
-        public List<Transform> cannonHolder = new List<Transform>();
-        public List<Transform> cannon = new List<Transform>();
+        public List<Transform> cannonHolder = new();
+        public List<Transform> cannon = new();
         public SpriteRenderer cannonBaseSprite;
         public SpriteRenderer cannonBaseSidesSprite;
-        public List<SpriteRenderer> cannonSprite = new List<SpriteRenderer>();
-        public List<Transform> cannonFirePoint = new List<Transform>();
+        public List<SpriteRenderer> cannonSprite = new();
+        public List<Transform> cannonFirePoint = new();
         public bool expandCannon;
         
         // Categories data.
-        public List<Category> categories = new List<Category>();
+        public List<Category> categories = new();
         
         #endregion
 
@@ -593,63 +603,6 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             hullParent.localPosition = Vector3.zero;
             hullParent.localRotation = Quaternion.identity;
             hullParent.localScale = Vector2.one;
-            
-            
-            
-            // Destroy the original hull.
-            if(hull != null) DestroyImmediate(hull.gameObject);
-            
-            // Create a new hull for the tank as a
-            // child of the parent hull (holds all hull elements).
-            hull = new GameObject().transform;
-            hull.name = "Hull";
-            hull.parent = hullParent;
-            hull.localPosition = Vector3.zero;
-            hull.localRotation = Quaternion.identity;
-            hull.localScale = Vector2.one;
-
-            // Add a sprite renderer to the hull game object and set it layer.
-            hullSprite = hull.gameObject.AddComponent<SpriteRenderer>();
-            hullSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Hull");
-            hullSprite.sortingLayerID = sortingLayerID;
-            hullSprite.color = hullColor;
-            
-            // Create a polygon collider.
-            hull.gameObject.AddComponent<PolygonCollider2D>();
-
-
-
-            // Add a additional coloring object as a child of the (child) hull.
-            var hullAdditionalColoring = new GameObject().transform;
-            hullAdditionalColoring.name = "Additional Color";
-            hullAdditionalColoring.parent = hull;
-            hullAdditionalColoring.localPosition = Vector3.zero;
-            hullAdditionalColoring.localRotation = Quaternion.identity;
-            hullAdditionalColoring.localScale = Vector2.one;
-            
-            // Again, add a sprite renderer to this object, set its layer/sorting order and the color.
-            hullAdditionalColorSprite = hullAdditionalColoring.gameObject.AddComponent<SpriteRenderer>();
-            hullAdditionalColorSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Additional Color");
-            hullAdditionalColorSprite.sortingLayerID = sortingLayerID;
-            hullAdditionalColorSprite.sortingOrder = 1;
-            hullAdditionalColorSprite.color = hullAdditionalColor;
-            
-            
-            
-            // Add shadows to the tank, following the above process.
-            var hullShadows = new GameObject().transform;
-            hullShadows.name = "Shadows";
-            hullShadows.parent = hull;
-            hullShadows.localPosition = Vector3.zero;
-            hullShadows.localRotation = Quaternion.identity;
-            hullShadows.localScale = Vector2.one;
-         
-            // Add the shadow sprite renderer.
-            hullShadowsSprite = hullShadows.gameObject.AddComponent<SpriteRenderer>();
-            hullShadowsSprite.sprite = Resources.Load<Sprite>(Path + "Hull/Shadows");
-            hullShadowsSprite.sortingLayerID = sortingLayerID;
-            hullShadowsSprite.sortingOrder = 1;
-            hullShadowsSprite.color = hullShadowsColor;
         }
         
         /// <summary>
@@ -846,24 +799,24 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// <param name="categoryName">Available Types:
         /// Vents, Compartments, Boxes, Extras.</param>
         /// <param name="projectFolder">Where the accessory sprite came from within the resources folder.</param>
-        public virtual void SpawnAccessory(int index, string categoryName, string projectFolder)
+        public virtual void SpawnAccessory(Category category)
         {
             var parentHull = transform.Find("Hull");
             if (parentHull == null) return;
             
-            var parent = parentHull.Find(categoryName);
+            var parent = parentHull.Find(category.categoryName);
                 
             if (parent == null)
             {
                 parent = new GameObject().transform;
-                parent.name = categoryName;
+                parent.name = category.categoryName;
                 parent.parent = parentHull;
                 parent.localPosition = Vector3.zero;
                 parent.localRotation = Quaternion.identity;
                 parent.localScale = Vector3.one;
             }
             
-            categories[index].accessories.Add(new Accessory(parent, projectFolder, sortingLayerID));
+            category.accessories.Add(new Accessory(parent, category.categoryFolder, sortingLayerID));
         }
 
         /// <summary>

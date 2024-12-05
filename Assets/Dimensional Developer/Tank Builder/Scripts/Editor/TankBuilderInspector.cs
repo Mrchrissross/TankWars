@@ -90,7 +90,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             }
             EditorGUILayout.EndVertical();
             
-            EditorGUILayout.Space(5);
+            Space(5);
         }
         
         
@@ -98,7 +98,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         private void DrawTop()
         {
             EditorGUILayout.BeginHorizontal();
-            Label("Sorting Layer:", "The sorting layer to assign to the tank.", 110);
+            Label("Sorting Layer:", "The sorting layer to assign to the tank.", LabelWidth);
             SortingLayerField("", "", _sortingLayerId, EditorStyles.popup, EditorStyles.label);
 
             if(Button("Set", "Sets the sorting layer to all sprite renderers among children.", 60))
@@ -108,7 +108,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
             DrawLine(0.5f, 8f, 5);
             
-            GUI.backgroundColor = Color.grey;
+            // SetBackgroundColor(Color.grey);
 
             if (!_addCategory)
             {
@@ -119,15 +119,14 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 }
                 else
                 {
-                    GUI.backgroundColor = Color.grey;
-                    GUILayout.BeginVertical("box");
-                    GUI.backgroundColor = new Color(1f, 0f, 0f, 1f);
+                    BeginVertical();
+                    SetBackgroundColor(new Color(1f, 0f, 0f, 1f));
 
                     
-                    GUILayout.Space(5);
-                    Label("Erase All:", "", 100);
+                    Space(5);
+                    Label("Erase All:", "", LabelWidth);
                     GUILayout.BeginHorizontal();
-                    Label("Are you sure?", "", 100);
+                    Label("Are you sure?", "", LabelWidth);
                     if (Button("Yes", "Erases everything."))
                     {
                         TankBuilder.EraseAll();
@@ -137,12 +136,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     if (Button("No", "")) _eraseAll = false;
                     
                     GUILayout.EndHorizontal(); 
-                    GUILayout.Space(15);
+                    Space(15);
                     
-                    GUILayout.EndVertical(); 
+                    EndVertical(); 
                 }
-                
-                GUI.backgroundColor = guiColorBackup;
             }
 
             if (!_eraseAll)
@@ -157,21 +154,19 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 }
                 else if(_addCategory)
                 {
-                    GUI.backgroundColor = Color.grey;
-                    GUILayout.BeginVertical("box");
+                    BeginVertical();
 
-                    Label("Add Category:", "", 100);
+                    Label("Add Category:", "", LabelWidth);
                     
-                    EditorGUIUtility.labelWidth = 100;
-                    _categoryName = EditorGUILayout.TextField(new GUIContent("Name:", "Name of the category to add."),
-                        _categoryName);
-                    
-                    EditorGUIUtility.labelWidth = 100;
-                    _resourceCategoriesIndex = EditorGUILayout.Popup(new GUIContent("Folder Location:",
-                        "Location of the folder in resources."), _resourceCategoriesIndex, _resourceCategoriesArray);
+                    SetBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+                    _categoryName = StringField("Name:", "Name of the category to add.", _categoryName, LabelWidth);
+                    ResetBackgroundColor();
+                        
+                    _resourceCategoriesIndex = Popup("Folder Location:",
+                        "Location of the folder in resources.", _resourceCategoriesIndex, _resourceCategoriesArray, LabelWidth);
                     _folderLocation = _resourceCategoriesArray[_resourceCategoriesIndex];
                     
-                    GUILayout.Space(5);
+                    Space(5);
                     
                     GUILayout.BeginHorizontal();
                     if (Button("Add", "Adds the category."))
@@ -196,7 +191,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     }
                     GUILayout.EndHorizontal();
                     
-                    GUILayout.EndVertical(); 
+                    EndVertical(); 
                 }
             }
             
@@ -212,13 +207,13 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
             if (TankBuilder.tankController == null) return;
             
-            GUILayout.Space(1.5f);
+            Space(1.5f);
                 
             if (Button("Add Weapon System", "Adds and sets up all the necessary " +
                                                         "components for the tank to shoot."))
                 TankBuilder.AddWeaponSystem();
             
-            GUILayout.Space(1.5f);
+            Space(1.5f);
                 
             if (Button("Add Camera System", "Adds and sets up all the necessary " +
                                                         "components for the camera."))
@@ -227,14 +222,14 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
 
 
-        private void DrawSpawnHull()
+        /*private void DrawSpawnHull()
         {
             GUILayout.BeginHorizontal();
 
             if (Foldout("Hull", "Spawn, toggles, or destroys the tanks hull.",
                 ref TankBuilder.expandHull))
             {
-                GUILayout.Space(-100);
+                Space(-100);
 
                 if (TexturedButton(plusTexture, "Spawns a new hull, destroying the old one.", 20f))
                     TankBuilder.SpawnHull();
@@ -251,9 +246,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 if (TankBuilder.hull == null) return;
 
-                GUI.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
-                GUILayout.BeginVertical("box");
-                GUI.backgroundColor = guiColorBackup;
+                BeginVertical();
 
                 if (Button("Toggle", "Toggles the current hull."))
                     Selection.activeGameObject = TankBuilder.hull.gameObject;
@@ -270,21 +263,80 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                     TankBuilder.hullColor = ColorField("Overall Color",
                         "Changes the color of the tanks hull.",
-                        TankBuilder.hullColor, true, 120);
+                        TankBuilder.hullColor, true, 130);
                     TankBuilder.hullAdditionalColor = ColorField("Additional Color",
-                        "Changes the additional colors on the tanks hull.", TankBuilder.hullAdditionalColor, true, 120);
+                        "Changes the additional colors on the tanks hull.", TankBuilder.hullAdditionalColor, true, 130);
                     TankBuilder.hullShadowsColor = ColorField("Shadows Color",
-                        "Changes the color of the shadows on the tanks hull.", TankBuilder.hullShadowsColor, true, 120);
+                        "Changes the color of the shadows on the tanks hull.", TankBuilder.hullShadowsColor, true, 130);
 
                     EditorGUI.indentLevel--;
                 }
 
-                GUILayout.EndVertical();
+                EndVertical();
             }
             else GUILayout.EndHorizontal();
+        }*/
+
+
+        
+        private void DrawSpawnHull()
+        {
+            GUILayout.BeginHorizontal();
+
+            var category = TankBuilder.hullCategory;
+            var expandCategory = category.expandCategory;
+
+            if (String.IsNullOrEmpty(category.categoryName))
+            {
+                category.categoryName = "Hull";
+                category.categoryFolder = "Hull";
+            }
+            
+            if (Foldout(category.categoryName, "Spawn, toggles, or destroys the tanks hull.",
+                    ref expandCategory))
+            {
+                Space(-100);
+                
+                if (TexturedButton(plusTexture, "Creates a completely new accessory.", 20f))
+                {
+                    TankBuilder.SpawnHull();
+                    TankBuilder.SpawnAccessory(category);
+                }
+
+                if (TankBuilder.hull != null)
+                {
+                    if (TexturedButton(minusTexture, "Warning: Destroys the tanks current hull and everything on it.", 20f))
+                        DestroyImmediate(TankBuilder.hull.gameObject);
+                }
+
+                GUILayout.EndHorizontal();
+
+                DrawLine(0.5f, 5f, 5);
+
+                if (TankBuilder.hull == null) return;
+
+                BeginVertical();
+
+                if (Button("Toggle", "Toggles the current hull."))
+                    Selection.activeGameObject = TankBuilder.hull.gameObject;
+
+
+
+                DrawLine(0.5f, 5f, 5);
+
+                InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
+                    
+                DrawAccessories(category, ref category.accessories);
+
+                EndVertical();
+            }
+            else GUILayout.EndHorizontal();
+            
+            category.expandCategory = expandCategory;
         }
-
-
+        
+        
+        
 
         private void DrawSpawnCannon()
         {
@@ -294,7 +346,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 ref TankBuilder.expandCannon))
             {
 
-                GUILayout.Space(-100);
+                Space(-100);
 
                 if (TexturedButton(plusTexture, "Spawns a new cannon, destroying the old one.", 20f))
                     TankBuilder.SpawnCannon();
@@ -311,9 +363,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 if (TankBuilder.cannonBase == null) return;
 
-                GUI.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
-                GUILayout.BeginVertical("box");
-                GUI.backgroundColor = guiColorBackup;
+                BeginVertical();
                 {
                     if (Button("Toggle", "Toggles the current cannon."))
                         Selection.activeGameObject = TankBuilder.cannonBase.gameObject;
@@ -324,10 +374,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
 
 
-                    EditorGUIUtility.labelWidth = 100;
-                    TankBuilder.cannonType = (Utility.TankBuilder.CannonType) EditorGUILayout.EnumPopup(new GUIContent(
-                        "Cannon Type",
-                        "The method used to follow the target."), TankBuilder.cannonType);
+                    TankBuilder.cannonType = (Utility.TankBuilder.CannonType) EnumPopup("Cannon Type", 
+                        "The method used to follow the target.", TankBuilder.cannonType, LabelWidth);
 
 
 
@@ -337,7 +385,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                     GUILayout.BeginHorizontal();
                     {
-                        Label("Base:", "Changes the values for the overall cannon rotor.", 100);
+                        Label("Base:", "Changes the values for the overall cannon rotor.", LabelWidth);
 
                         GUILayout.FlexibleSpace();
 
@@ -346,37 +394,37 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     }
                     GUILayout.EndHorizontal();
                     
-                    GUILayout.Space(3);
+                    Space(3);
 
                     TankBuilder.cannonCurrentTab = GUILayout.Toolbar(TankBuilder.cannonCurrentTab,
                         new string[] {"Position", "Size"});
                     
                     if (TankBuilder.cannonCurrentTab == 0)
                     {
-                        Label("Position:", "Changes the position of the base.", 100);
+                        Label("Position:", "Changes the position of the base.", LabelWidth);
 
                         EditorGUI.indentLevel++;
 
                         var position = TankBuilder.cannonRotorPosition;
                         position.x = Slider("X", "Changes the base's position along the x axis.",
-                            position.x, -3.0f, 3.0f, 100);
+                            position.x, -3.0f, 3.0f, LabelWidth);
                         position.y = Slider("Y", "Changes the base's position along the y axis.",
-                            position.y, -7.0f, 5.0f, 100);
+                            position.y, -7.0f, 5.0f, LabelWidth);
                         TankBuilder.cannonRotorPosition = position;
 
                         EditorGUI.indentLevel--;
                     }
                     else
                     {
-                        Label("Local Scale:", "Changes the size of the overall cannon.", 100);
+                        Label("Local Scale:", "Changes the size of the overall cannon.", LabelWidth);
 
                         EditorGUI.indentLevel++;
 
                         var size = TankBuilder.cannonRotorSize;
                         size.x = Slider("X", "Changes the base's size along the x axis.",
-                            size.x, -2.0f, 2.0f, 100);
+                            size.x, -2.0f, 2.0f, LabelWidth);
                         size.y = Slider("Y", "Changes the base's size along the y axis.",
-                            size.y, 0.0f, 2.0f, 100);
+                            size.y, 0.0f, 2.0f, LabelWidth);
                         TankBuilder.cannonRotorSize = size;
 
                         EditorGUI.indentLevel--;
@@ -392,7 +440,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     {
                         GUILayout.BeginHorizontal();
                         {
-                            Label("Main Cannon:", "Changes the values for the main cannon.", 100);
+                            Label("Main Cannon:", "Changes the values for the main cannon.", LabelWidth);
 
                             GUILayout.FlexibleSpace();
 
@@ -401,16 +449,16 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         }
                         GUILayout.EndHorizontal();
                         
-                        GUILayout.Space(3);
+                        Space(3);
 
                         EditorGUI.indentLevel++;
 
                         TankBuilder.singleCannonPosition = Slider("Position",
                             "Position of the cannon on the x axis.",
-                            TankBuilder.singleCannonPosition, -2.5f, 2.5f, 100.0f);
+                            TankBuilder.singleCannonPosition, -2.5f, 2.5f, LabelWidth);
 
                         TankBuilder.singleCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.singleCannonSize, 0.5f, 1.0f, 100.0f);
+                            TankBuilder.singleCannonSize, 0.5f, 1.0f, LabelWidth);
 
                         EditorGUI.indentLevel--;
                     }
@@ -418,7 +466,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     {
                         GUILayout.BeginHorizontal();
                         {
-                            Label("Left Cannon:", "Changes the values for the left cannon.", 100);
+                            Label("Left Cannon:", "Changes the values for the left cannon.", LabelWidth);
 
                             GUILayout.FlexibleSpace();
 
@@ -427,16 +475,16 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         }
                         GUILayout.EndHorizontal();
                         
-                        GUILayout.Space(3);
+                        Space(3);
 
                         EditorGUI.indentLevel++;
 
                         TankBuilder.leftCannonPosition = Slider("Position",
                             "Position of the cannon on the x axis.",
-                            TankBuilder.leftCannonPosition, -2.5f, 0.0f, 100.0f);
+                            TankBuilder.leftCannonPosition, -2.5f, 0.0f, LabelWidth);
 
                         TankBuilder.leftCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.leftCannonSize, 0.5f, 1.0f, 100.0f);
+                            TankBuilder.leftCannonSize, 0.5f, 1.0f, LabelWidth);
 
                         EditorGUI.indentLevel--;
 
@@ -444,7 +492,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         GUILayout.BeginHorizontal();
                         {
-                            Label("Right Cannon:", "Changes the values for the right cannon.", 100);
+                            Label("Right Cannon:", "Changes the values for the right cannon.", LabelWidth);
 
                             GUILayout.FlexibleSpace();
 
@@ -453,16 +501,16 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         }
                         GUILayout.EndHorizontal();
                         
-                        GUILayout.Space(3);
+                        Space(3);
 
                         EditorGUI.indentLevel++;
 
                         TankBuilder.rightCannonPosition = Slider("Position",
                             "Position of the cannon on the x axis.",
-                            TankBuilder.rightCannonPosition, 0.0f, 2.5f, 100.0f);
+                            TankBuilder.rightCannonPosition, 0.0f, 2.5f, LabelWidth);
 
                         TankBuilder.rightCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.rightCannonSize, 0.5f, 1.0f, 100.0f);
+                            TankBuilder.rightCannonSize, 0.5f, 1.0f, LabelWidth);
 
                         EditorGUI.indentLevel--;
                     }
@@ -475,7 +523,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         GUILayout.BeginHorizontal();
                         {
-                            Label("Base", "Changes the color of the cannons base.", 100);
+                            Label("Base", "Changes the color of the cannons base.", LabelWidth);
 
                             TankBuilder.cannonBaseColor = EditorGUILayout.ColorField(TankBuilder.cannonBaseColor);
                             TankBuilder.cannonBaseSidesColor =
@@ -485,7 +533,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         }
                         GUILayout.EndHorizontal();
                         
-                        GUILayout.Space(5);
+                        Space(5);
 
                         if (TankBuilder.cannonType == Utility.TankBuilder.CannonType.Single)
                         {
@@ -505,7 +553,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         EditorGUI.indentLevel--;
                     }
                 }
-                GUILayout.EndVertical();
+                EndVertical();
             }
             else GUILayout.EndHorizontal();
         }
@@ -525,7 +573,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     "Spawn, toggles, or destroys the accessories present within this category.",
                     ref expandCategory))
                 {
-                    GUILayout.Space(-100);
+                    Space(-100);
 
                     if (!category.editCategory)
                     {
@@ -543,7 +591,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     }
 
                     if (TexturedButton(plusTexture, "Creates a completely new accessory.", 20f))
-                        TankBuilder.SpawnAccessory(index, category.categoryName, category.categoryFolder);
+                        TankBuilder.SpawnAccessory(category);
 
                     if (TexturedButton(minusTexture, "Removes this category.", 20f))
                     {
@@ -553,26 +601,27 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                     GUILayout.EndHorizontal();
 
+                    
+                    
                     DrawLine(0.5f, 2.5f, 5);
+                    
+                    
                     
                     if (category.editCategory)
                     {
-                        GUI.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
-                        GUILayout.BeginVertical("box");
-                        GUI.backgroundColor = guiColorBackup;
+                        BeginVertical(new Color(0,0,0,0.4f));
                         {
-                            Label("Edit Category:", "", 100);
+                            Label("Edit Category:", "", LabelWidth);
+                            
+                            SetBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+                            _newCategoryName = StringField("Name:", "Name of the category.", _newCategoryName, LabelWidth);
+                            ResetBackgroundColor();
 
-                            EditorGUIUtility.labelWidth = 100;
-                            _newCategoryName = EditorGUILayout.TextField(new GUIContent("Name:", 
-                            "Name of the category."), _newCategoryName);
-
-                            EditorGUIUtility.labelWidth = 100;
-                            _editResourceCategoriesIndex = EditorGUILayout.Popup(new GUIContent("Folder Location:",
-                                "Location of the folder in resources."), _editResourceCategoriesIndex, _resourceCategoriesArray);
+                            _editResourceCategoriesIndex = Popup("Folder Location:",
+                                "Location of the folder in resources.", _editResourceCategoriesIndex, _resourceCategoriesArray, LabelWidth);
                             _newFolderLocation = _resourceCategoriesArray[_editResourceCategoriesIndex];
                         
-                            GUILayout.Space(5);
+                            Space(5);
                         
                             GUILayout.BeginHorizontal();
                             {
@@ -620,7 +669,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             GUILayout.EndHorizontal();
                     
                         }
-                        GUILayout.EndVertical(); 
+                        EndVertical(); 
                         
                         DrawLine(0.5f, 2.5f, 5);
                     }
@@ -629,12 +678,12 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                     InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
                     
-                    DrawAccessories(index, ref category.accessories);
+                    DrawAccessories(category, ref category.accessories);
                 }
                 else GUILayout.EndHorizontal();
 
                 if(index != TankBuilder.categories.Count - 1) DrawLine(0.5f, 2.5f, 5);
-                else GUILayout.Space(2.5f);
+                else Space(2.5f);
                 
                 category.expandCategory = expandCategory;
                 index++;
@@ -656,13 +705,11 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         
         
-        private void DrawAccessories(int index, ref List<Utility.TankBuilder.Accessory> accessories)
+        private void DrawAccessories(Utility.TankBuilder.Category category, ref List<Utility.TankBuilder.Accessory> accessories)
         {
             if (accessories.Count == 0) return;
             
-            GUI.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
-            GUILayout.BeginVertical("box");
-            GUI.backgroundColor = guiColorBackup;
+            BeginVertical();
             {
                 var i = 0;
                 foreach (var accessory in accessories)
@@ -674,7 +721,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     Space(-40);
                     if (Foldout(accessory.Name, "", ref accessory.expand))
                     {
-                        GUILayout.Space(-100);
+                        Space(-100);
 
                         if (!accessory.editName)
                         {
@@ -687,7 +734,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         if (TexturedButton(plusTexture, "Create a copy of this object?", 20f))
                         {
-                            TankBuilder.CopyAccessory(index, accessory);
+                            category.CopyAccessory(accessory);
                             break;
                         }
 
@@ -706,21 +753,18 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         
                         
                         
-                        GUI.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
-                        GUILayout.BeginVertical("box");
-                        GUI.backgroundColor = guiColorBackup;
+                        BeginVertical();
                         
                         if (accessory.editName)
                         {
-                            GUI.backgroundColor = new Color(0f, 0f, 0f, 0.35f);
+                            SetBackgroundColor(new Color(0f, 0f, 0f, 0.35f));
                             
                             ref var newName = ref accessory.newName ; 
                             
-                            EditorGUIUtility.labelWidth = 50;
-                            newName = EditorGUILayout.TextField(new GUIContent("Name", 
-                                "Automatically renames the game object."), newName);
+                            newName = StringField("Name", "Automatically renames the game object.", 
+                                newName, LabelWidth);
                             
-                            GUI.backgroundColor = guiColorBackup;
+                            ResetBackgroundColor();
                                 
                             GUILayout.BeginHorizontal();
                             {
@@ -753,7 +797,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                                     accessory.Name + "'s transform was not found, please reassign it or delete this item."),
                                 accessory.transform, typeof(Transform), true);
                             
-                            GUILayout.EndVertical();
+                            EndVertical();
 
                             continue;
                         }
@@ -769,9 +813,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
 
                         
-                        EditorGUIUtility.labelWidth = 100;
-                        accessory.Style = EditorGUILayout.Popup(new GUIContent("Style",
-                        "Changes the style of the accessory."), accessory.Style, _accessoryStyles);
+                        accessory.Style = Popup("Style",
+                        "Changes the style of the accessory.", accessory.Style, _accessoryStyles, LabelWidth);
 
                         
                         
@@ -780,8 +823,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
 
                         var currentTab = accessory.currentTab;
-                        accessory.currentTab = GUILayout.Toolbar(accessory.currentTab,
-                            new string[] {"Position", "Rotation", "Size"});
+                        accessory.currentTab = TabsToggle(accessory.currentTab, new string[] {"Position", "Rotation", "Size"});
                         
                         if(accessory.currentTab != currentTab) GUI.FocusControl(null);
 
@@ -789,15 +831,15 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         {
                             case 0:
                             {
-                                Label("Position:", "Changes the position of the accessory.", 100);
+                                Label("Position:", "Changes the position of the accessory.", LabelWidth);
 
                                 EditorGUI.indentLevel++;
 
                                 var position = accessory.Position;
                                 position.x = Slider("X", "Changes the accessories position along the x axis.",
-                                    position.x, -10.0f, 10.0f, 100);
+                                    position.x, -10.0f, 10.0f, LabelWidth);
                                 position.y = Slider("Y", "Changes the accessories position along the y axis.",
-                                    position.y, -15.0f, 15.0f, 100);
+                                    position.y, -15.0f, 15.0f, LabelWidth);
                                 accessory.Position = position;
 
                                 EditorGUI.indentLevel--;
@@ -805,13 +847,13 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             }
                             case 1:
                             {
-                                Label("Rotation:", "Changes the rotation of the accessory.", 100);
+                                Label("Rotation:", "Changes the rotation of the accessory.", LabelWidth);
 
                                 EditorGUI.indentLevel++;
 
                                 accessory.Rotation = Slider("Y",
                                     "Changes the accessories rotation along the y axis.",
-                                    accessory.Rotation, -180.0f, 180.0f, 100);
+                                    accessory.Rotation, -180.0f, 180.0f, LabelWidth);
 
                                 EditorGUI.indentLevel--;
 
@@ -819,15 +861,15 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             }
                             case 2:
                             {
-                                Label("Local Scale:", "Changes the scale of the accessory.", 100);
+                                Label("Local Scale:", "Changes the scale of the accessory.", LabelWidth);
 
                                 EditorGUI.indentLevel++;
 
                                 var scale = accessory.Scale;
                                 scale.x = Slider("X", "Changes the accessories position along the x axis.",
-                                    scale.x, -2.0f, 2.0f, 100);
+                                    scale.x, -2.0f, 2.0f, LabelWidth);
                                 scale.y = Slider("Y", "Changes the accessories position along the y axis.",
-                                    scale.y, -2.0f, 2.0f, 100);
+                                    scale.y, -2.0f, 2.0f, LabelWidth);
                                 accessory.Scale = scale;
 
                                 EditorGUI.indentLevel--;
@@ -840,21 +882,21 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         DrawLine(0.5f, 5f, 5);
 
-                        accessory.CurrentParent = EditorGUILayout.Popup(new GUIContent("Parent",
+                        accessory.CurrentParent = Popup("Parent",
                                 "The current parent of the accessory.\n\n" +
-                                "eg. if parent to the cannon, this accessory will rotate with it."), accessory.CurrentParent,
-                            new string[] {"Hull", "Cannon"});
+                                "eg. if parent to the cannon, this accessory will rotate with it.", accessory.CurrentParent,
+                            new string[] {"Hull", "Cannon"}, LabelWidth);
                         
-                        GUILayout.Space(2.5f);
+                        Space(2.5f);
                         
                         accessory.Color = ColorField("Color",
-                            "Changes the color of the accessory.", accessory.Color, true, 100);
+                            "Changes the color of the accessory.", accessory.Color, true, LabelWidth);
 
                         accessory.SortingOrder = IntField("Sorting Order",
                             "Where this accessory standing within the chosen sorting layer.",
-                            accessory.SortingOrder, 100);
+                            accessory.SortingOrder, LabelWidth);
                         
-                        GUILayout.EndVertical();
+                        EndVertical();
 
                     }
                     else GUILayout.EndHorizontal();
@@ -862,7 +904,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     i++;
                 }
             }
-            GUILayout.EndVertical();
+            EndVertical();
         }
     }
 }
