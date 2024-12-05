@@ -5,59 +5,26 @@ using DimensionalDeveloper.TankBuilder.Managers;
 namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(AudioManager))]
-    public class AudioManagerInspector : UnityEditor.Editor
+    public class AudioManagerInspector : EditorTemplate
     {
-        private const float BoxMinWidth = 300f;
-        private const float BoxMaxWidth = 1000f;
+        protected override string ScriptName => "Audio Manager";
         
-        private GUIStyle _boxStyle;
-        private GUIStyle _foldoutStyle;
-
+        protected override bool EnableBaseGUI => false;
+        
         private AudioManager AudioManager => target as AudioManager;
 
-        private void OnEnable() => EditorTools.InitTextures();
-        
-        public override void OnInspectorGUI()
-        {
-            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
-            
-            EditorGUI.BeginChangeCheck();
-            Undo.RecordObject(target, "AudioManager");
-            
-            DrawSections();
-
-            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(target);
-            serializedObject.ApplyModifiedProperties();
-            
-            EditorGUIUtility.labelWidth = 150;
-            
-            // base.OnInspectorGUI();
-        }
-        
-        private void DrawSections() => DrawSounds(0);
+        protected override void DrawSections() => DrawSounds(0);
 
         private void DrawSounds(int section)
         {
-            GUILayout.BeginHorizontal();
+            if(DrawHeader(this, section, "Audio", "", () =>
             {
-                var style = new GUIStyle(GUI.skin.label)
-                {
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    fontSize = 13
-                };
-            
-                EditorGUILayout.LabelField(new GUIContent("Audio", ""), style);
-
                 GUILayout.Space(-20);
 
-                if (EditorTools.TexturedButton(EditorTools.plusTexture,
-                    "Adds a new sound.", 20f))
+                if (TexturedButton(plusTexture,
+                        "Adds a new sound.", 20f))
                     AudioManager.AddSound();
-            }
-            GUILayout.EndHorizontal();
-            
-            EditorTools.DrawLine(0.5f, 0, 2.5f);
+            })) return;
 
             if (AudioManager.sounds.Count > 0)
             {
@@ -68,12 +35,12 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     {
                         GUILayout.BeginHorizontal();
                         {
-                            if (!EditorTools.Foldout(sound.name, "", ref sound.hideSection))
+                            if (!Foldout(sound.name, "", ref sound.hideSection))
                             {
                                 GUILayout.EndHorizontal();
                                 
                                 if(index < AudioManager.sounds.Count - 1) 
-                                    EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                                    DrawLine(0.5f, 1.5f, 5f);
                                 
                                 index++;
                                 continue;
@@ -81,10 +48,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                             GUILayout.Space(-100);
 
-                            if (EditorTools.TexturedButton(EditorTools.plusTexture, "Creates a copy of this sound.", 20f))
+                            if (TexturedButton(plusTexture, "Creates a copy of this sound.", 20f))
                                 AudioManager.CopySound(sound);
 
-                            if (EditorTools.TexturedButton(EditorTools.minusTexture, "Removes this sound.", 20f))
+                            if (TexturedButton(minusTexture, "Removes this sound.", 20f))
                             {
                                 AudioManager.sounds.RemoveAt(index);
                                 GUILayout.EndHorizontal();
@@ -94,7 +61,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         GUILayout.EndHorizontal();
                 
                         if(index < AudioManager.sounds.Count - 1) 
-                            EditorTools.DrawLine(0.5f, 1.5f, 5f);
+                            DrawLine(0.5f, 1.5f, 5f);
                         
                         DrawSound(index, sound);
 
@@ -109,22 +76,24 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
         private void DrawSound(int index, Sound sound)
         {
+            GUI.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
             GUILayout.BeginVertical("box");
+            GUI.backgroundColor = guiColorBackup;
             {
-                sound.name = EditorTools.StringField("Name", "Name of the sound. This will be used within the code.",
+                sound.name = StringField("Name", "Name of the sound. This will be used within the code.",
                     sound.name, 100);
 
                 EditorGUIUtility.labelWidth = 100;
                 sound.clip = (AudioClip) EditorGUILayout.ObjectField(new GUIContent("Clip", "The audio clip to be played."),
                     sound.clip, typeof(AudioClip), true);
                 
-                EditorTools.DrawLine(0.5f, 0, 2.5f);
+                DrawLine(0.5f, 0, 2.5f);
 
                 const float floatWidth = 32.5f;
                 
                 GUILayout.BeginHorizontal();
                 {
-                    EditorTools.MinMaxSlider("Volume", "Volume of the sound." +
+                    MinMaxSlider("Volume", "Volume of the sound." +
                         "\n To add randomness, increase the range between the two handles.",
                         ref sound.audioVolume.x, ref sound.audioVolume.y, 0.0f, 1.0f,
                         60);
@@ -139,7 +108,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 
                 GUILayout.BeginHorizontal();
                 {
-                    EditorTools.MinMaxSlider("Pitch", "Pitch of the sound." +
+                    MinMaxSlider("Pitch", "Pitch of the sound." +
                         "\n To add randomness, increase the range between the two handles.",
                         ref sound.audioPitch.x, ref sound.audioPitch.y, 0.25f, 1.75f,
                         60);
@@ -152,12 +121,12 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 
                 GUILayout.Space(1.5f);
                 
-                EditorTools.Toggle("Loop", "When the track ends, it will automatically replay.",
+                Toggle("Loop", "When the track ends, it will automatically replay.",
                     ref sound.loop, 100);
                 
-                EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
+                DrawLine(0.5f, 2.5f, 2.5f);
 
-                if (EditorTools.Button("Play", "Plays the selected sound."))
+                if (Button("Play", "Plays the selected sound."))
                 {
                     AudioManager.CreateSource(index, sound);
                     sound.Play();

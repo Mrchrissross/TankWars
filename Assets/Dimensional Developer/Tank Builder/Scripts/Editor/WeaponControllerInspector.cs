@@ -7,22 +7,20 @@ using DimensionalDeveloper.TankBuilder.Utility;
 namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(WeaponController))]
-    public class WeaponControllerInspector : UnityEditor.Editor
+    public class WeaponControllerInspector : EditorTemplate
     {
-        private const float BoxMinWidth = 300f;
-        private const float BoxMaxWidth = 1000f;
+        protected override string ScriptName => "Weapon Controller";
+        protected override bool EnableBaseGUI => false;
         
-        private GUIStyle _boxStyle;
-        private GUIStyle _foldoutStyle;
-
         public string[] assets;
         public string[] sounds;
         
         private WeaponController WeaponController => target as WeaponController;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            EditorTools.InitTextures();
+            base.OnEnable();
+            
             InitAssets();
             InitSounds();
         }
@@ -51,24 +49,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             for (var i = 0; i < length; i++) sounds[i + 1] = amSounds[i].name;
         }
 
-        public override void OnInspectorGUI()
-        {
-            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
-            
-            EditorGUI.BeginChangeCheck();
-            Undo.RecordObject(target, "MovementController");
-            
-            DrawSections();
-
-            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(target);
-            serializedObject.ApplyModifiedProperties();
-            
-            EditorGUIUtility.labelWidth = 150;
-            
-            // base.OnInspectorGUI();
-        }
-
-        private void DrawSections()
+        protected override void DrawSections()
         {
             DrawInputSettings(0);
             DrawWeaponSettings(1);
@@ -76,28 +57,29 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         private void DrawInputSettings(int section)
         {
-            if (EditorTools.DrawHeader("Input", ref WeaponController.hideSection[section])) return;
+            if (DrawHeader(this , section, "Input")) 
+                return;
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                EditorTools.Label("Shoot:",
+                Label("Shoot:",
                     "Ensure these settings match those that are within the input manager.", 100);
                     
                 GUILayout.BeginVertical("box");
                 {
                     if (WeaponController.firePoints.Count > 1)
                     {
-                        WeaponController.cannonInput[1] = EditorTools.StringField("Left Cannon",
+                        WeaponController.cannonInput[1] = StringField("Left Cannon",
                             "Button used to fire the left cannon.",
                             WeaponController.cannonInput[1], 100);
                         
-                        WeaponController.cannonInput[2] = EditorTools.StringField("Right Cannon",
+                        WeaponController.cannonInput[2] = StringField("Right Cannon",
                             "Button used to fire the right cannon.",
                             WeaponController.cannonInput[2], 100);
                     }
                     else
                     {
-                        WeaponController.cannonInput[0] = EditorTools.StringField("Main Cannon",
+                        WeaponController.cannonInput[0] = StringField("Main Cannon",
                             "Button used to fire the main cannon.",
                             WeaponController.cannonInput[0], 100);
                     }
@@ -111,7 +93,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         private void DrawWeaponSettings(int section)
         {
-            if (EditorTools.DrawHeader("Weapons", ref WeaponController.hideSection[section])) return;
+            if (DrawHeader(this , section, "Weapons")) return;
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
@@ -119,7 +101,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 {
                     DrawWeapon("Left Cannon", 1);
                     
-                    EditorTools.DrawLine(0.5f, 0f, 2.5f);
+                    DrawLine(0.5f, 0f, 2.5f);
                     
                     DrawWeapon("Right Cannon", 2);
                 }
@@ -131,7 +113,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
         private void DrawWeapon(string weaponName, int weaponNumber)
         {
-            if (!EditorTools.Foldout(weaponName + ":", "", ref WeaponController.weaponDropdown[weaponNumber], false,
+            if (!Foldout(weaponName + ":", "", ref WeaponController.weaponDropdown[weaponNumber], false,
                 true)) return;
             
             GUILayout.Space(-2.5f);
@@ -152,11 +134,11 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     return;
                 }
 
-                EditorTools.DrawLine(0.5f, 5f, 2.5f);
+                DrawLine(0.5f, 5f, 2.5f);
 
-                weapon.Name = EditorTools.StringField("Name", "The name of the weapon.", weapon.Name, 100);
+                weapon.Name = StringField("Name", "The name of the weapon.", weapon.Name, 100);
                 
-                EditorTools.DrawLine(0.5f, 3f, 2.5f);
+                DrawLine(0.5f, 3f, 2.5f);
                 
                 EditorGUIUtility.labelWidth = 100;
                 weapon.assetIndex = EditorGUILayout.Popup(new GUIContent("Asset",
@@ -165,30 +147,30 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 GUILayout.Space(1.5f);
                 
-                weapon.CollisionLayer = EditorTools.LayerMaskField("Collision",
+                weapon.CollisionLayer = LayerMaskField("Collision",
                     "Layers that the ammo can collide with.", weapon.CollisionLayer, 100);
 
-                EditorTools.DrawLine(0.5f, 3f, 2.5f);
+                DrawLine(0.5f, 3f, 2.5f);
 
-                EditorTools.Label("Weapon Settings:", "", 100);
+                Label("Weapon Settings:", "", 100);
 
                 GUI.backgroundColor = Color.grey;
                 GUILayout.BeginVertical("box");
                 {
-                    GUI.backgroundColor = EditorTools.guiColorBackup;
+                    GUI.backgroundColor = guiColorBackup;
 
                     var shotTimer = weapon.ShotTimer;
 
                     GUILayout.BeginHorizontal();
                     {
-                        shotTimer.x = EditorTools.FloatField("Shot Timer",
+                        shotTimer.x = FloatField("Shot Timer",
                             "Time between shots fired (in seconds). " +
                             "The X value is the set time that the timer will reset to. " +
                             "The Y value is the current count of the timer (the one being reduced).",
                             shotTimer.x, 100);
 
                         GUILayout.Space(-25);
-                        EditorTools.Label("Count:   " + shotTimer.y.ToString("0.0"), "", 90);
+                        Label("Count:   " + shotTimer.y.ToString("0.0"), "", 90);
                         GUILayout.Space(-40);
                     }
                     GUILayout.EndHorizontal();
@@ -197,22 +179,22 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                     GUILayout.Space(3.25f);
 
-                    weapon.Speed = EditorTools.FloatField("Speed", "How fast the bullet travels.",
+                    weapon.Speed = FloatField("Speed", "How fast the bullet travels.",
                         weapon.Speed, 100);
 
-                    weapon.Damage = EditorTools.FloatField("Damage", "How much damage the bullet does.",
+                    weapon.Damage = FloatField("Damage", "How much damage the bullet does.",
                         weapon.Damage, 100);
                 }
                 GUILayout.EndVertical();
 
-                EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
+                DrawLine(0.5f, 2.5f, 2.5f);
 
-                EditorTools.Label("Sounds:", "", 100);
+                Label("Sounds:", "", 100);
 
                 GUI.backgroundColor = Color.grey;
                 GUILayout.BeginVertical("box");
                 {
-                    GUI.backgroundColor = EditorTools.guiColorBackup;
+                    GUI.backgroundColor = guiColorBackup;
 
                     EditorGUIUtility.labelWidth = 100;
                     weapon.shotSoundIndex = EditorGUILayout.Popup(new GUIContent("Shoot",
@@ -230,14 +212,14 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 }
                 GUILayout.EndVertical();
 
-                EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
+                DrawLine(0.5f, 2.5f, 2.5f);
 
-                EditorTools.Label("Particle Systems:", "", 100);
+                Label("Particle Systems:", "", 100);
 
                 GUI.backgroundColor = Color.grey;
                 GUILayout.BeginVertical("box");
                 {
-                    GUI.backgroundColor = EditorTools.guiColorBackup;
+                    GUI.backgroundColor = guiColorBackup;
 
                     EditorGUIUtility.labelWidth = 100;
                     weapon.muzzleFlashIndex = EditorGUILayout.Popup(new GUIContent("Muzzle Flash",

@@ -126,8 +126,8 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
             // ReSharper disable once InconsistentNaming
             public Vector2 velocity
             {
-                get => Rigidbody.velocity;
-                set => Rigidbody.velocity = value;
+                get => Rigidbody.linearVelocity;
+                set => Rigidbody.linearVelocity = value;
             }
 
             public float currentRotation
@@ -278,6 +278,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
             #endregion
 
 
+            
 
             #region Rotor
 
@@ -324,15 +325,6 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         
         
         #region Fields
-
-        #region Unity Inspector
-
-        [HideInInspector] public bool[] hideSection = new bool[6];
-
-        #endregion
-        
-        
-        
         
         #region Input Settings
 
@@ -408,7 +400,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Handles user input.
         /// </summary>
 
-        private void HandleInput()
+        protected virtual void HandleInput()
         {
             if (pause || HaltMovement) return;
             
@@ -430,7 +422,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Handles the users horizontal movement input.
         /// </summary>
 		
-        private float GetHorizontalInput()
+        protected virtual float GetHorizontalInput()
         {
             // Acquire the keyboards horizontal input.
             var horizontal = Input.GetAxisRaw(keyboardHorizontalInput);
@@ -453,7 +445,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Handles the users vertical movement input.
         /// </summary>
 		
-        private float GetVerticalInput()
+        protected virtual float GetVerticalInput()
         {
             // Acquire the keyboards vertical input.
             var vertical = Input.GetAxisRaw(keyboardVerticalInput);
@@ -476,7 +468,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Updates the tank based on user input.
         /// </summary>
 
-        private void ProcessInput()
+        protected virtual void ProcessInput()
         {
             // Update the hulls velocity.
             UpdateVelocity();
@@ -536,7 +528,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// </summary>
         /// <param name="targetSpeed">The current users input speed.</param>
         
-        private void OverrideInput(ref float targetSpeed)
+        protected virtual void OverrideInput(ref float targetSpeed)
         {
             if (targetSpeed.IsZero()) return;
 
@@ -620,7 +612,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// too fast in one direction.
         /// </summary>
 
-        private void LimitVelocity(ref Vector2 currentVelocity)
+        protected virtual void LimitVelocity(ref Vector2 currentVelocity)
         {
             // If not limiting speed, return.
             if (!limitMaximumSpeed) return;
@@ -652,7 +644,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Handles the users cannon input.
         /// </summary>
         
-        private float GetCannonInput()
+        protected virtual float GetCannonInput()
         {
             if (camera == null) return 0;
             

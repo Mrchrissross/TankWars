@@ -69,10 +69,6 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         #endregion
 
     }
-
-    
-    
-    
     
     public class AssetManager : Singleton<AssetManager>
     {
@@ -90,7 +86,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
 
         #region Functions
 
-        public Asset GetAsset(string assetName)
+        public virtual Asset GetAsset(string assetName)
         {
             if (assetName == "None") return null;
 
@@ -109,7 +105,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="rotation">Asset rotation once spawned.</param>
         /// <returns>Returns the asset for future reference.</returns>
         
-        public GameObject SpawnObject(string assetName, Vector3 position, Quaternion rotation)
+        public virtual GameObject SpawnObject(string assetName, Vector3 position, Quaternion rotation)
         {
             if (assetName == "None") return null;
 
@@ -121,20 +117,15 @@ namespace DimensionalDeveloper.TankBuilder.Managers
                 return null;
             }
 
-            GameObject objectToUse = null;
-
-            foreach (var element in asset.objectPool)
-            {
-                if (element.Value) continue;
-
-                objectToUse = element.Key;
-                objectToUse.SetActive(true);
-                break;
-            }
+            GameObject objectToUse = asset.objectPool
+                .Where(element => !element.Value)
+                .Select(element => element.Key)
+                .FirstOrDefault();
 
             if (objectToUse == null)
             {
                 objectToUse = Instantiate(asset.prefab);
+                objectToUse.SetActive(false);
                 asset.objectPool.Add(objectToUse, true);
             }
             else asset.objectPool[objectToUse] = true;
@@ -148,6 +139,8 @@ namespace DimensionalDeveloper.TankBuilder.Managers
             newAssetTransform.position = position;
             newAssetTransform.rotation = rotation;
             newAssetTransform.localScale = new Vector2(sizeX, sizeY);
+            
+            objectToUse.SetActive(true);
 
             if (!asset.infiniteLife) Deactivate(asset, objectToUse, asset.lifeDuration);
             
@@ -158,7 +151,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// Creates a new asset.
         /// </summary>
 
-        public void AddAsset()
+        public virtual void AddAsset()
         {
             var asset = new Asset();
             assets.Add(asset);
@@ -169,7 +162,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// </summary>
         /// <param name="asset">Asset to copy.</param>
         
-        public void CopyAsset(Asset asset) => assets.Add(new Asset(asset));
+        public virtual void CopyAsset(Asset asset) => assets.Add(new Asset(asset));
         
         /// <summary>
         /// Creates the pool transform (parent) for all assets in this category.
@@ -177,7 +170,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="index">Index within the list of assets.</param>
         /// <param name="asset"></param>
         
-        public void CreatePool(int index, Asset asset)
+        protected virtual void CreatePool(int index, Asset asset)
         {
             var goName = "Asset " + index + ": " + asset.name;
 
@@ -198,7 +191,8 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="asset">Asset to deactivate.</param>
         /// <param name="element">The game object within the assets pool to be deactivated.</param>
         /// <param name="seconds">Seconds until deactivation.</param>
-        private void Deactivate(Asset asset, GameObject element, float seconds) => StartCoroutine(IDeactivate(asset, element, seconds));
+        public virtual void Deactivate(Asset asset, GameObject element, float seconds) => 
+            StartCoroutine(IDeactivate(asset, element, seconds));
         
         /// <summary>
         /// Coroutine to deactivate a game object after a number of seconds.

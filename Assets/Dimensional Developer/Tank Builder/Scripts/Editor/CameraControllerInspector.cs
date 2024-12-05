@@ -5,90 +5,41 @@ using DimensionalDeveloper.TankBuilder.Controllers;
 namespace DimensionalDeveloper.TankBuilder.Editor
 {
     [CustomEditor(typeof(CameraController))]
-    public class CameraControllerInspector : UnityEditor.Editor
+    public class CameraControllerInspector : EditorTemplate
     {
-        private const float BoxMinWidth = 300f;
-        private const float BoxMaxWidth = 1000f;
-        
-        private GUIStyle _boxStyle;
-        private GUIStyle _foldoutStyle;
+        protected override string ScriptName => "Camera Controller";
+        protected override bool EnableBaseGUI => false;
         
         private bool _customTankController;
         
         private CameraController CameraController => target as CameraController;
-
-        private void OnEnable() => EditorTools.InitTextures();
-
-        public override void OnInspectorGUI()
+        
+        protected override void DrawSections()
         {
-            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
-            
-            EditorGUI.BeginChangeCheck();
-            Undo.RecordObject(target, "Camera Controller");
-            
             DrawTargetSettings(0);
             DrawInputSettings(1);
             DrawMovementSettings(2);
-
-            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(target);
-            serializedObject.ApplyModifiedProperties();
-            
-            EditorGUIUtility.labelWidth = 150;
-            
-            // base.OnInspectorGUI();
         }
         
         private void DrawTargetSettings(int section)
         {
-            GUILayout.BeginHorizontal();
-            {
-                if (!CameraController.hideSection[section])
+            if (DrawHeader(this, section, "Rotor", "", () =>
                 {
-                    if (EditorTools.TexturedButton(EditorTools.eyeOpenTexture,
-                        "Hides all the content in this section.", 20f))
-                        CameraController.hideSection[section] = true;
+                    if (_customTankController) 
+                        return;
                     
                     GUILayout.Space(-20);
-                }
-                else
-                {
-                    if (EditorTools.TexturedButton(EditorTools.eyeClosedTexture,
-                        "Shows all the content in this section.", 20f))
-                        CameraController.hideSection[section] = false;
-                    
-                    GUILayout.Space(-20);
-                }
-                
-                var style = new GUIStyle(GUI.skin.label)
-                {
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    fontSize = 13
-                };
-            
-                EditorGUILayout.LabelField(new GUIContent("Targeting", ""), style);
 
-                if (!_customTankController)
-                {
-                    GUILayout.Space(-20);
-
-                    if (EditorTools.TexturedButton(EditorTools.tankTexture,
-                        "Manually input the Tank Controller into the camera system.", 20f))
+                    if (TexturedButton(tankTexture,
+                            "Manually input the Tank Controller into the camera system.", 20f))
                         _customTankController = true;
-                }
-            }
-            GUILayout.EndHorizontal();
-            
-            EditorTools.DrawLine();
-            GUILayout.Space(5);
-
-            if (CameraController.hideSection[section]) return;
+                })) return;
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
                 if (_customTankController)
                 {
-                    EditorTools.Label("Tank Controller:", "The tank controller to be used in this camera system.", 100);
+                    Label("Tank Controller:", "The tank controller to be used in this camera system.", 100);
                     
                     GUILayout.BeginVertical("box");
                     {
@@ -98,7 +49,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             CameraController.tankController = (TankController) EditorGUILayout.ObjectField(new GUIContent("",
                                 ""), CameraController.tankController, typeof(TankController), true);
 
-                            if (EditorTools.Button("Done", ""))
+                            if (Button("Done", ""))
                                 _customTankController = false;
                         }
                         GUILayout.EndHorizontal();
@@ -106,23 +57,23 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     }
                     GUILayout.EndVertical();
                     
-                    EditorTools.DrawLine(0.5f, 2.5f, 0);
+                    DrawLine(0.5f, 2.5f, 0);
                 }
                 
                 GUILayout.BeginHorizontal();
                 {
-                    CameraController.cameraTarget = EditorTools.TransformField("Target:",
-                        "This is the current target that the camera will follow.",
-                        CameraController.cameraTarget, 60);
+                    ObjectField("Target:",
+                        "This is the current target that the camera will follow.", 
+                        ref CameraController.cameraTarget, 60, 0, false);
                     
-                    if(EditorTools.Button("Reset", "Resets the target to look at the tank."))
+                    if(Button("Reset", "Resets the target to look at the tank."))
                         CameraController.ResetTarget();
                 }
                 GUILayout.EndHorizontal();
                 
                 GUILayout.BeginVertical("box");
                 {
-                    EditorTools.Toggle("Rotate With Target?",
+                    Toggle("Rotate With Target?",
                         "If enabled, the camera will rotate with the target on the z axis.",
                         ref CameraController.rotateWithTarget, 120);
                     
@@ -130,35 +81,35 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                     GUILayout.BeginHorizontal();
                     {
-                        EditorTools.Label("Offset:", "Offsets the cameras position relative to the target.", 50, 0);
+                        Label("Offset:", "Offsets the cameras position relative to the target.", 50, 0);
 
                         var positionOffset = CameraController.PositionOffset;
-                        positionOffset.x = EditorTools.FloatField("X", "", positionOffset.x, 20f);
-                        positionOffset.y = EditorTools.FloatField("Y", "", positionOffset.y, 20f);
+                        positionOffset.x = FloatField("X", "", positionOffset.x, 20f);
+                        positionOffset.y = FloatField("Y", "", positionOffset.y, 20f);
                         CameraController.PositionOffset = positionOffset;
                     }
                     GUILayout.EndHorizontal();
                     
                     GUILayout.Space(5.0f);
                     
-                    CameraController.CameraDistance = EditorTools.Slider("Camera Distance",
+                    CameraController.CameraDistance = Slider("Camera Distance",
                         "This is the maximum distance that the camera will extend from the target.",
                         CameraController.CameraDistance, 15.0f, 40.0f, 120);
                     
-                    EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
+                    DrawLine(0.5f, 2.5f, 2.5f);
                     // GUILayout.BeginHorizontal();
                     // {
-                        EditorTools.Toggle("Far Look?",
+                        Toggle("Far Look?",
                             "When pointing at a certain direction, the camera will offset to look further off in the distance.",
                             ref CameraController.farLook, 120);
                     // }
                     // GUILayout.EndHorizontal();
                     
-                    CameraController.farLookSpeed = EditorTools.Slider("Far Look Speed",
+                    CameraController.farLookSpeed = Slider("Far Look Speed",
                         "This is the speed that the camera will offset from the target while using far look.",
                         CameraController.farLookSpeed, 0.0f, 20.0f, 120);
                     
-                    CameraController.farLookDistance = EditorTools.Slider("Far Look Distance",
+                    CameraController.farLookDistance = Slider("Far Look Distance",
                         "This is the maximum distance that the camera will offset from the target while using far look.",
                         CameraController.farLookDistance, 0.0f, 30.0f, 120);
                 
@@ -172,7 +123,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         private void DrawInputSettings(int section)
         {
-            if (EditorTools.DrawHeader("Input", ref CameraController.hideSection[section])) return;
+            if (DrawHeader(this, section, "Input"))
+                return;
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
@@ -180,7 +132,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 {
                     GUILayout.FlexibleSpace();
                     var cursorLabel = CameraController.lockCursor ? "<b>Cursor Locked</b>" : "Cursor Not Locked";
-                    EditorTools.Label(cursorLabel, "Displays whether the mouse cursor is locked to the screen or not.",
+                    Label(cursorLabel, "Displays whether the mouse cursor is locked to the screen or not.",
                         120, 0, new GUIStyle(GUI.skin.label)
                         {
                             alignment = TextAnchor.MiddleCenter,
@@ -190,27 +142,27 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 }
                 EditorGUILayout.EndHorizontal();
 
-                EditorTools.DrawLine(0.5f, 2.5f, 2.5f);
+                DrawLine(0.5f, 2.5f, 2.5f);
 
-                CameraController.UnlockCursorKey = EditorTools.KeyCodeDropdown("Cursor Unlock Key",
+                CameraController.UnlockCursorKey = KeyCodeDropdown("Cursor Unlock Key",
                     "The keyboard key to unlock the mouse cursor.", CameraController.UnlockCursorKey, 110);
 
-                EditorTools.DrawLine(0.5f, 2.5f, 0);
+                DrawLine(0.5f, 2.5f, 0);
 
-                EditorTools.Label("Joystick:", "Ensure these settings match those that are within the input manager.",
+                Label("Joystick:", "Ensure these settings match those that are within the input manager.",
                     60);
 
                 GUILayout.BeginVertical("box");
                 {
                     GUILayout.BeginHorizontal();
                     {
-                        EditorTools.Label("Invert:",
+                        Label("Invert:",
                             "Inverts the input on select axis.", 95);
 
-                        EditorTools.Toggle("Horizontal", "",
+                        Toggle("Horizontal", "",
                             ref CameraController.joystickInvertHorizontal, 75);
 
-                        EditorTools.Toggle("Vertical", "",
+                        Toggle("Vertical", "",
                             ref CameraController.joystickInvertVertical, 60);
                         GUILayout.Space(-10);
                     }
@@ -218,31 +170,31 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     GUILayout.Space(2.5f);
 
 
-                    CameraController.joystickHorizontalInput = EditorTools.StringField("Horizontal",
+                    CameraController.joystickHorizontalInput = StringField("Horizontal",
                         "This is the horizontal joystick input found in the input manager.",
                         CameraController.joystickHorizontalInput, 100);
 
-                    CameraController.joystickVerticalInput = EditorTools.StringField("Vertical",
+                    CameraController.joystickVerticalInput = StringField("Vertical",
                         "This is the vertical joystick input found in the input manager.",
                         CameraController.joystickVerticalInput, 100);
 
                     EditorGUILayout.Space(7.5f);
 
-                    CameraController.deadZoneThreshold = EditorTools.Slider(" Dead Zone Threshold",
+                    CameraController.deadZoneThreshold = Slider(" Dead Zone Threshold",
                         "This is the dead zone threshold of the joystick, if the joystick input is below this " +
                         "threshold, no input is applied.", CameraController.deadZoneThreshold, 0.05f, 0.5f, 150);
 
                 }
                 GUILayout.EndVertical();
                 
-                EditorTools.DrawLine(0.5f, 2.5f, 0);
+                DrawLine(0.5f, 2.5f, 0);
                 
-                EditorTools.Label("Actions:",
+                Label("Actions:",
                     "Ensure these settings match those that are within the input manager.", 100);
                     
                 GUILayout.BeginVertical("box");
                 {
-                    CameraController.farLookInput = EditorTools.StringField("Far Look",
+                    CameraController.farLookInput = StringField("Far Look",
                         "Input to change the screen offset from positional to mouse/joystick.",
                         CameraController.farLookInput, 100);
                 }
@@ -255,18 +207,19 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
         private void DrawMovementSettings(int section)
         {
-            if (EditorTools.DrawHeader("Movement", ref CameraController.hideSection[section])) return;
+            if (DrawHeader(this, section, "Movement")) 
+                return;
 
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                if (EditorTools.Foldout("Smooth Movement", "If enabled, the cameras movement toward the target will be dampened.", 
+                if (Foldout("Smooth Movement", "If enabled, the cameras movement toward the target will be dampened.", 
                     ref CameraController.smoothMovement, true, true))
                 {
                     
                     GUI.backgroundColor = Color.black;
                     EditorGUILayout.BeginVertical(_foldoutStyle);
                     {
-                        GUI.backgroundColor = EditorTools.guiColorBackup;
+                        GUI.backgroundColor = guiColorBackup;
                         
                         EditorGUI.indentLevel++;
 
@@ -278,12 +231,12 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         GUILayout.Space(2.25f);
                         
                         if (CameraController.followMethod == CameraController.FollowMethod.Lerp)
-                            CameraController.lerpMovementSpeed = EditorTools.Slider("Speed",
+                            CameraController.lerpMovementSpeed = Slider("Speed",
                                 "The speed at which the camera will be linearly interpolated toward the camera.",
                                 CameraController.lerpMovementSpeed, 0.5f, 50.0f, 150);
 
                         else
-                            CameraController.smoothMovementTime = EditorTools.Slider("Damp Time",
+                            CameraController.smoothMovementTime = Slider("Damp Time",
                                 "The amount time that the camera will lag behind the target.", 
                                 CameraController.smoothMovementTime, 0.0f, 1.5f, 150);
                         
@@ -292,9 +245,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     EditorGUILayout.EndVertical();
                 }
                 
-                EditorTools.DrawLine(0.5f, 5, 2.5f);
+                DrawLine(0.5f, 5, 2.5f);
                 
-                if (EditorTools.Foldout("Smooth Rotation", "Smoothly moves the characters rotation toward the target rotation.", 
+                if (Foldout("Smooth Rotation", "Smoothly moves the characters rotation toward the target rotation.", 
                     ref CameraController.smoothRotation, true, true))
                 {
                     
@@ -302,13 +255,13 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                     EditorGUILayout.BeginVertical(_foldoutStyle);
                     {
-                        GUI.backgroundColor = EditorTools.guiColorBackup;
+                        GUI.backgroundColor = guiColorBackup;
                         
                         EditorGUI.indentLevel++;
 
                         EditorGUILayout.Space(1f);
                         
-                        CameraController.smoothRotationFactor = EditorTools.Slider("Time",
+                        CameraController.smoothRotationFactor = Slider("Time",
                             "Applies a drag to the camera, making it take longer to reach the target rotation.",
                             CameraController.smoothRotationFactor, 0, 10.0f, 100);
 

@@ -264,7 +264,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         public static void ApplyImpulse(this Rigidbody rigidbody, float impulse, Vector3 direction)
         {
             var verticalImpulse = direction * impulse;
-            rigidbody.velocity = rigidbody.velocity.OnlyXZ() + verticalImpulse;
+            rigidbody.linearVelocity = rigidbody.linearVelocity.OnlyXZ() + verticalImpulse;
         }
         
         /// <summary>
@@ -274,7 +274,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         public static void ApplyUpwardImpulse(this Rigidbody rigidbody, float impulse)
         {
             var verticalImpulse = Vector3.up * impulse;
-            rigidbody.velocity = rigidbody.velocity.OnlyXZ() + verticalImpulse;
+            rigidbody.linearVelocity = rigidbody.linearVelocity.OnlyXZ() + verticalImpulse;
         }
         
         /// <summary>

@@ -510,10 +510,8 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         
         #region Fields
 
-        public bool hideSection;
-        
         // Constant variable leading to the tank sprites.
-        private const string Path = "TankWars/Sprites/";
+        private const string Path = "Tank Builder/Sprites/";
         
         // Current tab that the cannon is current on. eg. position, size.        
         public int cannonCurrentTab = 0;
@@ -554,7 +552,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
 
         #region Functions
 
-        public void SetSortingLayer()
+        public virtual void SetSortingLayer()
         {
             var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 
@@ -566,7 +564,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// Use with caution: Remove absolutely everything from the tank
         /// and deletes is all.
         /// </summary>
-        public void EraseAll()
+        public virtual void EraseAll()
         {
             transform.DestroyChildren();
             
@@ -578,7 +576,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// Spawns the tanks hull.
         /// </summary>
         
-        public void SpawnHull()
+        public virtual void SpawnHull()
         {
             
             // Create the tanks hull
@@ -658,7 +656,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// Spawns the tanks cannon.
         /// </summary>
         
-        public void SpawnCannon()
+        public virtual void SpawnCannon()
         {
             // Clear all cannon data.
             cannonHolder.Clear();
@@ -784,7 +782,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// <param name="nameOfCategory">Name of the category.</param>
         /// <param name="folderLocation">Origin folder - where the sprites are located in the resources.</param>
         
-        public void AddCategory(string nameOfCategory, string folderLocation)
+        public virtual void AddCategory(string nameOfCategory, string folderLocation)
         {
             if (nameOfCategory == "Hull" || nameOfCategory == "Base"|| nameOfCategory == "Cannon")
             {
@@ -828,7 +826,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// </summary>
         /// <param name="index">The index of the category.</param>
         
-        public void RemoveCategory(int index)
+        public virtual void RemoveCategory(int index)
         {
             var categoryName = categories[index].categoryName;
 
@@ -848,7 +846,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// <param name="categoryName">Available Types:
         /// Vents, Compartments, Boxes, Extras.</param>
         /// <param name="projectFolder">Where the accessory sprite came from within the resources folder.</param>
-        public void SpawnAccessory(int index, string categoryName, string projectFolder)
+        public virtual void SpawnAccessory(int index, string categoryName, string projectFolder)
         {
             var parentHull = transform.Find("Hull");
             if (parentHull == null) return;
@@ -874,14 +872,14 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// <param name="categoryIndex">The index of the category to add the new accessory to.</param>
         /// <param name="accessory">The accessory to be copied.</param>
         
-        public void CopyAccessory(int categoryIndex, Accessory accessory) => 
+        public virtual void CopyAccessory(int categoryIndex, Accessory accessory) => 
             categories[categoryIndex].accessories.Add(new Accessory(accessory));
 
         /// <summary>
         /// Adds all movement components to the tanks game object.
         /// </summary>
         
-        public void AddMovementSystem()
+        public virtual void AddMovementSystem()
         {
             if (hull == null || cannonRotor == null) return;
             
@@ -915,7 +913,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// Adds all movement components to the tanks game object.
         /// </summary>
         
-        public void AddWeaponSystem()
+        public virtual void AddWeaponSystem()
         {
             if (hull == null || cannonRotor == null) return;
             
@@ -936,7 +934,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// Adds all camera system to the hierarchy.
         /// </summary>
         
-        public void AddCameraSystem()
+        public virtual void AddCameraSystem()
         {
             var ccGameObject = new GameObject();
             var ccTransform = ccGameObject.transform;

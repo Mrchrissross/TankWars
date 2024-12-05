@@ -174,12 +174,6 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 
 		#region Fields
 
-		#region Unity Inspector
-
-		public bool[] hideSection = new bool[3];
-
-		#endregion
-		
 		
 		
 		#region Input
@@ -249,7 +243,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Handles user input.
 		/// </summary>
 
-		private void HandleInput()
+		protected virtual void HandleInput()
 		{
 			if(tankController != null && (tankController.pause || tankController.HaltMovement)) return;
 			
@@ -285,7 +279,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Gets the far look input.
 		/// </summary>
 		
-		private Vector2 GetFarLookInput()
+		protected virtual Vector2 GetFarLookInput()
 		{
 			// Check for any mouse input through using the earlier input.
 			var mousePosition = Input.mousePosition.xy() - _mousePosition;
@@ -323,7 +317,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Updates the cameras rotation.
 		/// </summary>
 		
-		private void HandleRotation()
+		protected virtual void HandleRotation()
 		{
 			var targetRotation = rotateWithTarget ? Target.rotation : Quaternion.identity;
 			
@@ -345,7 +339,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// <param name="value">True: Hides cursor.
 		///                     False: Shows cursor.</param>
 
-		public void SetCursorLock(bool value)
+		public virtual void SetCursorLock(bool value)
 		{
 			lockCursor = value;
 			Cursor.lockState = !value ? CursorLockMode.None : CursorLockMode.Locked;
@@ -357,7 +351,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Moves the camera toward the target at select rate.
 		/// </summary>
 		
-		private void FollowTarget()
+		protected virtual void FollowTarget()
 		{
 			// If no target is set, return.
 			if (Target == null) return;
@@ -384,7 +378,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Resets the target as tank.
 		/// </summary>
 		
-		public void ResetTarget()
+		public virtual void ResetTarget()
 		{
 			if(tankController == null)
 			{
@@ -401,7 +395,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		/// Completely resets the camera.
 		/// </summary>
 		
-		public void Reset()
+		public virtual void Reset()
 		{
 			if (Target == null) return;
 			
@@ -427,13 +421,13 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
 		// Update the camera position so it follows the player.
 		private void LateFixedUpdate() => FollowTarget();
         
-		private void OnEnable()
+		protected virtual void OnEnable()
 		{
 			StartCoroutine(nameof(RunLateFixedUpdate));
 			Reset();
 		}
 
-		private void OnDisable()
+		protected virtual void OnDisable()
 		{
 			StopCoroutine(nameof(RunLateFixedUpdate));
 		}

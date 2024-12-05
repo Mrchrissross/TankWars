@@ -65,15 +65,8 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         
         #region Fields
 
-        #region Unity Inspector
-
-        [HideInInspector] public bool[] hideSection = new bool[6];
-
-        #endregion
-        
-        
         // Storage of fire point transforms.
-        public List<Transform> firePoints = new List<Transform>();
+        public List<Transform> firePoints = new();
         
         // Three separate booleans for each cannon.
         public string[] cannonInput = {"Main Shoot", "Left Shoot", "Right Shoot"};
@@ -91,7 +84,7 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
         /// Shoots when the player presses the shoot key.
         /// </summary>
         
-        void Shoot()
+        protected virtual void Shoot()
         {
             // Iterate through the fire points.
             var index = firePoints.Count == 1 ? 0 : 1;
@@ -150,10 +143,6 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
                 
                 // Initialise the ammo with all the weapons information.
                 ammoController.InitialiseAmmo(weapon);
-                
-                //
-                // Perform the recoil (working progress).
-                //
                 
                 // Restart the shot timer.
                 weapon.ShotTimer = shotTimer.WithY(shotTimer.x);

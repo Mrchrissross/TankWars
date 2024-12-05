@@ -20,14 +20,14 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         private void OnEnable()
         {
-            EditorTools.InitTextures();
+            EditorTemplate.InitTextures();
             onPauseEvents = serializedObject.FindProperty("onPauseEvents");
             onResumeEvents = serializedObject.FindProperty("onResumeEvents");
         }
 
         public override void OnInspectorGUI()
         {
-            EditorTools.InitStyles(out _boxStyle, out _foldoutStyle);
+            EditorTemplate.InitStyles(out _boxStyle, out _foldoutStyle);
             
             EditorGUI.BeginChangeCheck();
             Undo.RecordObject(target, "Recorder");
@@ -44,7 +44,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
         private void DrawContent()
         {
-            EditorTools.DrawHeader("Recorder");
+            EditorTemplate.DrawHeader("Recorder");
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
@@ -65,7 +65,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         if (recorderLabel != "Recording") showIndex = true;
                         
-                        EditorTools.Label(recorderLabel, "", 
+                        EditorTemplate.Label(recorderLabel, "", 
                             120, 0, new GUIStyle(GUI.skin.label)
                             {
                                 alignment = TextAnchor.MiddleCenter,
@@ -73,7 +73,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             });
 
                         if(showIndex)
-                            EditorTools.ReadOnlyValue("Frame", "", recorder.index,"0", 60);
+                            EditorTemplate.ReadOnlyValue("Frame", "", recorder.index,"0", 60);
                         
                         GUILayout.FlexibleSpace();
                     }
@@ -90,27 +90,27 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         GUILayout.Space(17.5f);
                     }
                     
-                    EditorTools.DrawLine(0.5f, 5, 5f);
+                    EditorTemplate.DrawLine(0.5f, 5, 5f);
                 }
                 
-                recorder.recordTime = EditorTools.Slider("Record Length", "", recorder.recordTime, 0, 10, 100);
+                recorder.recordTime = EditorTemplate.Slider("Record Length", "", recorder.recordTime, 0, 10, 100);
 
-                EditorTools.DrawLine(0.5f, 5, 2.5f);
+                EditorTemplate.DrawLine(0.5f, 5, 2.5f);
                 
-                EditorTools.Label("Keys: ", "");
+                EditorTemplate.Label("Keys: ", "");
                 
                 GUILayout.BeginVertical("box");
                 {
-                    recorder.pause = EditorTools.KeyCodeDropdown("Pause", "The keyboard key to pause the recorder.", recorder.pause, 100);
+                    recorder.pause = EditorTemplate.KeyCodeDropdown("Pause", "The keyboard key to pause the recorder.", recorder.pause, 100);
                         
                     GUILayout.Space(5);
 
                     GUILayout.BeginVertical("box");
                     {
-                        recorder.fastForward = EditorTools.KeyCodeDropdown("Fast Forward",
+                        recorder.fastForward = EditorTemplate.KeyCodeDropdown("Fast Forward",
                             "The keyboard key to fast forward.", recorder.fastForward, 100);
 
-                        recorder.rewind = EditorTools.KeyCodeDropdown("Rewind",
+                        recorder.rewind = EditorTemplate.KeyCodeDropdown("Rewind",
                             "The keyboard key to rewind.", recorder.rewind, 100);
                     }
                     GUILayout.EndVertical();
@@ -119,9 +119,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 
                 GUILayout.Space(5);
                 
-                EditorTools.DrawLine(0.5f, 5, 2.5f);
+                EditorTemplate.DrawLine(0.5f, 5, 2.5f);
                 
-                EditorTools.Label("On Pause: ", "These events will be called when the recorder is paused, " +
+                EditorTemplate.Label("On Pause: ", "These events will be called when the recorder is paused, " +
                                                 "rewinding, or fast forwarding.", 100);
                 
                 GUILayout.BeginVertical("box");
