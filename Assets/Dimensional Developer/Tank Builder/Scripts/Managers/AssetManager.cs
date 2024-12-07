@@ -72,6 +72,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
     
     public class AssetManager : Singleton<AssetManager>
     {
+        
         #region Fields
 
         // Asset array allows to choose how many assets we want to display,
@@ -86,11 +87,11 @@ namespace DimensionalDeveloper.TankBuilder.Managers
 
         #region Functions
 
-        public virtual Asset GetAsset(string assetName)
+        public static Asset GetAsset(string assetName)
         {
             if (assetName == "None") return null;
 
-            foreach (var asset in assets.Where(asset => asset.name == assetName))
+            foreach (var asset in Instance.assets.Where(asset => asset.name == assetName))
                 return asset;
             
             Debug.LogWarning("Asset Manager: Asset not found in list. (" + assetName + ")");
@@ -105,7 +106,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="rotation">Asset rotation once spawned.</param>
         /// <returns>Returns the asset for future reference.</returns>
         
-        public virtual GameObject SpawnObject(string assetName, Vector3 position, Quaternion rotation)
+        public static GameObject SpawnObject(string assetName, Vector3 position, Quaternion rotation)
         {
             if (assetName == "None") return null;
 
@@ -151,10 +152,10 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// Creates a new asset.
         /// </summary>
 
-        public virtual void AddAsset()
+        public static void AddAsset()
         {
             var asset = new Asset();
-            assets.Add(asset);
+            Instance.assets.Add(asset);
         } 
         
         /// <summary>
@@ -162,7 +163,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// </summary>
         /// <param name="asset">Asset to copy.</param>
         
-        public virtual void CopyAsset(Asset asset) => assets.Add(new Asset(asset));
+        public static void CopyAsset(Asset asset) => Instance.assets.Add(new Asset(asset));
         
         /// <summary>
         /// Creates the pool transform (parent) for all assets in this category.
@@ -170,7 +171,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="index">Index within the list of assets.</param>
         /// <param name="asset"></param>
         
-        protected virtual void CreatePool(int index, Asset asset)
+        protected static void CreatePool(int index, Asset asset)
         {
             var goName = "Asset " + index + ": " + asset.name;
 
@@ -181,7 +182,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
             }
             
             var go = new GameObject(goName);
-            go.transform.SetParent(transform);
+            go.transform.SetParent(Instance.transform);
             asset.SetTransform(go.transform);
         }
 
@@ -191,14 +192,14 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="asset">Asset to deactivate.</param>
         /// <param name="element">The game object within the assets pool to be deactivated.</param>
         /// <param name="seconds">Seconds until deactivation.</param>
-        public virtual void Deactivate(Asset asset, GameObject element, float seconds) => 
-            StartCoroutine(IDeactivate(asset, element, seconds));
+        public static void Deactivate(Asset asset, GameObject element, float seconds) => 
+            Instance.StartCoroutine(IDeactivate(asset, element, seconds));
         
         /// <summary>
         /// Coroutine to deactivate a game object after a number of seconds.
         /// </summary>
         
-        private IEnumerator IDeactivate (Asset asset, GameObject element, float seconds)
+        private static IEnumerator IDeactivate (Asset asset, GameObject element, float seconds)
         {
             var timer = 0.0f;
             while(timer < seconds) 

@@ -39,15 +39,14 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
         private void DrawInputSettings(int section)
         {
-            if (DrawHeader(this, section, "Rotor", "", () =>
+            if (DrawHeader(this, section, "Input", "", () =>
                 {
                     if (_customCamera) 
                         return;
                     
                     GUILayout.Space(-20);
 
-                    if (TexturedButton(cameraTexture,
-                            "Add a custom camera rather than the tank wars camera system.", 20f))
+                    if (TexturedButton(cameraTexture, "Add a custom camera rather than the tank wars camera system."))
                         _customCamera = true;
                 })) return;
             

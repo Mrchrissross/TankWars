@@ -31,7 +31,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     GUILayout.Space(-20);
 
                     if (TexturedButton(tankTexture,
-                            "Manually input the Tank Controller into the camera system.", 20f))
+                            "Manually input the Tank Controller into the camera system."))
                         _customTankController = true;
                 })) return;
             

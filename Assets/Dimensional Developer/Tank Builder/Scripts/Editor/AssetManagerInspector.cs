@@ -21,8 +21,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                {
                    GUILayout.Space(-20);
 
-                   if (TexturedButton(plusTexture,
-                           "Adds a new asset.", 20f))
+                   if (TexturedButton(plusTexture, "Adds a new asset."))
                        AssetManager.AddAsset();
                })) return;
 
@@ -38,10 +37,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         {
                             GUILayout.Space(-100);
 
-                            if (TexturedButton(plusTexture, "Creates a copy of this sound.", 20f))
+                            if (TexturedButton(plusTexture, "Creates a copy of this sound."))
                                 AssetManager.CopyAsset(asset);
 
-                            if (TexturedButton(minusTexture, "Removes this sound.", 20f))
+                            if (TexturedButton(minusTexture, "Removes this sound."))
                             {
                                 AssetManager.assets.RemoveAt(index);
                                 GUILayout.EndHorizontal();

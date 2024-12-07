@@ -137,6 +137,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
             private const string Path = "Editor UI/";
             public static Texture2D cameraTexture;
+            public static Texture2D colliderAddTexture;
+            public static Texture2D colliderRemoveTexture;
             public static Texture2D deleteTexture;
             public static Texture2D editTexture;
             public static Texture2D eyeClosedTexture;
@@ -167,6 +169,8 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             public static void InitTextures()
             {
                 cameraTexture = InitTexture(Path + "camera");
+                colliderAddTexture = InitTexture(Path + "collider_add");
+                colliderRemoveTexture = InitTexture(Path + "collider_remove");
                 deleteTexture = InitTexture(Path + "delete");
                 editTexture = InitTexture(Path + "edit");
                 eyeClosedTexture = InitTexture(Path + "eye_closed");
@@ -214,7 +218,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     if (!hideToggle)
                     {
                         if (TexturedButton(eyeOpenTexture,
-                            "Hides all the content in this section.", 20f))
+                            "Hides all the content in this section."))
                             hideToggle = true;
                         
                         GUILayout.Space(-20);
@@ -222,7 +226,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     else
                     {
                         if (TexturedButton(eyeClosedTexture,
-                            "Shows all the content in this section.", 20f))
+                            "Shows all the content in this section."))
                             hideToggle = false;
                         
                         GUILayout.Space(-20);
@@ -234,7 +238,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         {
                             fontStyle = FontStyle.Bold,
                             alignment = TextAnchor.MiddleCenter,
-                            fontSize = 13
+                            fontSize = 15
                         };
                     }
                 
@@ -280,7 +284,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             /// <param name="size">The size of the icon.</param>
             /// <param name="tooltip">The tooltip to display when hovering over the element.</param>
             /// <returns>Returns true when the button is pressed.</returns>
-            public static bool TexturedButton(Texture2D texture, string tooltip, float size) => GUILayout.Button(new GUIContent(texture, tooltip), 
+            public static bool TexturedButton(Texture2D texture, string tooltip, float size = 25f) => GUILayout.Button(new GUIContent(texture, tooltip), 
                 GUIStyle.none, GUILayout.Width(size), GUILayout.Height(size));
 
             /// <summary>
@@ -849,7 +853,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             /// <param name="drawToggle">Draws the toggle box on the far right.</param>
             /// <param name="drawLine">Draws a line underneath the foldout.</param>
             /// <param name="space">Amount of space after the element. </param>
-            public static bool Foldout(string label, string tooltip, ref bool value, bool drawToggle = false, bool drawLine = false, float space = 0)
+            public static bool Foldout(string label, string tooltip, ref bool value, bool drawToggle = false, bool drawLine = false, int fontSize = 13, float space = 0)
             {
                 EditorGUILayout.BeginHorizontal();
                 {
@@ -859,7 +863,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         border = new RectOffset(15, 7, 4, 4),
                         fixedHeight = 22,
                         contentOffset = new Vector2(20f, -2f),
-                        fontSize = 12,
+                        fontSize = fontSize,
                         normal = {background = Texture2D.blackTexture}
                     };
 

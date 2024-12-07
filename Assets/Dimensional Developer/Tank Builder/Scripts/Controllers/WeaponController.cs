@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DimensionalDeveloper.TankBuilder.Utility;
 using DimensionalDeveloper.TankBuilder.Managers;
@@ -13,113 +14,65 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
     
     public class WeaponController : MonoBehaviour
     {
-        
-        #region Properties
 
-        // The storage of components for easy access.
-        #region Cached Components
-            
-        /// <summary>
-        /// Cached 'AudioManager' component.
-        /// </summary>
-        
-        private new AudioManager AudioManager
+        #region Classes
+
+        [Serializable]
+        public class LinkedWeapon
         {
-            get
-            {
-                if (_audioManager) return _audioManager;
-
-                _audioManager = AudioManager.Instance;
-                
-                if(_audioManager == null) Debug.LogError("Ammo Controller: An audio manager was not found in the scene.");
-
-                return _audioManager;
-            }
-        }
-        private AudioManager _audioManager;
-        
-        /// <summary>
-        /// Cached 'AssetManager' component.
-        /// </summary>
-        
-        private new AssetManager AssetManager
-        {
-            get
-            {
-                if (_assetManager) return _assetManager;
-
-                _assetManager = AssetManager.Instance;
-                
-                if(_assetManager == null) Debug.LogError("Ammo Controller: An asset manager was not found in the scene.");
-
-                return _assetManager;
-            }
-        }
-        private AssetManager _assetManager;
             
-        #endregion
-        
-        #endregion
-        
-        
-        
-        #region Fields
-
-        // Storage of fire point transforms.
-        public List<Transform> firePoints = new();
-        
-        // Three separate booleans for each cannon.
-        public string[] cannonInput = {"Main Shoot", "Left Shoot", "Right Shoot"};
-        public bool[] shootCannon = new bool[3];
-        public Weapon[] weapons = new Weapon[3];
-        public bool[] weaponDropdown = new bool[3];
-
-        #endregion
-
-        
-        
-        #region Functions
-
-        /// <summary>
-        /// Shoots when the player presses the shoot key.
-        /// </summary>
-        
-        protected virtual void Shoot()
-        {
-            // Iterate through the fire points.
-            var index = firePoints.Count == 1 ? 0 : 1;
-            var end = firePoints.Count == 1 ? 1 : 3;
             
-            for (; index < end; index++)
+            #region Properties
+
+            /// <summary>
+            /// Returns true is a the weapon is available to shoot.
+            /// </summary>
+            
+            public virtual bool CanShoot => !OnCooldown && InputReceived;
+            
+            /// <summary>
+            /// Returns true if there has been user input to use this weapon. 
+            /// </summary>
+            
+            public virtual bool InputReceived => Input.GetButtonDown(input) || Math.Abs(Input.GetAxisRaw(input)) > 0.0f;
+            
+            /// <summary>
+            /// Returns true if the weapon is currently on cooldown.
+            /// </summary>
+            
+            public virtual bool OnCooldown => !(cooldown.y < Mathf.Epsilon);
+
+            #endregion
+
+            
+            
+            #region Fields
+
+            public Transform firePoint;
+            
+            public string input = "";
+            public Weapon weapon;
+            public bool expandWeapon = false;
+
+            public Vector2 cooldown;
+
+            #endregion
+
+
+
+            #region Methods
+
+            /// <summary>
+            /// Shoots the weapon - playing a sound, spawning a projectile and muzzle flash.
+            /// </summary>
+            
+            public virtual void SpawnProjectile()
             {
-                // Acquire the fire points weapon information.
-                ref var weapon = ref weapons[index];
-
-                // If no weapon has been assigned, return.
-                if (weapon == null) continue;
+                UpdateCooldown();
                 
-                // Check the shot timer.
-                var shotTimer = weapon.ShotTimer;
-                if(shotTimer.y > 0f) shotTimer.y -= Time.deltaTime;
-                weapon.ShotTimer = shotTimer;
-
-                // Check for user input.
-                var input = Input.GetButtonDown(cannonInput[index]) || 
-                            Math.Abs(Input.GetAxisRaw(cannonInput[index])) > 0.0f;
-                
-                // If there has been no user input or the shot timer is not depleted,
-                // continue on to next fire point.
-                if (!input || !(shotTimer.y < Mathf.Epsilon)) continue;
-                
-                // The cannon has been fired.
-                shootCannon[index] = false;
+                if (!CanShoot) return;
 
                 // Acquire fire point.
-                var firePoint =
-                    index == 0 ? firePoints[0] :
-                    index == 1 ? firePoints[0] :
-                    firePoints[1];
-
                 var firePointPosition = firePoint.position;
                 var firePointRotation = firePoint.rotation;
                 
@@ -143,11 +96,99 @@ namespace DimensionalDeveloper.TankBuilder.Controllers
                 
                 // Initialise the ammo with all the weapons information.
                 ammoController.InitialiseAmmo(weapon);
-                
-                // Restart the shot timer.
-                weapon.ShotTimer = shotTimer.WithY(shotTimer.x);
+
+                ResetCooldown();
+            }
+            
+            /// <summary>
+            /// Updates the cooldown of this weapon.
+            /// </summary>
+            
+            public virtual void UpdateCooldown()
+            {
+                if(cooldown.y > -0.01f) cooldown.y -= Time.deltaTime;
+            }
+            
+            /// <summary>
+            /// Resets the cooldown of this weapon.
+            /// </summary>
+            
+            public virtual void ResetCooldown() => cooldown.y = weapon.Cooldown;
+
+            #endregion
+            
+            
+        }
+
+        #endregion
+        
+        
+        
+        #region Fields
+
+        public List<LinkedWeapon> linkedWeapons = new();
+
+        #endregion
+
+        
+        
+        #region Methods
+
+        /// <summary>
+        /// Creates all weapons based on how many fire points are referenced. 
+        /// </summary>
+        /// <param name="firePoints">The fire points to link. Typically pulled from the Tank Builder.</param>
+        
+        public virtual void CreateWeapons(List<Transform> firePoints)
+        {
+            linkedWeapons.Clear();
+            
+            foreach (var firePoint in firePoints)
+                AddWeapon(firePoint);
+        }
+        
+        /// <summary>
+        /// Adds a linked weapon to the linked weapon list.
+        /// </summary>
+        /// <param name="firePoint">The fire point to link.</param>
+        
+        public virtual void AddWeapon(Transform firePoint)
+        {
+            linkedWeapons.Add(new LinkedWeapon()
+            {
+                firePoint = firePoint
+            });
+        }
+        
+        /// <summary>
+        /// Removes a linked weapon from the linked weapon list.
+        /// </summary>
+        /// <param name="firePoint">The linked fire point.</param>
+        
+        public virtual void RemoveWeapon(Transform firePoint)
+        {
+            foreach (var linkedWeapon in linkedWeapons.Where(linkedWeapon => linkedWeapon.firePoint == firePoint))
+            {
+                linkedWeapons.Remove(linkedWeapon);
+                return;
             }
         }
+        
+        /// <summary>
+        /// Shoots when the player presses the shoot key.
+        /// </summary>
+        
+        protected virtual void Shoot()
+        {
+            // Iterate through the fire points.
+            foreach (var linkedWeapon in linkedWeapons)
+            {
+                // If no weapon has been assigned, return.
+                linkedWeapon?.SpawnProjectile();
+            }
+        }
+        
+        
 
         #endregion
 

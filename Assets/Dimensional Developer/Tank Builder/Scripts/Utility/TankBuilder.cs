@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DimensionalDeveloper.TankBuilder.Controllers;
-using UnityEngine.Serialization;
+using UnityEditor;
 
 namespace DimensionalDeveloper.TankBuilder.Utility
 {
@@ -12,7 +13,10 @@ namespace DimensionalDeveloper.TankBuilder.Utility
 
     public class TankBuilder : MonoBehaviour
     {
+        
+        
         #region Classes
+        
         
         [Serializable]
         public class Category
@@ -32,9 +36,12 @@ namespace DimensionalDeveloper.TankBuilder.Utility
                 accessories.Add(new Accessory(accessory));
         }
         
+        
+        
         [Serializable]
         public class Accessory
         {
+            
             #region Fields
 
             public string newName;
@@ -42,6 +49,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             public string parentName;
             
             public Transform transform;
+            public Transform firePoint;
             public SpriteRenderer accessorySprite;
             
             // Unity Editor Fields
@@ -55,6 +63,8 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             
             #region Properties
 
+            public bool IsWeapon => firePoint != null;
+            
             public int Style
             {
                 get => style;
@@ -108,70 +118,63 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             
             public Vector2 Position
             {
-                get => position;
+                get => transform.localPosition;
                 set
                 {
-                    if (value == position) return;
-                    
+                    if (value == Position) return;
+
+                    var position = Position;
                     position.x = Mathf.Clamp(value.x, -10.0f, 10.0f);
                     position.y = Mathf.Clamp(value.y, -15.0f, 15.0f);
                     transform.localPosition = position;
                 }
             }
-            [SerializeField] private Vector2 position = Vector2.zero;
             
             public float Rotation
             {
-                get => rotation;
+                get => transform.localEulerAngles.z;
                 set
                 {
-                    if (value == rotation) return;
-                    
-                    rotation = Mathf.Clamp(value, -180.0f, 180.0f);
+                    if (Math.Abs(value - Rotation) < 0.001) return;
+
+                    var rotation = Mathf.Clamp(value, -180.0f, 180.0f);
                     transform.localEulerAngles = transform.localEulerAngles.WithZ(rotation);
                 }
             }
-            [SerializeField] private float rotation = 0;
             
             public Vector2 Scale
             {
-                get => scale;
+                get => transform.localScale;
                 set
                 {
-                    if (value == scale) return;
-                    
+                    if (value == Scale) return;
+
+                    var scale = Scale;
                     scale.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
                     scale.y = Mathf.Clamp(value.y, -2.0f, 2.0f);
                     transform.localScale = scale;
                 }
             }
-            [SerializeField] private Vector2 scale = Vector2.one;
             
             public Color Color
             {
-                get => color;
+                get => accessorySprite.color;
                 set
                 {
-                    if (value == color) return;
-
-                    color = value;
+                    if (value == Color) return;
                     accessorySprite.color = value;
                 }
             }
-            [SerializeField] private Color color = Color.white;
 
             public int SortingOrder
             {
-                get => sortingOrder;
+                get => accessorySprite.sortingOrder;
                 set
                 {
-                    if (value == sortingOrder) return;
-
-                    sortingOrder = value;
-                    accessorySprite.sortingOrder = sortingOrder;
+                    if (value == SortingOrder) return;
+                    accessorySprite.sortingOrder = value;
                 }
             }
-            [SerializeField] private int sortingOrder = 0;
 
             #endregion
 
@@ -238,315 +241,85 @@ namespace DimensionalDeveloper.TankBuilder.Utility
                 
                 Style = copy.Style;
             }
+
+            /// <summary>
+            /// Converts the accessory into a weapon by creating a new fire point. 
+            /// </summary>
+            /// <returns></returns>
+            
+            public Transform AddWeapon()
+            {
+                firePoint = new GameObject().transform;
+                firePoint.name = "FirePoint";
+                firePoint.SetParent(transform);
+                firePoint.localPosition = Vector2.zero;
+                firePoint.localRotation = Quaternion.identity;
+                firePoint.localScale = Vector3.one;
+
+                return firePoint;
+            }
             
             #endregion
 
         }
         
+        
         #endregion
+        
         
         
         
         
         #region Properties
-
-        public enum CannonType
-        {
-            Single,
-            Double
-        }
-        
-        public CannonType cannonType
-        {
-            get => _cannonType;
-            set
-            {
-                if (value == _cannonType) return;
-                
-                _cannonType = value;
-                SpawnCannon();
-
-                if (weaponController == null) return;
-                
-                weaponController.firePoints.Clear();
-                
-                foreach (var firePoint in cannonFirePoint)
-                    weaponController.firePoints.Add(firePoint);
-            }
-        }
-        [SerializeField] private CannonType _cannonType = CannonType.Single;
-        
         
         
         #region Hull Properties
 
-            public Color hullColor
+        public Vector2 hullSize
+        {
+            get => _hullSize;
+            set
             {
-                get => _hullColor;
-                set
-                {
-                    if (value == _hullColor) return;
+                if (value == _hullSize) return;
+                
+                _hullSize.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
+                _hullSize.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
 
-                    _hullColor = value;
-                    hullSprite.color = value;
-                }
+                if (hull == null) return;
+                
+                hull.parent.localScale = _hullSize;
+                hull.parent.localScale = _hullSize;
             }
-            [SerializeField] private Color _hullColor = Color.white;
+        }
+        [SerializeField] private Vector2 _hullSize = Vector2.one;
             
-            public Color hullAdditionalColor
-            {
-                get => _hullAdditionalColor;
-                set
-                {
-                    if (value == _hullAdditionalColor) return;
-
-                    _hullAdditionalColor = value;
-                    hullAdditionalColorSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _hullAdditionalColor = Color.white;
-            
-            public Color hullShadowsColor
-            {
-                get => _hullShadowsColor;
-                set
-                {
-                    if (value == _hullShadowsColor) return;
-
-                    _hullShadowsColor = value;
-                    hullShadowsSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _hullShadowsColor = Color.white;
-
-            public Vector2 hullPosition
-            {
-                get => _hullPosition;
-                set
-                {
-                    if (value == _hullPosition) return;
-                        
-                    _hullPosition.x = Mathf.Clamp(value.x, -3.0f, 3.0f);
-                    _hullPosition.y = Mathf.Clamp(value.y, -7.0f, 5.0f);
-
-                    if (hull == null) return;
-                    
-                    hull.parent.localPosition = _hullPosition;
-                    hull.parent.localPosition = _hullPosition;
-                }
-            }
-            [SerializeField] private Vector2 _hullPosition = Vector2.zero;
-
-            public Vector2 hullSize
-            {
-                get => _hullSize;
-                set
-                {
-                    if (value == _hullSize) return;
-                    
-                    _hullSize.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
-                    _hullSize.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
-
-                    if (hull == null) return;
-                    
-                    hull.parent.localScale = _hullSize;
-                    hull.parent.localScale = _hullSize;
-                }
-            }
-            [SerializeField] private Vector2 _hullSize = Vector2.one;
-            
-        #endregion
-        
-        
-
-        #region Cannon Colors
-        
-            public Color cannonBaseColor
-            {
-                get => _cannonBaseColor;
-                set
-                {
-                    if (value == _cannonBaseColor) return;
-
-                    _cannonBaseColor = value;
-                    cannonBaseSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _cannonBaseColor = Color.white;
-            
-            public Color cannonBaseSidesColor
-            {
-                get => _cannonBaseSidesColor;
-                set
-                {
-                    if (value == _cannonBaseSidesColor) return;
-
-                    _cannonBaseSidesColor = value;
-                    cannonBaseSidesSprite.color = value;
-                }
-            }
-            [SerializeField] private Color _cannonBaseSidesColor = Color.white;
-            
-            public Color cannonColor
-            {
-                get => _cannonColor;
-                set
-                {
-                    if (value == _cannonColor) return;
-
-                    _cannonColor = value;
-                    cannonSprite[0].color = value;
-                }
-            }
-            [SerializeField] private Color _cannonColor = Color.white;
-            
-            public Color leftCannonColor
-            {
-                get => _leftCannonColor;
-                set
-                {
-                    if (value == _leftCannonColor) return;
-
-                    _leftCannonColor = value;
-                    cannonSprite[0].color = value;
-                }
-            }
-            [SerializeField] private Color _leftCannonColor = Color.white;
-            
-            public Color rightCannonColor
-            {
-                get => _rightCannonColor;
-                set
-                {
-                    if (value == _rightCannonColor) return;
-
-                    _rightCannonColor = value;
-                    cannonSprite[1].color = value;
-                }
-            }
-            [SerializeField] private Color _rightCannonColor = Color.white;
             
         #endregion
 
         
         
-        #region Cannon Positions
+        #region Cannon Properties
 
-            public Vector2 cannonRotorPosition
+        public Vector2 cannonRotorSize
+        {
+            get => _cannonRotorSize;
+            set
             {
-                get => _cannonRotorPosition;
-                set
-                {
-                    if (value == _cannonRotorPosition) return;
+                if (value == _cannonRotorSize) return;
                     
-                    _cannonRotorPosition.x = Mathf.Clamp(value.x, -3.0f, 3.0f);
-                    _cannonRotorPosition.y = Mathf.Clamp(value.y, -7.0f, 5.0f);
-                    cannonRotor.localPosition = _cannonRotorPosition;
-                }
+                _cannonRotorSize.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
+                _cannonRotorSize.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
+                cannonRotor.localScale = _cannonRotorSize;
             }
-            [SerializeField] private Vector2 _cannonRotorPosition = Vector2.zero;
+        }
+        [SerializeField] private Vector2 _cannonRotorSize = Vector2.one;
         
-            public float singleCannonPosition
-            {
-                get => _singleCannonPosition;
-                set
-                {
-                    if (value == _singleCannonPosition || cannonHolder[0] == null) return;
-                    
-                    _singleCannonPosition = Mathf.Clamp(value, -2.5f, 2.5f);
-                    cannonHolder[0].localPosition = cannonHolder[0].localPosition.WithX(_singleCannonPosition);
-                }
-            }
-            [SerializeField] private float _singleCannonPosition = 0;
-            
-            public float leftCannonPosition
-            {
-                get => _leftCannonPosition;
-                set
-                {
-                    if (value == _leftCannonPosition || cannonHolder[0] == null) return;
-                    
-                    _leftCannonPosition = Mathf.Clamp(value, -2.5f, 0);
-                    cannonHolder[0].localPosition = cannonHolder[0].localPosition.WithX(_leftCannonPosition);
-                }
-            }
-            [SerializeField] private float _leftCannonPosition = -1.0f;
-            
-            public float rightCannonPosition
-            {
-                get => _rightCannonPosition;
-                set
-                {
-                    if (value == _rightCannonPosition || cannonHolder[1] == null) return;
-                    
-                    _rightCannonPosition = Mathf.Clamp(value, 0, 2.5f);
-                    cannonHolder[1].localPosition = cannonHolder[1].localPosition.WithX(_rightCannonPosition);
-                }
-            }
-            [SerializeField] private float _rightCannonPosition = 1.0f;
         
         #endregion
-
         
-        
-        #region Cannon Sizes
-
-            public Vector2 cannonRotorSize
-            {
-                get => _cannonRotorSize;
-                set
-                {
-                    if (value == _cannonRotorSize) return;
-                    
-                    _cannonRotorSize.x = Mathf.Clamp(value.x, -2.0f, 2.0f);
-                    _cannonRotorSize.y = Mathf.Clamp(value.y, 0.0f, 2.0f);
-                    cannonRotor.localScale = _cannonRotorSize;
-                }
-            }
-            [SerializeField] private Vector2 _cannonRotorSize = Vector2.one;
-            
-            public float singleCannonSize
-            {
-                get => _singleCannonSize;
-                set
-                {
-                    if (value == _singleCannonSize || cannonHolder[0] == null) return;
-                    
-                    _singleCannonSize = Mathf.Clamp(value, 0.5f, 1.0f);
-                    cannonHolder[0].localScale = Vector3.one * _singleCannonSize;
-                }
-            }
-            [SerializeField] private float _singleCannonSize = 1.0f;
-            
-            public float leftCannonSize
-            {
-                get => _leftCannonSize;
-                set
-                {
-                    if (value == _leftCannonSize || cannonHolder[0] == null) return;
-                    
-                    _leftCannonSize = Mathf.Clamp(value, 0.5f, 1.0f);
-                    cannonHolder[0].localScale = Vector3.one * _leftCannonSize;
-                }
-            }
-            [SerializeField] private float _leftCannonSize = 1.0f;
-            
-            public float rightCannonSize
-            {
-                get => _rightCannonSize;
-                set
-                {
-                    if (value == _rightCannonSize || cannonHolder[1] == null) return;
-                    
-                    _rightCannonSize = Mathf.Clamp(value, 0.5f, 1.0f);
-                    cannonHolder[1].localScale = Vector3.one * _rightCannonSize;
-                }
-            }
-            [SerializeField] private float _rightCannonSize = 1.0f;
         
         #endregion
-
-        #endregion
+        
 
         
         
@@ -571,20 +344,14 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             categoryFolder = "Hull"
         };
         public Transform hull;
-        public SpriteRenderer hullSprite;
-        public SpriteRenderer hullAdditionalColorSprite;
-        public SpriteRenderer hullShadowsSprite;
         
         // Cannon data.
+        public Category cannonCategory = new()
+        {
+            categoryName = "Cannon",
+            categoryFolder = "Cannon"
+        };
         public Transform cannonRotor;
-        public Transform cannonBase;
-        public List<Transform> cannonHolder = new();
-        public List<Transform> cannon = new();
-        public SpriteRenderer cannonBaseSprite;
-        public SpriteRenderer cannonBaseSidesSprite;
-        public List<SpriteRenderer> cannonSprite = new();
-        public List<Transform> cannonFirePoint = new();
-        public bool expandCannon;
         
         // Categories data.
         public List<Category> categories = new();
@@ -592,10 +359,15 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         #endregion
 
         
+
         
 
         #region Functions
 
+        /// <summary>
+        /// Sets the tanks of overall sorting layer.
+        /// </summary>
+        
         public virtual void SetSortingLayer()
         {
             var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
@@ -614,6 +386,12 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             
             foreach (var category in categories) category.accessories.Clear();
             categories.Clear();
+
+            hullCategory.accessories.Clear();
+            cannonCategory.accessories.Clear();
+            
+            hullCategory = null;
+            cannonCategory = null;
         }
 
         /// <summary>
@@ -622,21 +400,18 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         
         public virtual void SpawnHull()
         {
+            if (hull != null) return;
             
             // Create the tanks hull
             // (the game object that holds all elements attached to the hull).
-            var hullParent = transform.Find("Hull");
-            if (hullParent == null)
-            {
-                hullParent = new GameObject().transform;
-                hullParent.name = "Hull";
-                hullParent.parent = transform;
-            }
+            hull = new GameObject().transform;
+            hull.name = "Hull";
+            hull.parent = transform;
             
             // Reset the hulls position to zero.
-            hullParent.localPosition = Vector3.zero;
-            hullParent.localRotation = Quaternion.identity;
-            hullParent.localScale = Vector2.one;
+            hull.localPosition = Vector2.zero;
+            hull.localRotation = Quaternion.identity;
+            hull.localScale = Vector2.one;
         }
         
         /// <summary>
@@ -645,122 +420,14 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         
         public virtual void SpawnCannon()
         {
-            // Clear all cannon data.
-            cannonHolder.Clear();
-            cannon.Clear();
-            cannonSprite.Clear();
-            cannonFirePoint.Clear();
-
-            // Create the cannon rotor
-            // (the game object that holds all elements attached to the cannon).
-            if (cannonRotor == null)
-            {
-                cannonRotor = new GameObject().transform;
-                cannonRotor.name = "Cannon";
-                cannonRotor.parent = transform;
-                cannonRotor.localPosition = cannonRotorPosition;
-                cannonRotor.localRotation = Quaternion.identity;
-                cannonRotor.localScale = Vector2.one * cannonRotorSize;
-            } 
+            if(cannonRotor != null) return;
             
-            
-            
-            // Destroy the original base.
-            if(cannonBase != null) DestroyImmediate(cannonBase.gameObject);
-            
-            // Create a new base for the cannon as a
-            // child of the rotor.
-            cannonBase = new GameObject().transform;
-            cannonBase.name = "Base";
-            cannonBase.parent = cannonRotor;
-            cannonBase.localPosition = Vector3.zero;
-            cannonBase.localRotation = Quaternion.identity;
-            cannonBase.localScale = Vector2.one;
-
-            // Add a sprite renderer to the base.
-            cannonBaseSprite = cannonBase.gameObject.AddComponent<SpriteRenderer>();
-            cannonBaseSprite.sprite = Resources.Load<Sprite>(Path + "Cannon/Base");
-            cannonBaseSprite.sortingLayerID = sortingLayerID;
-            cannonBaseSprite.sortingOrder = 11;
-            cannonBaseSprite.color = cannonBaseColor;
-            
-            
-            
-            // Create a child object of the base which acts as the
-            // coloring to the bases sides.
-            var baseSides = new GameObject().transform;
-            baseSides.name = "BaseSides";
-            baseSides.parent = cannonBase;
-            baseSides.localPosition = Vector3.zero;
-            baseSides.localRotation = Quaternion.identity;
-            baseSides.localScale = Vector2.one;
-            
-            // Again add a sprite to this object.
-            cannonBaseSidesSprite = baseSides.gameObject.AddComponent<SpriteRenderer>();
-            cannonBaseSidesSprite.sprite = Resources.Load<Sprite>(Path + "Cannon/BaseSides");
-            cannonBaseSidesSprite.sortingLayerID = sortingLayerID;
-            cannonBaseSidesSprite.sortingOrder = 10;
-            cannonBaseSidesSprite.color = cannonBaseSidesColor;
-            
-            
-
-            // Depending on whether the tank is a single or double draw however many cannons.
-            var single = cannonType == CannonType.Single;
-
-            for (var i = 0; i < 2; i++)
-            {
-                if (single && i > 0) break;
-                
-                // Create a holder for the cannon.
-                cannonHolder.Add(new GameObject().transform);
-                cannonHolder[i].name = single ? "Cannon" : i == 0 ? "Left Cannon" : "Right Cannon";
-                cannonHolder[i].parent = cannonBase;
-                cannonHolder[i].localPosition = Vector3.zero;
-                cannonHolder[i].localRotation = Quaternion.identity;
-                
-                // Create the cannon and parent it to the holder.
-                cannon.Add(new GameObject().transform);
-                cannon[i].name = "CannonSprite";
-                cannon[i].parent = cannonHolder[i];
-                cannon[i].localPosition = Vector3.zero.WithY(8.195f);
-                cannon[i].localRotation = Quaternion.identity;
-                
-                cannonHolder[i].localPosition = new Vector3(0, 4.2f, 0);
-                
-                cannonSprite.Add(cannon[i].gameObject.AddComponent<SpriteRenderer>());
-                cannonSprite[i].sprite = Resources.Load<Sprite>(Path + "Cannon/Cannon");
-                cannonSprite[i].sortingLayerID = sortingLayerID;
-                cannonSprite[i].sortingOrder = 12;
-                
-                // Get or create a polygon collider.
-                cannon[i].gameObject.AddComponent<PolygonCollider2D>();
-                
-                
-                
-                cannonFirePoint.Add(new GameObject().transform);
-                cannonFirePoint[i].name = "FirePoint";
-                cannonFirePoint[i].parent = cannonHolder[i];
-                cannonFirePoint[i].localPosition = Vector3.zero.WithY(8.195f * 2.0f);
-                cannonFirePoint[i].localRotation = Quaternion.identity;
-            }
-
-            // Reposition and scale the cannons.
-            if (single)
-            {
-                cannonHolder[0].localPosition = cannonHolder[0].localPosition.WithX(singleCannonPosition);
-                cannonHolder[0].localScale = Vector3.one * singleCannonSize;
-                cannonSprite[0].color = cannonColor;
-            }
-            else
-            {
-                cannonHolder[0].localPosition = cannonHolder[0].localPosition.WithX(leftCannonPosition);
-                cannonHolder[0].localScale = Vector3.one * leftCannonSize;
-                cannonSprite[0].color = leftCannonColor;
-                
-                cannonHolder[1].localPosition = cannonHolder[1].localPosition.WithX(rightCannonPosition);
-                cannonHolder[1].localScale = Vector3.one * rightCannonSize;
-                cannonSprite[1].color = rightCannonColor;
-            }
+            cannonRotor = new GameObject().transform;
+            cannonRotor.name = "Cannon";
+            cannonRotor.parent = transform;
+            cannonRotor.localPosition = Vector2.zero;
+            cannonRotor.localRotation = Quaternion.identity;
+            cannonRotor.localScale = Vector2.one;
         }
 
         /// <summary>
@@ -834,16 +501,16 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// <param name="projectFolder">Where the accessory sprite came from within the resources folder.</param>
         public virtual void SpawnAccessory(Category category)
         {
-            var parentHull = transform.Find("Hull");
-            if (parentHull == null) return;
+            var root = transform.Find(category.categoryName == "Cannon" ? "Cannon" : "Hull");
+            if (root == null) return;
             
-            var parent = parentHull.Find(category.categoryName);
+            var parent = root.Find(category.categoryName);
                 
             if (parent == null)
             {
                 parent = new GameObject().transform;
                 parent.name = category.categoryName;
-                parent.parent = parentHull;
+                parent.parent = root;
                 parent.localPosition = Vector3.zero;
                 parent.localRotation = Quaternion.identity;
                 parent.localScale = Vector3.one;
@@ -861,6 +528,19 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         public virtual void CopyAccessory(int categoryIndex, Accessory accessory) => 
             categories[categoryIndex].accessories.Add(new Accessory(accessory));
 
+        /// <summary>
+        /// Returns all fire points created on the tank.
+        /// </summary>
+        
+        public virtual List<Transform> GetFirePoints()
+        {
+            var firePoints = hullCategory.accessories.Where(accessory => accessory.IsWeapon).Select(accessory => accessory.firePoint).ToList();
+            firePoints.AddRange(cannonCategory.accessories.Where(accessory => accessory.IsWeapon).Select(accessory => accessory.firePoint));
+            firePoints.AddRange(from accessory in from category in categories from accessory in category.accessories where accessory.IsWeapon select accessory select accessory.firePoint);
+
+            return firePoints;
+        }
+        
         /// <summary>
         /// Adds all movement components to the tanks game object.
         /// </summary>
@@ -887,11 +567,13 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             {
                 cameraController.tankController = tankController;
                 tankController.camera = cameraController.Camera;
+                EditorUtility.SetDirty(cameraController);
             }
             
             // Rename the tank.
             transform.name = "Player Tank";
             
+            EditorUtility.SetDirty(tankController);
             print("Tank Builder: Movement system added.");
         }
         
@@ -907,12 +589,10 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             if(weaponController != null) DestroyImmediate(weaponController);
 
             weaponController = gameObject.AddComponent<WeaponController>();
+
+            weaponController.CreateWeapons(GetFirePoints());
             
-            foreach (var firePoint in cannonFirePoint)
-                weaponController.firePoints.Add(firePoint);
-            
-            
-            
+            EditorUtility.SetDirty(weaponController);
             print("Tank Builder: Weapon system added.");
         }
         
@@ -942,13 +622,17 @@ namespace DimensionalDeveloper.TankBuilder.Utility
             cam.orthographic = true;
             cam.orthographicSize = cameraController.CameraDistance;
             tankController.camera = cam;
-		        
+            
             cameraGameObject.AddComponent<AudioListener>();
+            
+            EditorUtility.SetDirty(tankController);
+            EditorUtility.SetDirty(cameraController);
             
             if(cameraController.CameraTransform != null) print("Tank Builder: Camera system added.");
         }
         
         #endregion
+        
         
     }
 }

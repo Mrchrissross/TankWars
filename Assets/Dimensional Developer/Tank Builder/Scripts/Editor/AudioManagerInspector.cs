@@ -21,8 +21,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             {
                 GUILayout.Space(-20);
 
-                if (TexturedButton(plusTexture,
-                        "Adds a new sound.", 20f))
+                if (TexturedButton(plusTexture, "Adds a new sound."))
                     AudioManager.AddSound();
             })) return;
 
@@ -48,10 +47,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                     
                             GUILayout.Space(-100);
 
-                            if (TexturedButton(plusTexture, "Creates a copy of this sound.", 20f))
+                            if (TexturedButton(plusTexture, "Creates a copy of this sound."))
                                 AudioManager.CopySound(sound);
 
-                            if (TexturedButton(minusTexture, "Removes this sound.", 20f))
+                            if (TexturedButton(minusTexture, "Removes this sound."))
                             {
                                 AudioManager.sounds.RemoveAt(index);
                                 GUILayout.EndHorizontal();

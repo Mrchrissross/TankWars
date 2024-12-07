@@ -10,6 +10,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
     [CustomEditor(typeof(Utility.TankBuilder)), CanEditMultipleObjects]
     public class TankBuilderInspector : EditorTemplate
     {
+        
+        
+        #region Fields
+        
         protected override string ScriptName => "Tank Builder";
         protected override bool EnableBaseGUI => false;
         private Utility.TankBuilder TankBuilder => target as Utility.TankBuilder;
@@ -31,9 +35,19 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         private int _resourceCategoriesIndex;
         private int _editResourceCategoriesIndex;
         
-        public int hullCurrentTab = 0;
-        public int cannonCurrentTab = 0;
+        private int hullCurrentTab = 0;
+        private int cannonCurrentTab = 0;
+        
+        // Used in the editor to provide an extra support for placing objects.
+        private enum HandleType { Move, Rotation, Scale };
+        private HandleType gizmoHandleType;
+        private Transform accessoryGizmo;
+        private Transform firePointGizmo;
 
+        #endregion
+
+        
+        
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -224,83 +238,32 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         }
 
 
-
-        /*private void DrawSpawnHull()
-        {
-            GUILayout.BeginHorizontal();
-
-            if (Foldout("Hull", "Spawn, toggles, or destroys the tanks hull.",
-                ref TankBuilder.expandHull))
-            {
-                Space(-100);
-
-                if (TexturedButton(plusTexture, "Spawns a new hull, destroying the old one.", 20f))
-                    TankBuilder.SpawnHull();
-
-                if (TankBuilder.hull != null)
-                {
-                    if (TexturedButton(minusTexture, "Destroys the tanks current hull.", 20f))
-                        DestroyImmediate(TankBuilder.hull.gameObject);
-                }
-
-                GUILayout.EndHorizontal();
-
-                DrawLine(0.5f, 5f, 5);
-
-                if (TankBuilder.hull == null) return;
-
-                BeginVertical();
-
-                if (Button("Toggle", "Toggles the current hull."))
-                    Selection.activeGameObject = TankBuilder.hull.gameObject;
-
-
-
-                DrawLine(0.5f, 5f, 5);
-
-
-
-                Label("Colors:", "Changes the various colors on the tanks hull.");
-                {
-                    EditorGUI.indentLevel++;
-
-                    TankBuilder.hullColor = ColorField("Overall Color",
-                        "Changes the color of the tanks hull.",
-                        TankBuilder.hullColor, true, 130);
-                    TankBuilder.hullAdditionalColor = ColorField("Additional Color",
-                        "Changes the additional colors on the tanks hull.", TankBuilder.hullAdditionalColor, true, 130);
-                    TankBuilder.hullShadowsColor = ColorField("Shadows Color",
-                        "Changes the color of the shadows on the tanks hull.", TankBuilder.hullShadowsColor, true, 130);
-
-                    EditorGUI.indentLevel--;
-                }
-
-                EndVertical();
-            }
-            else GUILayout.EndHorizontal();
-        }*/
-
-
+        
         
         private void DrawSpawnHull()
         {
             GUILayout.BeginHorizontal();
 
+            TankBuilder.hullCategory ??= new Utility.TankBuilder.Category()
+            {
+                categoryName = "Hull",
+                categoryFolder = "Hull",
+                expandCategory = false,
+                editCategory = false,
+                accessories = new List<Utility.TankBuilder.Accessory>()
+            };
+            
             var category = TankBuilder.hullCategory;
             var expandCategory = category.expandCategory;
 
-            if (String.IsNullOrEmpty(category.categoryName))
-            {
-                category.categoryName = "Hull";
-                category.categoryFolder = "Hull";
-            }
-            
             if (Foldout(category.categoryName, "Spawn, toggles, or destroys the tanks hull.",
                     ref expandCategory))
             {
+                category.expandCategory = expandCategory;
+                
                 Space(-100);
                 
-                if (TexturedButton(plusTexture, "Creates a completely new accessory.", 20f))
+                if (TexturedButton(plusTexture, "Creates a completely new accessory."))
                 {
                     TankBuilder.SpawnHull();
                     TankBuilder.SpawnAccessory(category);
@@ -308,7 +271,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 if (TankBuilder.hull != null)
                 {
-                    if (TexturedButton(minusTexture, "Warning: Destroys the tanks current hull and everything on it.", 20f))
+                    if (TexturedButton(minusTexture, "Warning: Destroys the tanks current hull and everything on it."))
                         DestroyImmediate(TankBuilder.hull.gameObject);
                 }
 
@@ -316,293 +279,231 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                 
                 
-                DrawLine(0.5f, 5f, 5);
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Toggle
+                // -------------------------------------------------------------------------------------------------
+
                 
-                
-                
-                if (TankBuilder.hull == null) return;
+
+                if (TankBuilder.hull == null)
+                {
+                    if (!Button("Build", "Builds the current hull.")) 
+                        return;
+                    
+                    TankBuilder.SpawnHull();
+                    TankBuilder.SpawnAccessory(category);
+
+                    return;
+                }
                 
                 if (Button("Toggle", "Toggles the current hull."))
                     Selection.activeGameObject = TankBuilder.hull.gameObject;
 
 
+                
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Position, Rotation, Scale
+                // -------------------------------------------------------------------------------------------------
 
-                DrawLine(0.5f, 5f, 5);
+
                 
-                
-                
-                hullCurrentTab = GUILayout.Toolbar(hullCurrentTab,
-                    new string[] {"Position", "Size"});
-                    
+                if (accessoryGizmo != TankBuilder.hull) hullCurrentTab = -1;
+                hullCurrentTab = GUILayout.Toolbar(hullCurrentTab, new[] {"Position", "Size"});
+
                 if (hullCurrentTab == 0)
                 {
                     Label("Position:", "Changes the position of the base.", LabelWidth);
+                    
+                    accessoryGizmo = TankBuilder.hull;
+                    gizmoHandleType = HandleType.Move;
 
                     EditorGUI.indentLevel++;
 
-                    var position = TankBuilder.hullPosition;
+                    var position = TankBuilder.hull.localPosition;
                     position.x = Slider("X", "Changes the base's position along the x axis.",
                         position.x, -3.0f, 3.0f, LabelWidth);
                     position.y = Slider("Y", "Changes the base's position along the y axis.",
                         position.y, -7.0f, 5.0f, LabelWidth);
-                    TankBuilder.hullPosition = position;
+                    TankBuilder.hull.localPosition = position;
 
                     EditorGUI.indentLevel--;
                 }
-                else
+                else if (hullCurrentTab == 1)
                 {
                     Label("Local Scale:", "Changes the size of the overall cannon.", LabelWidth);
+                    
+                    accessoryGizmo = TankBuilder.hull;
+                    gizmoHandleType = HandleType.Scale;
 
                     EditorGUI.indentLevel++;
 
-                    var size = TankBuilder.hullSize;
+                    var size = TankBuilder.hull.localScale;
                     size.x = Slider("X", "Changes the base's size along the x axis.",
                         size.x, -2.0f, 2.0f, LabelWidth);
                     size.y = Slider("Y", "Changes the base's size along the y axis.",
                         size.y, 0.0f, 2.0f, LabelWidth);
-                    TankBuilder.hullSize = size;
+                    TankBuilder.hull.localScale = size;
 
                     EditorGUI.indentLevel--;
                 }
                 
                 
                 
-                DrawLine(0.5f, 5f, 5);
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Accessories
+                // -------------------------------------------------------------------------------------------------
 
                 
 
+                category.accessories ??= new List<Utility.TankBuilder.Accessory>();
                 InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
-                    
                 DrawAccessories(category, ref category.accessories);
 
             }
-            else GUILayout.EndHorizontal();
-            
+            else
+            {
+                GUILayout.EndHorizontal();
+
+                if (accessoryGizmo == TankBuilder.hull) accessoryGizmo = null;
+            }
+
             category.expandCategory = expandCategory;
         }
         
         
-
+        
         private void DrawSpawnCannon()
         {
             GUILayout.BeginHorizontal();
 
-            if (Foldout("Cannon", "Spawn, toggles, or destroys the tanks Cannon.",
-                ref TankBuilder.expandCannon))
+            TankBuilder.cannonCategory ??= new Utility.TankBuilder.Category()
             {
+                categoryName = "Cannon",
+                categoryFolder = "Cannon",
+                expandCategory = false,
+                editCategory = false,
+                accessories = new List<Utility.TankBuilder.Accessory>()
+            };
+            
+            var category = TankBuilder.cannonCategory;
+            var expandCategory = category.expandCategory;
 
+            if (String.IsNullOrEmpty(category.categoryName))
+            {
+                category.categoryName = "Cannon";
+                category.categoryFolder = "Cannon";
+            }
+
+            if (Foldout("Cannon", "Spawn, toggles, or destroys the tanks Cannon.",
+                    ref expandCategory))
+            {
+                category.expandCategory = expandCategory;
                 Space(-100);
 
-                if (TexturedButton(plusTexture, "Spawns a new cannon, destroying the old one.", 20f))
-                    TankBuilder.SpawnCannon();
-
-                if (TankBuilder.cannonBase != null)
+                if (TexturedButton(plusTexture, "Creates a completely new accessory."))
                 {
-                    if (TexturedButton(minusTexture, "Destroys the tanks current cannon.", 20f))
-                        DestroyImmediate(TankBuilder.cannonBase.gameObject);
+                    TankBuilder.SpawnCannon();
+                    TankBuilder.SpawnAccessory(category);
+                }
+                
+
+                if (TankBuilder.cannonRotor != null)
+                {
+                    if (TexturedButton(minusTexture, "Destroys the tanks current cannon."))
+                        DestroyImmediate(TankBuilder.cannonRotor.gameObject);
                 }
 
                 GUILayout.EndHorizontal();
 
-                DrawLine(0.5f, 5f, 5);
+                
+                
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Toggle
+                // -------------------------------------------------------------------------------------------------
 
-                if (TankBuilder.cannonBase == null) return;
 
-                BeginVertical();
+
+                if (TankBuilder.cannonRotor == null)
                 {
-                    if (Button("Toggle", "Toggles the current cannon."))
-                        Selection.activeGameObject = TankBuilder.cannonBase.gameObject;
-
-
-
-                    DrawLine(0.5f, 5f, 5);
-
-
-
-                    TankBuilder.cannonType = (Utility.TankBuilder.CannonType) EnumPopup("Cannon Type", 
-                        "The method used to follow the target.", TankBuilder.cannonType, LabelWidth);
-
-
-
-                    DrawLine(0.5f, 5f, 5);
-
+                    if (!Button("Build", "Builds the current cannon.")) 
+                        return;
                     
-                    
-                    GUILayout.BeginHorizontal();
-                    {
-                        Label("Base:", "Changes the values for the overall cannon rotor.", LabelWidth);
+                    TankBuilder.SpawnCannon();
+                    TankBuilder.SpawnAccessory(category);
 
-                        GUILayout.FlexibleSpace();
-
-                        if (Button("Toggle", "Toggles the current cannon."))
-                            Selection.activeGameObject = TankBuilder.cannonRotor.gameObject;
-                    }
-                    GUILayout.EndHorizontal();
-                    
-                    Space(3);
-
-                    cannonCurrentTab = GUILayout.Toolbar(cannonCurrentTab,
-                        new string[] {"Position", "Size"});
-                    
-                    if (cannonCurrentTab == 0)
-                    {
-                        Label("Position:", "Changes the position of the base.", LabelWidth);
-
-                        EditorGUI.indentLevel++;
-
-                        var position = TankBuilder.cannonRotorPosition;
-                        position.x = Slider("X", "Changes the base's position along the x axis.",
-                            position.x, -3.0f, 3.0f, LabelWidth);
-                        position.y = Slider("Y", "Changes the base's position along the y axis.",
-                            position.y, -7.0f, 5.0f, LabelWidth);
-                        TankBuilder.cannonRotorPosition = position;
-
-                        EditorGUI.indentLevel--;
-                    }
-                    else
-                    {
-                        Label("Local Scale:", "Changes the size of the overall cannon.", LabelWidth);
-
-                        EditorGUI.indentLevel++;
-
-                        var size = TankBuilder.cannonRotorSize;
-                        size.x = Slider("X", "Changes the base's size along the x axis.",
-                            size.x, -2.0f, 2.0f, LabelWidth);
-                        size.y = Slider("Y", "Changes the base's size along the y axis.",
-                            size.y, 0.0f, 2.0f, LabelWidth);
-                        TankBuilder.cannonRotorSize = size;
-
-                        EditorGUI.indentLevel--;
-                    }
-
-                    
-                    
-                    DrawLine(0.5f, 5f, 5);
-
-                    
-                    
-                    if (TankBuilder.cannonType == Utility.TankBuilder.CannonType.Single)
-                    {
-                        GUILayout.BeginHorizontal();
-                        {
-                            Label("Main Cannon:", "Changes the values for the main cannon.", LabelWidth);
-
-                            GUILayout.FlexibleSpace();
-
-                            if (Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = TankBuilder.cannonHolder[0].gameObject;
-                        }
-                        GUILayout.EndHorizontal();
-                        
-                        Space(3);
-
-                        EditorGUI.indentLevel++;
-
-                        TankBuilder.singleCannonPosition = Slider("Position",
-                            "Position of the cannon on the x axis.",
-                            TankBuilder.singleCannonPosition, -2.5f, 2.5f, LabelWidth);
-
-                        TankBuilder.singleCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.singleCannonSize, 0.5f, 1.0f, LabelWidth);
-
-                        EditorGUI.indentLevel--;
-                    }
-                    else
-                    {
-                        GUILayout.BeginHorizontal();
-                        {
-                            Label("Left Cannon:", "Changes the values for the left cannon.", LabelWidth);
-
-                            GUILayout.FlexibleSpace();
-
-                            if (Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = TankBuilder.cannonHolder[0].gameObject;
-                        }
-                        GUILayout.EndHorizontal();
-                        
-                        Space(3);
-
-                        EditorGUI.indentLevel++;
-
-                        TankBuilder.leftCannonPosition = Slider("Position",
-                            "Position of the cannon on the x axis.",
-                            TankBuilder.leftCannonPosition, -2.5f, 0.0f, LabelWidth);
-
-                        TankBuilder.leftCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.leftCannonSize, 0.5f, 1.0f, LabelWidth);
-
-                        EditorGUI.indentLevel--;
-
-                        DrawLine(0.5f, 5f, 5);
-
-                        GUILayout.BeginHorizontal();
-                        {
-                            Label("Right Cannon:", "Changes the values for the right cannon.", LabelWidth);
-
-                            GUILayout.FlexibleSpace();
-
-                            if (Button("Toggle", "Toggles the current cannon."))
-                                Selection.activeGameObject = TankBuilder.cannonHolder[1].gameObject;
-                        }
-                        GUILayout.EndHorizontal();
-                        
-                        Space(3);
-
-                        EditorGUI.indentLevel++;
-
-                        TankBuilder.rightCannonPosition = Slider("Position",
-                            "Position of the cannon on the x axis.",
-                            TankBuilder.rightCannonPosition, 0.0f, 2.5f, LabelWidth);
-
-                        TankBuilder.rightCannonSize = Slider("Size", "Size of the tanks cannon.",
-                            TankBuilder.rightCannonSize, 0.5f, 1.0f, LabelWidth);
-
-                        EditorGUI.indentLevel--;
-                    }
-
-                    DrawLine(0.5f, 5f, 5);
-                    
-                    Label("Colors:", "Changes the various colors on the tanks cannon.");
-                    {
-                        EditorGUI.indentLevel++;
-
-                        GUILayout.BeginHorizontal();
-                        {
-                            Label("Base", "Changes the color of the cannons base.", LabelWidth);
-
-                            TankBuilder.cannonBaseColor = EditorGUILayout.ColorField(TankBuilder.cannonBaseColor);
-                            TankBuilder.cannonBaseSidesColor =
-                                EditorGUILayout.ColorField(TankBuilder.cannonBaseSidesColor);
-
-                            GUILayout.FlexibleSpace();
-                        }
-                        GUILayout.EndHorizontal();
-                        
-                        Space(5);
-
-                        if (TankBuilder.cannonType == Utility.TankBuilder.CannonType.Single)
-                        {
-                            TankBuilder.cannonColor = ColorField("Cannon",
-                                "Changes the color of the tanks cannon.", TankBuilder.cannonColor, true, 120);
-                        }
-                        else
-                        {
-                            TankBuilder.leftCannonColor = ColorField("Left Cannon",
-                                "Changes the color of the tanks left cannon.", TankBuilder.leftCannonColor, true,
-                                120);
-                            TankBuilder.rightCannonColor = ColorField("Right Cannon",
-                                "Changes the color of the tanks right cannon.", TankBuilder.rightCannonColor, true,
-                                120);
-                        }
-
-                        EditorGUI.indentLevel--;
-                    }
+                    return;
                 }
-                EndVertical();
-            }
-            else GUILayout.EndHorizontal();
-        }
 
+                if (Button("Toggle", "Toggles the current cannon."))
+                    Selection.activeGameObject = TankBuilder.cannonRotor.gameObject;
+
+
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Position, Rotation, Scale
+                // -------------------------------------------------------------------------------------------------
+
+
+                
+                if (accessoryGizmo != TankBuilder.cannonRotor) cannonCurrentTab = -1;
+                cannonCurrentTab = GUILayout.Toolbar(cannonCurrentTab, new[] {"Position", "Size"});
+
+                if (cannonCurrentTab == 0)
+                {
+                    Label("Position:", "Changes the position of the cannon.", LabelWidth);
+                    
+                    accessoryGizmo = TankBuilder.cannonRotor;
+                    gizmoHandleType = HandleType.Move;
+
+                    EditorGUI.indentLevel++;
+
+                    var position = TankBuilder.cannonRotor.localPosition;
+                    position.x = Slider("X", "Changes the base's position along the x axis.",
+                        position.x, -3.0f, 3.0f, LabelWidth);
+                    position.y = Slider("Y", "Changes the base's position along the y axis.",
+                        position.y, -7.0f, 5.0f, LabelWidth);
+                    TankBuilder.cannonRotor.localPosition = position;
+
+                    EditorGUI.indentLevel--;
+                }
+                else if (cannonCurrentTab == 1)
+                {
+                    Label("Local Scale:", "Changes the size of the overall cannon.", LabelWidth);
+                    
+                    accessoryGizmo = TankBuilder.cannonRotor;
+                    gizmoHandleType = HandleType.Scale;
+
+                    EditorGUI.indentLevel++;
+
+                    var size = TankBuilder.cannonRotor.localScale;
+                    size.x = Slider("X", "Changes the base's size along the x axis.",
+                        size.x, -2.0f, 2.0f, LabelWidth);
+                    size.y = Slider("Y", "Changes the base's size along the y axis.",
+                        size.y, 0.0f, 2.0f, LabelWidth);
+                    TankBuilder.cannonRotor.localScale = size;
+
+                    EditorGUI.indentLevel--;
+                }
+
+                
+                // -------------------------------------------------------------------------------------------------
+                DrawLine(0.5f, 5f, 5); // Accessories
+                // -------------------------------------------------------------------------------------------------
+
+                
+                category.accessories ??= new List<Utility.TankBuilder.Accessory>();
+                InitAccessoryStyle(category.categoryFolder, ref _accessoryStyles);
+                DrawAccessories(category, ref category.accessories);
+            }
+            else
+            {
+                GUILayout.EndHorizontal();
+
+                if (accessoryGizmo == TankBuilder.cannonRotor) accessoryGizmo = null;
+            }
+            
+            category.expandCategory = expandCategory;
+        }
+        
         
         
         private void DrawCategories()
@@ -622,7 +523,7 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                     if (!category.editCategory)
                     {
-                        if (TexturedButton(editTexture, "Edit Category?", 20f))
+                        if (TexturedButton(editTexture, "Edit Category?"))
                         {
                             category.editCategory = true;
                             _newCategoryName = category.categoryName;
@@ -635,10 +536,10 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         }
                     }
 
-                    if (TexturedButton(plusTexture, "Creates a completely new accessory.", 20f))
+                    if (TexturedButton(plusTexture, "Creates a completely new accessory."))
                         TankBuilder.SpawnAccessory(category);
 
-                    if (TexturedButton(minusTexture, "Removes this category.", 20f))
+                    if (TexturedButton(minusTexture, "Removes this category."))
                     {
                         TankBuilder.RemoveCategory(index);
                         break;
@@ -698,8 +599,6 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                                     _newCategoryName = "";
                                     _newFolderLocation = "";
                                     GUI.FocusControl(null);
-                                    
-                                    // Debug.Log("Tank Builder: New category name and folder has been applied.");
                                 }
 
                                 if (Button("Back", "Goes back to main."))
@@ -752,7 +651,17 @@ namespace DimensionalDeveloper.TankBuilder.Editor
         
         private void DrawAccessories(Utility.TankBuilder.Category category, ref List<Utility.TankBuilder.Accessory> accessories)
         {
-            if (accessories.Count == 0) return;
+            // A button that shows when the category has no accessories. 
+            if (accessories.Count == 0)
+            {
+                if (!Button("Add Accessory", "Add a new accessory.")) 
+                    return;
+                
+                TankBuilder.SpawnCannon();
+                TankBuilder.SpawnAccessory(category);
+                
+                return;
+            }
             
             BeginVertical();
             {
@@ -770,20 +679,41 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         if (!accessory.editName)
                         {
-                            if (TexturedButton(editTexture, "Rename object?", 20f))
+                            if (TexturedButton(editTexture, "Rename object?"))
                             {
                                 accessory.editName = true;
                                 accessory.newName = accessory.Name;
                             }
                         }
 
-                        if (TexturedButton(plusTexture, "Create a copy of this object?", 20f))
+                        if (accessory.transform != null)
+                        {
+                            var hasCollider = accessory.transform.gameObject.GetComponent<PolygonCollider2D>() == null;
+                            if (hasCollider)
+                            {
+                                if (TexturedButton(colliderAddTexture, "Create a collider on this object"))
+                                {
+                                    accessory.transform.gameObject.AddComponent<PolygonCollider2D>();
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (TexturedButton(colliderRemoveTexture, "Removes the collider from this object"))
+                                {
+                                    DestroyImmediate(accessory.transform.gameObject.GetComponent<PolygonCollider2D>());
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (TexturedButton(plusTexture, "Create a copy of this object?"))
                         {
                             category.CopyAccessory(accessory);
                             break;
                         }
 
-                        if (TexturedButton(minusTexture, "Remove this object?", 20f))
+                        if (TexturedButton(minusTexture, "Remove this object?"))
                         {
                             if (accessory.transform != null) DestroyImmediate(accessory.transform.gameObject);
                             accessories.RemoveAt(i);
@@ -793,8 +723,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         GUILayout.EndHorizontal();
 
                         
-                        
-                        DrawLine(0.5f, 2.5f, 2.5f);
+                        //----------------------------------------------------------------------------------------------
+                        DrawLine(0.5f, 2.5f, 2.5f); // Edit Item
+                        //----------------------------------------------------------------------------------------------
                         
                         
                         
@@ -820,8 +751,15 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                                     accessory.Name = newName;
                                     accessory.editName = false;
                                     GUI.FocusControl(null);
+                                }
+                                
+                                if (Button("Match Style", "Matches the name of the current style."))
+                                {
+                                    if (string.IsNullOrEmpty(newName)) newName = _accessoryStyles[accessory.Style];
                                     
-                                    // Debug.Log("Tank Builder: New accessory name has been applied.");
+                                    accessory.Name = accessory.accessorySprite.sprite.name;
+                                    accessory.editName = false;
+                                    GUI.FocusControl(null);
                                 }
                                 
                                 if (Button("Back", "Goes back to main."))
@@ -832,29 +770,42 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             }
                             GUILayout.EndHorizontal();
                             
-                            DrawLine(0.5f, 2.5f, 5);
+                            
+                            //----------------------------------------------------------------------------------------------
+                            DrawLine(0.5f, 2.5f, 5); // End of edit item.
+                            //----------------------------------------------------------------------------------------------
+                            
+                            
+                            
                         }
-
-
+                        
+                        // Missing Transform
                         if (accessory.transform == null)
                         {
-                            accessory.transform = (Transform) EditorGUILayout.ObjectField(new GUIContent("Missing Transform:",
-                                    accessory.Name + "'s transform was not found, please reassign it or delete this item."),
-                                accessory.transform, typeof(Transform), true);
-                            
+                            ObjectField("Missing Transform:", accessory.Name + "'s transform was not found, please reassign it or delete this item.", ref accessory.transform, LabelWidth);
                             EndVertical();
 
                             continue;
                         }
 
-                        if (accessory.accessorySprite == null) accessory.accessorySprite = accessory.transform.GetComponent<SpriteRenderer>();
+                        // Missing Renderer
+                        if (accessory.accessorySprite == null)
+                        {
+                            accessory.accessorySprite = accessory.transform.GetComponent<SpriteRenderer>();
+                            if (accessory.accessorySprite == null)
+                            {
+                                ObjectField("Missing Renderer:", accessory.Name + "'s renderer was not found, please reassign it or delete this item.", ref accessory.accessorySprite, LabelWidth);
+                            }
+                        }
 
                         if (Button("Toggle", "Toggles the current accessory."))
                             Selection.activeGameObject = accessory.transform.gameObject;
 
                         
                         
-                        DrawLine(0.5f, 2.5f, 2.5f);
+                        //----------------------------------------------------------------------------------------------
+                        DrawLine(0.5f, 2.5f, 2.5f); // Style
+                        //----------------------------------------------------------------------------------------------
 
 
                         
@@ -863,11 +814,15 @@ namespace DimensionalDeveloper.TankBuilder.Editor
 
                         
                         
-                        DrawLine(0.5f, 2.5f, 5);
+                        //----------------------------------------------------------------------------------------------
+                        DrawLine(0.5f, 2.5f, 5); // Position, Rotation, Size
+                        //----------------------------------------------------------------------------------------------
 
 
 
                         var currentTab = accessory.currentTab;
+                        if (accessoryGizmo != accessory.transform) currentTab = -1;
+                        
                         accessory.currentTab = TabsToggle(accessory.currentTab, new string[] {"Position", "Rotation", "Size"});
                         
                         if(accessory.currentTab != currentTab) GUI.FocusControl(null);
@@ -877,6 +832,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             case 0:
                             {
                                 Label("Position:", "Changes the position of the accessory.", LabelWidth);
+                                
+                                accessoryGizmo = accessory.transform;
+                                gizmoHandleType = HandleType.Move;
 
                                 EditorGUI.indentLevel++;
 
@@ -893,6 +851,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             case 1:
                             {
                                 Label("Rotation:", "Changes the rotation of the accessory.", LabelWidth);
+                                
+                                accessoryGizmo = accessory.transform;
+                                gizmoHandleType = HandleType.Rotation;
 
                                 EditorGUI.indentLevel++;
 
@@ -907,6 +868,9 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                             case 2:
                             {
                                 Label("Local Scale:", "Changes the scale of the accessory.", LabelWidth);
+                                
+                                accessoryGizmo = accessory.transform;
+                                gizmoHandleType = HandleType.Scale;
 
                                 EditorGUI.indentLevel++;
 
@@ -920,14 +884,56 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                                 EditorGUI.indentLevel--;
                                 break;
                             }
-
-                            default:
-                                break;
                         }
 
-                        DrawLine(0.5f, 5f, 5);
+                        
+                        //----------------------------------------------------------------------------------------------
+                        DrawLine(0.5f, 5f, 5); // FirePoint
+                        //----------------------------------------------------------------------------------------------
 
-                        if (category.categoryName is not "Hull" or "Cannon")
+                        
+                        
+                        var isWeapon = accessory.IsWeapon;
+
+                        if (!isWeapon)
+                        {
+                            if (Button("Add Fire Point", "Converts this part into a weapon."))
+                            {
+                                var firePoint = accessory.AddWeapon();
+                               if(TankBuilder.weaponController != null) TankBuilder.weaponController.AddWeapon(firePoint);
+                            }
+                        }
+                        else
+                        {
+                            var firePoint = accessory.firePoint;
+                            
+                            if (Button("Remove Fire Point", "Converts this part into an accessory."))
+                            {
+                                if(TankBuilder.weaponController != null) TankBuilder.weaponController.RemoveWeapon(firePoint);
+                                DestroyImmediate(firePoint.gameObject);
+                            }
+                            
+                            if (firePointGizmo != firePoint)
+                            {
+                                if (Button("Show Fire Point Gizmo", "Shows the Fire Points Handle"))
+                                    firePointGizmo = firePoint;
+                            }
+                            else
+                            {
+                                if (Button("Hide Fire Point Gizmo", "Hides the Fire Points Handle"))
+                                    firePointGizmo = null;
+                            }
+                        }
+                        
+                        
+                        
+                        //----------------------------------------------------------------------------------------------
+                        DrawLine(0.5f, 5f, 5); // Colors
+                        //----------------------------------------------------------------------------------------------
+
+                        
+                        
+                        if (category.categoryName is not ("Hull" or "Cannon"))
                         {
                             accessory.CurrentParent = Popup("Parent",
                                     "The current parent of the accessory.\n\n" +
@@ -947,12 +953,86 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                         EndVertical();
 
                     }
-                    else GUILayout.EndHorizontal();
+                    else
+                    {
+                        GUILayout.EndHorizontal();
+
+                        if (accessoryGizmo == accessory.transform) accessoryGizmo = null;
+                    }
 
                     i++;
                 }
             }
             EndVertical();
         }
+
+
+
+        public void OnSceneGUI()
+        {
+            for (var index = 0; index < 2; index++)
+            {
+                var isAccessory = index == 0;
+                
+                var element = isAccessory ? accessoryGizmo : firePointGizmo;
+                if (element == null) continue;
+                
+                // Handle
+                const float opacity = 0.75f;
+                const float size = 0.15f;
+                Handles.color = isAccessory ? new Color(0f, 0f, 1f, opacity) : new Color(1f, 0f, 0f, opacity);
+                Handles.SphereHandleCap(0, element.position, Quaternion.identity, size, EventType.Repaint);
+                    
+                // Perform Changes
+                EditorGUI.BeginChangeCheck();
+
+                if (!isAccessory)
+                {
+                    var newPosition = Handles.PositionHandle(element.position, Quaternion.identity);
+                    if (EditorGUI.EndChangeCheck()) 
+                    {
+                        Undo.RecordObject(element, "Change Fire Point Position");
+                        element.position = newPosition;
+                        
+                        EditorUtility.SetDirty(element);
+                    }
+
+                    return;
+                }
+                
+                var vector3 = (gizmoHandleType) switch
+                {
+                    HandleType.Move => Handles.PositionHandle(element.position, element.rotation),
+                    HandleType.Scale => Handles.ScaleHandle(element.localScale, element.position, element.rotation),
+                    _ => Vector3.zero
+                };
+
+                var rotation = Quaternion.identity;
+                if (gizmoHandleType == HandleType.Rotation) rotation = Handles.RotationHandle(element.rotation, element.position);
+                
+                if (EditorGUI.EndChangeCheck()) 
+                {
+                    Undo.RecordObject(element, "Change Accessory Position");
+                    
+                    switch(gizmoHandleType) 
+                    {
+                        case HandleType.Move:
+                            element.position = vector3;
+                            break;
+                        case HandleType.Rotation:
+                            element.rotation = rotation;
+                            break;
+                        case HandleType.Scale:
+                            element.localScale = vector3;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                        
+                    EditorUtility.SetDirty(element);
+                }
+            }
+        }
+        
     }
 }

@@ -174,39 +174,39 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void PlaySound(string soundName) => GetSound(soundName)?.Play();
+        public static void PlaySound(string soundName) => GetSound(soundName)?.Play();
 
         /// <summary>
         /// Stops the named sound.
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void StopSound(string soundName) => GetSound(soundName)?.Stop();
+        public static void StopSound(string soundName) => GetSound(soundName)?.Stop();
 
         /// <summary>
         /// Pauses the named sound.
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public void PauseSound(string soundName) => GetSound(soundName)?.Pause();
+        public static void PauseSound(string soundName) => GetSound(soundName)?.Pause();
 
         /// <summary>
         /// Checks if the named sound is playing.
         /// </summary>
         /// <param name="soundName">The name of the sound.</param>
         
-        public bool IsPlaying(string soundName) => (from sound in sounds where sound.name == soundName select sound.IsPlaying()).FirstOrDefault();
+        public static bool IsPlaying(string soundName) => (from sound in Instance.sounds where sound.name == soundName select sound.IsPlaying()).FirstOrDefault();
 
         /// <summary>
         /// Returns the specified sound from the sound list.
         /// </summary>
         /// <param name="soundName">Name of the desired sound.</param>
         
-        public Sound GetSound(string soundName)
+        public static Sound GetSound(string soundName)
         {
             if (soundName == "None") return null;
             
-            foreach (var sound in sounds.Where(sound => sound.name == soundName))
+            foreach (var sound in Instance.sounds.Where(sound => sound.name == soundName))
                 return sound;
             
             Debug.LogWarning("Audio Manager: Sound not found in list." + soundName);
@@ -217,10 +217,10 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// Creates a new sound.
         /// </summary>
 
-        public void AddSound()
+        public static void AddSound()
         {
             var sound = new Sound();
-            sounds.Add(sound);
+            Instance.sounds.Add(sound);
         } 
         
         /// <summary>
@@ -228,7 +228,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// </summary>
         /// <param name="sound">Sound to copy.</param>
         
-        public void CopySound(Sound sound) => sounds.Add(new Sound(sound));
+        public static void CopySound(Sound sound) => Instance.sounds.Add(new Sound(sound));
 
         /// <summary>
         /// Creates the audio source for a sound.
@@ -236,7 +236,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         /// <param name="index">Index within the list of sounds.</param>
         /// <param name="sound"></param>
         
-        public void CreateSource(int index, Sound sound)
+        public static void CreateSource(int index, Sound sound)
         {
             var goName = "Sound " + index + ": " + sound.name;
 
@@ -247,7 +247,7 @@ namespace DimensionalDeveloper.TankBuilder.Managers
             }
             
             var go = new GameObject(goName);
-            go.transform.SetParent(transform);
+            go.transform.SetParent(Instance.transform);
             sound.SetSource(go.AddComponent<AudioSource>());
             sound.audioSource.playOnAwake = false;
         }
@@ -269,5 +269,6 @@ namespace DimensionalDeveloper.TankBuilder.Managers
         }
 
         #endregion        
+        
     }
 }

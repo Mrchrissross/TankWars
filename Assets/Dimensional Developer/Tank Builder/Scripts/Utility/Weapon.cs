@@ -1,11 +1,13 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DimensionalDeveloper.TankBuilder.Utility
 {
     [CreateAssetMenu(fileName = "Weapon", menuName = "Tank Wars/New Weapon", order = 1)]
     public class Weapon : ScriptableObject
     {
+        
         
         #region Properties
 
@@ -66,19 +68,15 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         /// The Y value is the current count of the timer (the one being reduced).
         /// </summary>
             
-        public Vector2 ShotTimer
+        public float Cooldown
         {
-            get => shotTimer;
-            set
-            {
-                shotTimer.x = Mathf.Max(0.0f, value.x);
-                shotTimer.y = Mathf.Max(-0.001f, value.y);
-            }
+            get => cooldown;
+            set => cooldown = Mathf.Max(0.0f, value);
         }
         [Tooltip("Time between shots fired (in seconds)." + 
-            "\n \n The X value is the set time that the timer will reset to." +
-            "\n    The Y value is the current count of the timer (the one being reduced).")]
-        [Space, SerializeField] private Vector2 shotTimer = new Vector2(0.8f, 0.0f);
+                 "\n \n The X value is the set time that the timer will reset to." +
+                 "\n    The Y value is the current count of the timer (the one being reduced).")]
+        [Space, SerializeField] private float cooldown = 0.8f;
         
         /// <summary>
         /// How fast the ammo travels.
@@ -157,7 +155,6 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         [HideInInspector] public int explosionIndex;
 
         #endregion
-
         
         
         
@@ -168,7 +165,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         public void OnValidate()
         {
             Name = _name;
-            ShotTimer = shotTimer;
+            Cooldown = cooldown;
             Speed = speed;
             Damage = damage;
             ShotSound = shotSound;
@@ -180,5 +177,7 @@ namespace DimensionalDeveloper.TankBuilder.Utility
         #endif
 
         #endregion
+        
+        
     }
 }

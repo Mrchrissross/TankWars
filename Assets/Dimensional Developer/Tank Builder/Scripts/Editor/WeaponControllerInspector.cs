@@ -62,26 +62,22 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                Label("Shoot:",
-                    "Ensure these settings match those that are within the input manager.", 100);
+                Label("Shoot:", "Ensure these settings match those that are within the input manager.", LabelWidth);
                     
                 GUILayout.BeginVertical("box");
                 {
-                    if (WeaponController.firePoints.Count > 1)
+                    for (var index = 0; index < WeaponController.linkedWeapons.Count; index++)
                     {
-                        WeaponController.cannonInput[1] = StringField("Left Cannon",
-                            "Button used to fire the left cannon.",
-                            WeaponController.cannonInput[1], 100);
-                        
-                        WeaponController.cannonInput[2] = StringField("Right Cannon",
-                            "Button used to fire the right cannon.",
-                            WeaponController.cannonInput[2], 100);
-                    }
-                    else
-                    {
-                        WeaponController.cannonInput[0] = StringField("Main Cannon",
-                            "Button used to fire the main cannon.",
-                            WeaponController.cannonInput[0], 100);
+                        var linkedWeapon = WeaponController.linkedWeapons[index];
+                        if (linkedWeapon.firePoint == null)
+                        {
+                            WeaponController.linkedWeapons.RemoveAt(index);
+                            break;
+                        }
+
+                        linkedWeapon.input = StringField(linkedWeapon.firePoint.parent.name,
+                            "Button used to fire this specific cannon.",
+                            linkedWeapon.input, LabelWidth);
                     }
                 }
                 GUILayout.EndVertical();
@@ -97,30 +93,26 @@ namespace DimensionalDeveloper.TankBuilder.Editor
             
             EditorGUILayout.BeginVertical(_boxStyle, GUILayout.MinWidth(BoxMinWidth), GUILayout.MaxWidth(BoxMaxWidth));
             {
-                if (WeaponController.firePoints.Count > 1)
+                foreach (var linkedWeapon in WeaponController.linkedWeapons)
                 {
-                    DrawWeapon("Left Cannon", 1);
-                    
+                    DrawWeapon(linkedWeapon);
                     DrawLine(0.5f, 0f, 2.5f);
-                    
-                    DrawWeapon("Right Cannon", 2);
                 }
-                else DrawWeapon("Main Cannon", 0);
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(5);
         }
 
-        private void DrawWeapon(string weaponName, int weaponNumber)
+        private void DrawWeapon(WeaponController.LinkedWeapon linkedWeapon)
         {
-            if (!Foldout(weaponName + ":", "", ref WeaponController.weaponDropdown[weaponNumber], false,
+            if (!Foldout($"{linkedWeapon.firePoint.parent.name}: ", "", ref linkedWeapon.expandWeapon, false,
                 true)) return;
             
             GUILayout.Space(-2.5f);
                 
             GUILayout.BeginVertical("box");
             {
-                ref var weapon = ref WeaponController.weapons[weaponNumber];
+                ref var weapon = ref linkedWeapon.weapon;
 
                 EditorGUI.BeginChangeCheck();
                 if (weapon != null) Undo.RecordObject(weapon, weapon.Name);
@@ -159,23 +151,23 @@ namespace DimensionalDeveloper.TankBuilder.Editor
                 {
                     GUI.backgroundColor = guiColorBackup;
 
-                    var shotTimer = weapon.ShotTimer;
+                    var cooldown = weapon.Cooldown;
 
                     GUILayout.BeginHorizontal();
                     {
-                        shotTimer.x = FloatField("Shot Timer",
+                        cooldown = FloatField("Shot Timer",
                             "Time between shots fired (in seconds). " +
                             "The X value is the set time that the timer will reset to. " +
                             "The Y value is the current count of the timer (the one being reduced).",
-                            shotTimer.x, 100);
+                            cooldown, 100);
 
                         GUILayout.Space(-25);
-                        Label("Count:   " + shotTimer.y.ToString("0.0"), "", 90);
+                        Label("Count:   " + linkedWeapon.cooldown.y.ToString("0.0"), "", 90);
                         GUILayout.Space(-40);
                     }
                     GUILayout.EndHorizontal();
 
-                    weapon.ShotTimer = shotTimer;
+                    weapon.Cooldown = cooldown;
 
                     GUILayout.Space(3.25f);
 
